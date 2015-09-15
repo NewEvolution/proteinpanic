@@ -1,0 +1,17 @@
+<div class="container-fluid authform">
+  <div class="row">
+    <div class="col-sm-1 col-md-2 col-lg-3"></div>
+    <div class="col-sm-10 col-md-8 col-lg-6">
+      <h3>Please choose a username</h3>
+      <div class="input-group">
+        <span class="input-group-addon">Username:</span>
+        <input type="text" class="form-control add-input" id="username-input" placeholder="Fishbulb" ng-model="username.username">
+      </div>
+      <div class="loginbuttons">
+        <button class="btn btn-default" id="available-btn" ng-click="username.checkAvail()">Check Availability</button> 
+        <button class="btn btn-default" id="choose-btn" ng-click="username.checkAvail(true)">Choose Username</button>
+      </div>
+    </div>
+    <div class="col-sm-1 col-md-2 col-lg-3"></div>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background: #79c2b4; }
+
+.input-group,
+.loginbuttons,
+.authbuttons,
+#protein-btn,
+#amino-btn {
+  margin-top: 10px; }
+
+.authform {
+  text-align: center; }
+  .authform h4 {
+    display: inline-block; }
+  .authform button {
+    width: 10em; }
+
+.authbuttons button {
+  width: 12em;
+  margin-top: 10px;
+  display: inline-block;
+  font-size: 2em;
+  text-align: left;
+  padding-left: 3em;
+  border: 1px solid #adadad; }
+  .authbuttons button:hover {
+    border: 1px solid black; }
+  .authbuttons button img {
+    height: 24px; }
+
+#github-btn {
+  color: black;
+  background-color: white; }
+
+#facebook-btn {
+  color: white;
+  background-color: #4b6ea9; }
+
+#google-btn {
+  color: white;
+  background-color: #c33; }
+
+#twitter-btn {
+  color: white;
+  background-color: #00aced; }
+
+.content {
+  text-align: center; }
+
+#gameTarget {
+  width: 800px;
+  height: 600px;
+  margin: 20px auto; }
+
+/*# sourceMappingURL=main.css.map */

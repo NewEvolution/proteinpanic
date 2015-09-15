@@ -1,0 +1,31 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-1 col-md-2 col-lg-3"></div>
+    <div class="col-sm-10 col-md-8 col-lg-6">
+      <h2>Protein Entry</h2>
+      <div class="input-group">
+        <span class="input-group-addon">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Protein&nbsp;Name:</span>
+        <input type="text" class="form-control add-input" id="protein" placeholder="Enter Protein Name" ng-model="add.proteinName">
+      </div>
+      <div class="input-group">
+        <span class="input-group-addon">Amino&nbsp;Acid&nbsp;Sequence:</span>
+        <textarea type="text" class="form-control add-input" id="amino-sequence" placeholder="Enter the Protein's Hyphen-separated Amino Acid Sequence" ng-model="add.aminoString"></textarea>
+      </div>
+      <button class="btn btn-default form-control" id="protein-btn" ng-click="add.addProtein()">Add Protein</button>
+      <h2>Amino Acid Entry</h2>
+      <div class="input-group">
+        <span class="input-group-addon">Amino&nbsp;Acid&nbsp;Name:</span>
+        <input type="text" class="form-control add-input" id="amino" placeholder="Enter Amino Acid Name" ng-model="add.aminoName">
+      </div>
+      <div class="input-group">
+        <span class="input-group-addon">Amino&nbsp;Acid&nbsp;Code:</span>
+        <input type="text" class="form-control add-input" id="amino-code" placeholder="Enter the Amino Acid's Single Letter Code" ng-model="add.aminoCode">
+      </div>
+      <div class="input-group">
+        <span class="input-group-addon">&nbsp;Codon&nbsp;Sequence:</span>
+        <textarea type="text" class="form-control add-input" id="codon-sequence" placeholder="Enter the Amino Acid's Space-comma-separated Codon Sequences" ng-model="add.codonString"></textarea>
+      </div>
+      <button class="btn btn-default form-control" id="amino-btn" ng-click="add.addAmino()">Add Amino Acid</button>
+    <div class="col-sm-1 col-md-2 col-lg-3"></div>
+  </div>
+</div>
