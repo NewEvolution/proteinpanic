@@ -14,9 +14,9 @@ define([
   }])
   .controller("addCtrl", ["$firebaseArray", "uid",
     function($firebaseArray, uid) {
-      var proteins = new Firebase("https://aminos-anonymous.firebaseio.com/proteins/");
-      var aminos = new Firebase("https://aminos-anonymous.firebaseio.com/aminos/");
-      var users = new Firebase("https://aminos-anonymous.firebaseio.com/users/");
+      var proteins = new Firebase("https://proteinpanic.firebaseio.com/proteins/");
+      var aminos = new Firebase("https://proteinpanic.firebaseio.com/aminos/");
+      var users = new Firebase("https://proteinpanic.firebaseio.com/users/");
       var proteinArr = $firebaseArray(proteins);
       var aminoArr = $firebaseArray(aminos);
       var userArr = $firebaseArray(users);

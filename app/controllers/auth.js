@@ -14,8 +14,8 @@ define([
   }])
   .controller("authCtrl", ["$firebaseAuth", "$firebaseArray", "uid",
     function($firebaseAuth, $firebaseArray, uid) {
-      var authRef = new Firebase("https://aminos-anonymous.firebaseio.com/");
-      var userRef = new Firebase("https://aminos-anonymous.firebaseio.com/users/");
+      var authRef = new Firebase("https://proteinpanic.firebaseio.com/");
+      var userRef = new Firebase("https://proteinpanic.firebaseio.com/users/");
       var usersArr = $firebaseArray(userRef);
       var currentUID = "";
       var goTo = "";

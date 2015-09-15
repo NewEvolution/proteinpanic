@@ -14,10 +14,10 @@ define([
 	}])
 	.controller("gameCtrl", ["$firebaseArray", "uid", function($firebaseArray, uid) {
 
-		var proteins = new Firebase("https://aminos-anonymous.firebaseio.com/proteins");
-		var aminos = new Firebase("https://aminos-anonymous.firebaseio.com/aminos");
-		var users = new Firebase("https://aminos-anonymous.firebaseio.com/users");
-		var ref = new Firebase("https://aminos-anonymous.firebaseio.com");
+		var proteins = new Firebase("https://proteinpanic.firebaseio.com/proteins");
+		var aminos = new Firebase("https://proteinpanic.firebaseio.com/aminos");
+		var users = new Firebase("https://proteinpanic.firebaseio.com/users");
+		var ref = new Firebase("https://proteinpanic.firebaseio.com");
 
 		var proteinArr = $firebaseArray(proteins);
 		var userArr = $firebaseArray(users);
