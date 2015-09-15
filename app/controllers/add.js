@@ -2,7 +2,7 @@ define([
   "angular",
   "firebase",
   "angularRoute"
-], function(angular, route, firebase) {
+], function(angular, firebase, route) {
   angular
   .module("AminoApp.add", ["ngRoute"])
   .config(["$routeProvider", function($routeProvider) {

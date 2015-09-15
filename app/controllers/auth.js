@@ -6,7 +6,7 @@ define([
   angular
   .module("AminoApp.auth", ["ngRoute"])
   .config(["$routeProvider", function($routeProvider) {
-    $routeProvider.when("/", {
+    $routeProvider.when("/auth", {
       templateUrl: "partials/auth.html",
       controller: "authCtrl",
       controllerAs: "auth"
