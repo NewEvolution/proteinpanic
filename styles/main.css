@@ -1,58 +1,76 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: "Nunito", Arial, sans-serif;
   background: #79c2b4; }
 
 .input-group,
-.loginbuttons,
-.authbuttons,
 #protein-btn,
 #amino-btn {
   margin-top: 10px; }
 
-.authform {
-  text-align: center; }
-  .authform h4 {
-    display: inline-block; }
-  .authform button {
-    width: 10em; }
-
-.authbuttons button {
-  width: 12em;
-  margin-top: 10px;
-  display: inline-block;
-  font-size: 2em;
-  text-align: left;
-  padding-left: 3em;
-  border: 1px solid #adadad; }
-  .authbuttons button:hover {
-    border: 1px solid black; }
-  .authbuttons button img {
-    height: 24px; }
-
-#github-btn {
-  color: black;
-  background-color: white; }
-
-#facebook-btn {
-  color: white;
-  background-color: #4b6ea9; }
-
-#google-btn {
-  color: white;
-  background-color: #c33; }
-
-#twitter-btn {
-  color: white;
-  background-color: #00aced; }
-
-.content {
-  text-align: center; }
-
-#gameTarget {
+#gameHolder {
   width: 1024px;
   height: 600px;
   margin: 20px auto; }
+
+.positioner {
+  width: 0;
+  height: 0;
+  position: relative; }
+
+.form-group, .login-group, .user-group {
+  font-size: 1.2em;
+  position: absolute;
+  text-align: center; }
+  .form-group input, .login-group input, .user-group input {
+    width: 100%;
+    padding: 2px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    border: 1px solid black;
+    font-family: "Nunito", Arial, sans-serif; }
+    .form-group input:invalid, .login-group input:invalid, .user-group input:invalid {
+      color: red; }
+  .form-group button, .login-group button, .user-group button {
+    padding: 2px 5px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    background-color: #eee;
+    border: 1px solid black;
+    font-family: "Nunito", Arial, sans-serif;
+    box-shadow: inset 3px 3px 3px white, inset -3px -3px 3px #777; }
+    .form-group button:hover, .login-group button:hover, .user-group button:hover {
+      cursor: pointer;
+      box-shadow: inset 0 0 6px white, inset 0 0 6px white, inset 3px 3px 3px white, inset -3px -3px 3px #777; }
+    .form-group button:active, .login-group button:active, .user-group button:active {
+      box-shadow: inset -3px -3px 3px white, inset 3px 3px 3px #777; }
+    .form-group button:focus, .login-group button:focus, .user-group button:focus {
+      outline: none; }
+
+.login-group {
+  top: 140px;
+  left: 430px;
+  width: 248px; }
+  .login-group button {
+    width: 42%; }
+
+.user-group {
+  top: 40px;
+  left: 415px;
+  width: 565px;
+  height: 260px;
+  overflow: scroll; }
+  .user-group h3 {
+    padding: 0;
+    margin: 0; }
+  .user-group #username-input {
+    width: 350px; }
+  .user-group #color-input {
+    height: 50px; }
+    .user-group #color-input:hover {
+      cursor: pointer; }
 
 /*# sourceMappingURL=main.css.map */

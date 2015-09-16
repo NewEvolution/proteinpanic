@@ -1,0 +1,22 @@
+<div id="gameHolder">
+  <div class="positioner">
+    <div class="form-group user-group">
+      <div>
+        <h3>Username:</h3>
+        <input type="text" id="username-input" placeholder="Choose a username" ng-model="user.username">
+        <button id="available-btn" ng-click="user.checkAvail()">Check Availability</button>
+      </div>
+      <hr>
+      <div>
+        <h3>Player Color:</h3>
+        <input type="color" id="color-input" ng-model="user.color">
+      </div>
+      <hr>
+      <div>
+        <button id="choose-btn" type="submit" ng-click="user.checkAvail(true)">Choose Username</button>
+      </div>
+    </div>
+  </div>
+  <div id="gameTarget">
+  </div>
+</div>

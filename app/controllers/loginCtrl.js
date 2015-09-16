@@ -4,55 +4,54 @@ define([
 	"bootstrap",
 	"angularRoute",
 ], function(angular, firebase, bootstrap, angularRoute) {
-	angular.module("AminoApp.game", ["ngRoute"])
+	angular.module("AminoApp.login", ["ngRoute"])
 	.config(["$routeProvider", function($routeProvider) {
 		$routeProvider.when("/", {
-			templateUrl: "../partials/game.html",
-			controller: "gameCtrl",
-			controllerAs: "game"
+			templateUrl: "../partials/login.html",
+			controller: "loginCtrl",
+			controllerAs: "login"
 		});
 	}])
-	.controller("gameCtrl", ["$firebaseArray", "uid", "proteinPanic", "mainMenu",
-	function($firebaseArray, uid, proteinPanic, mainMenu) {
+	.controller("loginCtrl", ["$firebaseArray", "uid", "proteinPanic",
+	function($firebaseArray, uid, proteinPanic) {
 
 		var users = new Firebase("https://proteinpanic.firebaseio.com/users");
 		var ref = new Firebase("https://proteinpanic.firebaseio.com");
 
 		var usersArr = $firebaseArray(users);
 		var currentUID = null;
-		this.loginPage = false;
-		this.userPage = false;
 		this.username = "";
 
 		var game = proteinPanic;
-		loginMenu();
-		userMenu();
-		mainMenu();
 
-		var authData = ref.getAuth();
-		if(authData === null) {
-			game.state.start("loginMenu");
-			this.loginPage = true;
+    var authData = ref.getAuth();
+    if(authData === null) {
+  		loginMenu();
 		} else {
 		  uid.setUid(authData.uid);
 		  currentUID = authData.uid;
 			usersArr.$loaded().then(angular.bind(this, function(data) {
+        var userDoesNotExist = true;
 				for(var key in data) {
 					if(data[key].uid === currentUID) {
+            userDoesNotExist = false;
 						this.username = data[key].username;
 					}
 				}
+        if(userDoesNotExist) {
+          usersArr.$add({uid: currentUID});
+        }
 				if(this.username === "") {
-			    game.state.start("userMenu");
-					this.userPage = true;
+          window.location = "#/user";
 				} else {
-					game.state.start("mainMenu");
+					window.location = "#/game";
 				}
 			}));
 		}
 
 		function loginMenu() {
 			game.state.add("loginMenu", {preload: preload, create: create});
+      game.state.start("loginMenu");
 
 			var githubBtn;
 			var googleBtn;
@@ -128,69 +127,6 @@ define([
 
 		}
 
-		function userMenu() {
-			console.log("this", this);
-			game.state.add("userMenu", {preload: preload, create: create});
-
-	    function preload() {
-	      game.load.spritesheet("player", "images/tRNA.png", 65, 70);
-	      game.load.spritesheet("A", "images/Alanine.png", 60, 59);
-	      game.load.spritesheet("R", "images/Arginine.png", 60, 52);
-	      game.load.spritesheet("N", "images/Asparagine.png", 26, 60);
-	      game.load.spritesheet("D", "images/Aspartic_acid.png", 60, 58);
-	      game.load.spritesheet("C", "images/Cysteine.png", 60, 59);
-	      game.load.spritesheet("E", "images/Glutamic_acid.png", 30, 60);
-	      game.load.spritesheet("Q", "images/Glutamine.png", 60, 44);
-	      game.load.spritesheet("G", "images/Glycine.png", 60, 57);
-	      game.load.spritesheet("H", "images/Histidine.png", 59, 60);
-	      game.load.spritesheet("I", "images/Isoleucine.png", 60, 59);
-	      game.load.spritesheet("L", "images/Leucine.png", 59, 60);
-	      game.load.spritesheet("K", "images/Lysine.png", 60, 44);
-	      game.load.spritesheet("M", "images/Methionine.png", 43, 60);
-	      game.load.spritesheet("F", "images/Phenylalanine.png", 60, 60);
-	      game.load.spritesheet("P", "images/Proline.png", 60, 48);
-	      game.load.spritesheet("S", "images/Serine.png", 39, 60);
-	      game.load.spritesheet("T", "images/Threonine.png", 56, 60);
-	      game.load.spritesheet("W", "images/Tryptophan.png", 60, 31);
-	      game.load.spritesheet("Y", "images/Tyrosine.png", 60, 38);
-	      game.load.spritesheet("V", "images/Valine.png", 60, 60);
-	      game.load.image("splash", "images/splash_screen.png");
-	    }
-
-	    function create(){
-	      game.physics.startSystem(Phaser.Physics.ARCADE);
-
-	      game.add.sprite(0, 0, "splash");
-	    }
-		}
-
-		this.checkAvail = function(choosing) {
-      var usernameAvailable = false;
-      for (var k = 0; k < usersArr.length; k++) {
-        if(this.username === "") {
-          alert("Usernames cannot be blank.");
-        } else if(usersArr[k].username === this.username) {
-          usernameAvailable = false;
-          alert("I'm sorry, the username " + this.username + " is taken.");
-          break;
-        } else {
-          usernameAvailable = true;
-        }
-      }
-      if(usernameAvailable && choosing) {
-        this.newUsername();
-      } else if (usernameAvailable) {
-        alert(this.username + " is available!");
-      }
-    };
-
-    this.newUsername = function() {
-      usersArr.$add({
-        uid: currentUID,
-        username: this.username
-      });
-    };
-
 	  this.signUp = function() {
 	  	if(this.email === undefined || this.email.indexOf("@") === -1 || this.password.length < 6) {
 	  		alert("You must provide a valid email address & a 6-character minimum password.");
@@ -229,9 +165,9 @@ define([
 	            }
 	          }
 	          if(this.username === "") {
-	          	userMenu();
+	          	window.location = "#/user";
 						} else {
-							mainMenu();
+							window.location = "#/game";
 						}
 	        }
 	      }.bind(this));
