@@ -3,16 +3,16 @@ define([
   "firebase",
   "bootstrap",
 ], function(angular, firebase, bootstrap) {
-  angular.module("AminoApp.mainMenu", [])
-  .factory("mainMenu", ["$firebaseArray", "uid", "proteinPanic", function($firebaseArray, uid, proteinPanic) {
+  angular.module("AminoApp.preload", [])
+  .factory("preload", ["proteinPanic", function(proteinPanic) {
 
     var game = proteinPanic;
 
     return function() {
-      game.state.add("mainMenu", {preload: preload, create: create});
-
-      function preload() {
         game.load.spritesheet("facebook-btn", "images/facebook-btn.png", 246, 42);
+        game.load.spritesheet("twitter-btn", "images/twitter-btn.png", 246, 42);
+        game.load.spritesheet("github-btn", "images/github-btn.png", 246, 42);
+        game.load.spritesheet("google-btn", "images/google-btn.png", 246, 42);
         game.load.spritesheet("player", "images/tRNA.png", 65, 70);
         game.load.spritesheet("A", "images/Alanine.png", 60, 59);
         game.load.spritesheet("R", "images/Arginine.png", 60, 52);
@@ -35,21 +35,8 @@ define([
         game.load.spritesheet("Y", "images/Tyrosine.png", 60, 38);
         game.load.spritesheet("V", "images/Valine.png", 60, 60);
         game.load.image("splash", "images/splash_screen.png");
+        game.load.image("orline", "images/or_line.png");
         game.load.image("title", "images/title.png");
-      }
-
-      function create(){
-        game.physics.startSystem(Phaser.Physics.ARCADE);
-
-        game.add.sprite(0, 0, "splash");
-        game.add.sprite(433, 38, "title");
-        facebookBtn = game.add.button(739, 168, "facebook-btn", testFunc, this, 0, 1, 2, 0);
-      }
-
-      function testFunc() {
-        game.state.start("userMenu");
-      }
-
-    };
+      };
   }]);
 });
