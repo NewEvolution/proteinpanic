@@ -12,8 +12,8 @@ define([
 			controllerAs: "login"
 		});
 	}])
-	.controller("loginCtrl", ["$firebaseArray", "uid", "proteinPanic", "preload",
-	function($firebaseArray, uid, proteinPanic, preload) {
+	.controller("loginCtrl", ["$scope", "$firebaseArray", "uid", "proteinPanic", "preload",
+	function($scope, $firebaseArray, uid, proteinPanic, preload) {
 
 		var users = new Firebase("https://proteinpanic.firebaseio.com/users");
 		var ref = new Firebase("https://proteinpanic.firebaseio.com");
@@ -24,30 +24,31 @@ define([
     this.username = "";
 
 
-    var authData = ref.getAuth();
-    if(authData === null) {
-  		loginMenu();
-		} else {
-		  uid.setUid(authData.uid);
-		  currentUID = authData.uid;
-			usersArr.$loaded().then(angular.bind(this, function(data) {
-        var userDoesNotExist = true;
-				for(var key in data) {
-					if(data[key].uid === currentUID) {
-            userDoesNotExist = false;
-						this.username = data[key].username;
-					}
-				}
-        if(userDoesNotExist) {
-          usersArr.$add({uid: currentUID});
-        }
-				if(this.username === "") {
-          window.location = "#/user";
-				} else {
-					window.location = "#/game";
-				}
-			}));
-		}
+  //   var authData = ref.getAuth();
+  //   if(authData === null) {
+  // 		loginMenu();
+		// } else {
+		//   uid.setUid(authData.uid);
+		//   currentUID = authData.uid;
+		// 	usersArr.$loaded().then(angular.bind(this, function(data) {
+  //       var userDoesNotExist = true;
+		// 		for(var key in data) {
+		// 			if(data[key].uid === currentUID) {
+  //           userDoesNotExist = false;
+		// 				this.username = data[key].username;
+		// 			}
+		// 		}
+  //       if(userDoesNotExist) {
+  //         usersArr.$add({uid: currentUID});
+  //       }
+		// 		if(this.username === "") {
+  //         window.location = "#/user";
+		// 		} else {
+		// 			window.location = "#/game";
+		// 		}
+		// 	}));
+		// }
+    loginMenu();
 
 		function loginMenu() {
 			game.state.add("loginMenu", {preload: preload, create: create});
@@ -123,10 +124,10 @@ define([
 	        password: this.password
 	      }, function(error, authData) {
 	        if (error) {
-	          console.log("Login Failed!\n" + error);
-            console.log(error.message);
+	          alert("Login Failed!\n" + error);
             if(error.message === "The specified password is incorrect.") {
               this.passReset = true;
+              $scope.$digest();
               console.log("the existential horror that is this", this);
             }
 	        } else {
