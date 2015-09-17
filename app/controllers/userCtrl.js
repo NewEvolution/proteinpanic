@@ -108,6 +108,10 @@ define([
       });
     };
 
+    this.mainMenu = function() {
+      window.location = "#/menu";
+    };
+
     this.changeEmail = function() {
       ref.changeEmail({
         oldEmail: this.email,

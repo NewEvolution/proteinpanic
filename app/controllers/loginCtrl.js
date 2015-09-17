@@ -14,41 +14,42 @@ define([
 	}])
 	.controller("loginCtrl", ["$scope", "$firebaseArray", "uid", "proteinPanic", "preload",
 	function($scope, $firebaseArray, uid, proteinPanic, preload) {
+	
+  	var game = proteinPanic;
 
-		var users = new Firebase("https://proteinpanic.firebaseio.com/users");
-		var ref = new Firebase("https://proteinpanic.firebaseio.com");
-		var usersArr = $firebaseArray(users);
-		var game = proteinPanic;
+    var users = new Firebase("https://proteinpanic.firebaseio.com/users");
+    var ref = new Firebase("https://proteinpanic.firebaseio.com");
+  
+    var usersArr = $firebaseArray(users);
     var currentUID = null;
     this.passReset = false;
     this.username = "";
 
 
-  //   var authData = ref.getAuth();
-  //   if(authData === null) {
-  // 		loginMenu();
-		// } else {
-		//   uid.setUid(authData.uid);
-		//   currentUID = authData.uid;
-		// 	usersArr.$loaded().then(angular.bind(this, function(data) {
-  //       var userDoesNotExist = true;
-		// 		for(var key in data) {
-		// 			if(data[key].uid === currentUID) {
-  //           userDoesNotExist = false;
-		// 				this.username = data[key].username;
-		// 			}
-		// 		}
-  //       if(userDoesNotExist) {
-  //         usersArr.$add({uid: currentUID});
-  //       }
-		// 		if(this.username === "") {
-  //         window.location = "#/user";
-		// 		} else {
-		// 			window.location = "#/game";
-		// 		}
-		// 	}));
-		// }
-    loginMenu();
+    var authData = ref.getAuth();
+    if(authData === null) {
+  		loginMenu();
+		} else {
+		  uid.setUid(authData.uid);
+		  currentUID = authData.uid;
+			usersArr.$loaded().then(angular.bind(this, function(data) {
+        var userDoesNotExist = true;
+				for(var key in data) {
+					if(data[key].uid === currentUID) {
+            userDoesNotExist = false;
+						this.username = data[key].username;
+					}
+				}
+        if(userDoesNotExist) {
+          usersArr.$add({uid: currentUID});
+        }
+				if(this.username === "") {
+          window.location = "#/user";
+				} else {
+					window.location = "#/menu";
+				}
+			}));
+		}
 
 		function loginMenu() {
 			game.state.add("loginMenu", {preload: preload, create: create});
@@ -142,7 +143,7 @@ define([
 	          if(this.username === "") {
 	          	window.location = "#/user";
 						} else {
-							window.location = "#/game";
+							window.location = "#/menu";
 						}
 	        }
 	      }.bind(this));

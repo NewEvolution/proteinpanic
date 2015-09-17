@@ -13,7 +13,7 @@ body {
   margin-top: 10px;
 }
 
-#gameHolder {
+#game-holder {
   width: 1024px;
   height: 600px;
   margin: 20px auto 0;
@@ -110,4 +110,13 @@ body {
   .radio {
     width: auto;
   }
+}
+
+.howto-group {
+  @extend .form-group;
+  top: 40px;
+  left: 415px;
+  width: 565px;
+  height: 260px;
+  overflow: auto;
 }

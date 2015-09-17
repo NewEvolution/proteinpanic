@@ -13,6 +13,10 @@ define([
         game.load.spritesheet("twitter-btn", "images/twitter-btn.png", 246, 42);
         game.load.spritesheet("github-btn", "images/github-btn.png", 246, 42);
         game.load.spritesheet("google-btn", "images/google-btn.png", 246, 42);
+        game.load.spritesheet("resume_game", "images/resume_game.png", 252, 72);
+        game.load.spritesheet("how_to_play", "images/how_to_play.png", 252, 72);
+        game.load.spritesheet("new_game", "images/new_game.png", 252, 72);
+        game.load.spritesheet("options", "images/options.png", 252, 72);
         game.load.spritesheet("player", "images/tRNA.png", 65, 70);
         game.load.spritesheet("A", "images/Alanine.png", 60, 59);
         game.load.spritesheet("R", "images/Arginine.png", 60, 52);
