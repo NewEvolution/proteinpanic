@@ -70,7 +70,7 @@ define([
 		  }
 
       function resumeFunc() {
-        window.location ="#/user";
+        window.location ="#/game";
       }
 
       function optionsFunc() {
@@ -82,7 +82,7 @@ define([
       }
 
       function newFunc() {
-      	window.location ="#/user";
+      	window.location ="#/game";
       }
 
 		}

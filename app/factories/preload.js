@@ -17,7 +17,7 @@ define([
         game.load.spritesheet("how_to_play", "images/how_to_play.png", 252, 72);
         game.load.spritesheet("new_game", "images/new_game.png", 252, 72);
         game.load.spritesheet("options", "images/options.png", 252, 72);
-        game.load.spritesheet("player", "images/tRNA.png", 65, 70);
+        game.load.spritesheet("player", "images/tRNA.png", 70, 104);
         game.load.spritesheet("A", "images/Alanine.png", 60, 59);
         game.load.spritesheet("R", "images/Arginine.png", 60, 52);
         game.load.spritesheet("N", "images/Asparagine.png", 26, 60);
@@ -39,6 +39,7 @@ define([
         game.load.spritesheet("Y", "images/Tyrosine.png", 60, 38);
         game.load.spritesheet("V", "images/Valine.png", 60, 60);
         game.load.image("splash", "images/splash_screen.png");
+        game.load.image("background", "images/cell_bg.png");
         game.load.image("orline", "images/or_line.png");
         game.load.image("title", "images/title.png");
       };
