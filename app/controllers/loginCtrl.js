@@ -17,12 +17,12 @@ define([
 
 		var users = new Firebase("https://proteinpanic.firebaseio.com/users");
 		var ref = new Firebase("https://proteinpanic.firebaseio.com");
-
 		var usersArr = $firebaseArray(users);
-		var currentUID = null;
-		this.username = "";
-
 		var game = proteinPanic;
+    var currentUID = null;
+    this.passReset = false;
+    this.username = "";
+
 
     var authData = ref.getAuth();
     if(authData === null) {
@@ -105,7 +105,7 @@ define([
 	        password : this.password
 	      }, function(error, userData) {
 	        if (error) {
-	          console.log("Error creating user:", error);
+	          alert("Error creating user:\n" + error);
 	        } else {
 	          console.log("Successfully created user account with uid:", userData.uid);
 	          this.logIn();
@@ -115,7 +115,7 @@ define([
     };
 
     this.logIn = function() {
-	  	if(this.email === undefined || this.email.indexOf("@") === -1 || this.password.length < 6) {
+	  	if(this.email === undefined || this.email.indexOf("@") === -1 || this.email.indexOf(".") === -1 || this.password.length < 6) {
 	  		alert("You must provide a valid email address & a 6-character minimum password.");
 	  	} else {
 	      ref.authWithPassword({
@@ -123,7 +123,12 @@ define([
 	        password: this.password
 	      }, function(error, authData) {
 	        if (error) {
-	          console.log("Login Failed!", error);
+	          console.log("Login Failed!\n" + error);
+            console.log(error.message);
+            if(error.message === "The specified password is incorrect.") {
+              this.passReset = true;
+              console.log("the existential horror that is this", this);
+            }
 	        } else {
 	          console.log("Authenticated successfully with payload:", authData);
 	          currentUID = authData.uid;
@@ -141,6 +146,18 @@ define([
 	        }
 	      }.bind(this));
 	    }
+    };
+
+    this.resetPass = function() {
+      ref.resetPassword({
+        email: this.email
+      }, function(error) {
+        if (error === null) {
+          alert("Password reset email sent successfully!");
+        } else {
+          alert("Error sending password reset email:\n" + error);
+        }
+      });
     };
 
 	}]);

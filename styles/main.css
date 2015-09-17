@@ -51,18 +51,21 @@ body {
       outline: none; }
 
 .login-group {
-  top: 140px;
+  top: 120px;
   left: 430px;
   width: 248px; }
   .login-group button {
     width: 42%; }
+  .login-group #reset-btn {
+    width: auto;
+    margin-top: 5px; }
 
 .user-group {
   top: 40px;
   left: 415px;
   width: 565px;
   height: 260px;
-  overflow: scroll; }
+  overflow: auto; }
   .user-group h3 {
     padding: 0;
     margin: 0; }
@@ -72,5 +75,14 @@ body {
     height: 50px; }
     .user-group #color-input:hover {
       cursor: pointer; }
+  .user-group .slider {
+    width: 80%; }
+  .user-group .display {
+    width: 10%; }
+  .user-group .radio-holder {
+    text-align: left;
+    padding-left: 160px; }
+  .user-group .radio {
+    width: auto; }
 
 /*# sourceMappingURL=main.css.map */
