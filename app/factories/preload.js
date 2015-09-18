@@ -17,6 +17,8 @@ define([
         game.load.spritesheet("how_to_play", "images/how_to_play.png", 252, 72);
         game.load.spritesheet("new_game", "images/new_game.png", 252, 72);
         game.load.spritesheet("options", "images/options.png", 252, 72);
+        game.load.spritesheet("ribosome", "images/Ribosome.png", 148, 155);
+        game.load.spritesheet("eyes", "images/Ribosome-eyes.png", 83, 50);
         game.load.spritesheet("player", "images/tRNA.png", 70, 104);
         game.load.spritesheet("A", "images/Alanine.png", 60, 59);
         game.load.spritesheet("R", "images/Arginine.png", 60, 52);
