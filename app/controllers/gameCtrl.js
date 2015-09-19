@@ -24,7 +24,7 @@ define([
     
     var usersArr = $firebaseArray(users);
     var currentUID = null;
-    this.username = "";
+    var username = "";
 
     var authData = ref.getAuth();
     if(authData === null) {
@@ -36,15 +36,16 @@ define([
         var userDoesNotExist = true;
         for(var key in data) {
           if(data[key].uid === currentUID) {
-            userDoesNotExist = false;
-            this.username = data[key].username;
             playerColor = "0x" + data[key].color.slice(1);
+            username = data[key].username;
+            userDoesNotExist = false;
+            mouse = data[key].mouse;
           }
         }
         if(userDoesNotExist) {
           usersArr.$add({uid: currentUID});
         }
-        if(this.username === "") {
+        if(username === "") {
           window.location = "#/user";
         } else {
           theGame();
@@ -54,6 +55,7 @@ define([
 
     var eyes;
     var player;
+    var hitbox;
     var cursors;
     var ribosome;
     var countText;
@@ -66,7 +68,7 @@ define([
     var mouse = false;
     var aminosRemaining;
     var blinkCounter = 0;
-    var homeSafe = false;
+    var mousedOver = false;
     var aminoToCollectGroup;
     var spinningOut = false;
     var carryingAmino = false;
@@ -88,7 +90,7 @@ define([
         }
 
         // Player block ###########################################################################
-        player = game.add.sprite(game.world.centerX, game.world.centerY, "player");
+        player = game.add.sprite(100, 1100, "player");
         game.physics.arcade.enable(player);
         player.body.collideWorldBounds = true;
         eyes = game.add.sprite(0, 0, "eyes");
@@ -108,9 +110,9 @@ define([
           } else {
             theAmino = game.rnd.pick(proteinAminos);
           }
-          var aminoX = 201;
-          var aminoY = 301;
-          while((aminoX > 200 && aminoX < 1000) && (aminoY > 300 && aminoY < 900)) {
+          var aminoX = 0;
+          var aminoY = 1200;
+          while(aminoX < 200 && aminoY > 1000) { // Don't spawn inside the ribosome
             aminoX = game.rnd.integerInRange(0, 1200);
             aminoY = game.rnd.integerInRange(0, 1200);
           }
@@ -130,9 +132,9 @@ define([
 
         // Aminos to collect count ################################################################
         aminosRemaining = proteinAminos.length;
-        countHolder = game.add.sprite(0,0);
+        countHolder = game.add.sprite(0, 0);
         countHolder.fixedToCamera = true;
-        countText = game.add.text(0,0,aminosRemaining + " Left!");
+        countText = game.add.text(0, 0, aminosRemaining + " Left!");
         countHolder.addChild(countText);
         countHolder.cameraOffset.x = 140;
         countHolder.cameraOffset.y = 10;
@@ -140,14 +142,22 @@ define([
 
         // Ribosome block #########################################################################
         ribosome = game.add.sprite(0, 0, "ribosome");
+        riboeyes = game.add.sprite(0, 0, "riboeyes");
+        hitbox = game.add.sprite(0, 0, "hitbox");
         game.physics.arcade.enable(ribosome);
-        riboeyes = game.add.sprite(0,0, "riboeyes");
+        game.physics.arcade.enable(hitbox);
+        ribosome.body.immovable = true;
+        hitbox.body.immovable = true;
+        ribosome.inputEnabled = true;
         ribosome.fixedToCamera = true;
         ribosome.cameraOffset.x = 20;
         ribosome.cameraOffset.y = 410;
         riboeyes.fixedToCamera = true;
         riboeyes.cameraOffset.x = 85;
         riboeyes.cameraOffset.y = 432;
+        hitbox.fixedToCamera = true;
+        hitbox.cameraOffset.x = 20;
+        hitbox.cameraOffset.y = 500;
 
         // Gameover / win text ####################################################################
         spriteText = game.add.sprite(0, 0);
@@ -159,7 +169,7 @@ define([
 
       function update() {
         game.physics.arcade.collide(aminoGroup, aminoGroup, rotateBoth, null, this);
-        game.physics.arcade.overlap(player, ribosome, inTheRibosome, null, this);
+        game.physics.arcade.overlap(player, hitbox, inTheRibosome, null, this);
         game.physics.arcade.collide(player, aminoGroup, checkAmino, null, this);
         game.physics.arcade.collide(ribosome, aminoGroup, nothing, null, this);
 
@@ -179,14 +189,17 @@ define([
         }
 
         // Player Motion ##########################################################################
+        if (ribosome.input.pointerOver() && !mousedOver) {
+          mousedOver = true; // So we don't just hurtle off into the aether upon game start
+        }
         player.frame = 0;
         eyes.frame = 0;
         if(spinningOut) {
           player.rotation += 0.5;
         } else {
-          if(mouse) { // Mouse-follow controls
+          if(mouse && mousedOver) { // Mouse-follow controls
             game.physics.arcade.moveToPointer(player, 60, game.input.activePointer, 400);
-          } else { // Keyboard controls
+          } else if(!mouse) { // Keyboard controls
             player.body.velocity.x = 0;
             player.body.velocity.y = 0;
             if (cursors.left.isDown) {
@@ -251,32 +264,25 @@ define([
           }
         }
         // Always keep 15 aminos on screen
-        if(aliveCount < 15) {
+        if(aliveCount < 15 && proteinAminos[1] !== undefined) { // if the array is empty i.e. the level is complete
           var theAmino = proteinAminos[1];
-          console.log("theAmino", theAmino);
-          if(theAmino !== undefined) { // if the array is empty i.e. the level is complete
-            var anAminoX = 201;
-            var anAminoY = 301;
-            while((anAminoX > player.x - 400 && anAminoX < player.x + 400) && (anAminoY > player.y - 400 && anAminoY < player.y + 400)) {
-              anAminoX = game.rnd.integerInRange(0, 1200);
-              anAminoY = game.rnd.integerInRange(0, 1200);
-            }
-            var anAmino = aminoGroup.create(anAminoX, anAminoY, theAmino);
-            anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
-            anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
-            anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
-            anAmino.body.bounce.x = 0.6 + Math.random() * 0.35;
-            anAmino.body.collideWorldBounds = true;
-            anAmino.anchor.setTo(0.5, 0.5);
+          var anAminoX = 201;
+          var anAminoY = 301;
+          while((anAminoX > player.x - 400 && anAminoX < player.x + 400) && (anAminoY > player.y - 400 && anAminoY < player.y + 400)) {
+            anAminoX = game.rnd.integerInRange(0, 1200);
+            anAminoY = game.rnd.integerInRange(0, 1200);
           }
+          var anAmino = aminoGroup.create(anAminoX, anAminoY, theAmino);
+          anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
+          anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
+          anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
+          anAmino.body.bounce.x = 0.6 + Math.random() * 0.35;
+          anAmino.body.collideWorldBounds = true;
+          anAmino.anchor.setTo(0.5, 0.5);
         }
 
         // Called functions #######################################################################
         function inTheRibosome() {
-          if(!homeSafe) {
-            homeSafe = true;
-            console.log("Ding!");
-          }
           if(carriedAmino !== undefined && carryingAmino === true) {
             carryingAmino = false;
             if(proteinAminos.length === 1) {
@@ -343,7 +349,7 @@ define([
 //-------------------------------------------------------------------------------------------------
 
       function render() {
-        game.debug.body(player);
+        game.debug.body(hitbox);
         game.debug.cameraInfo(game.camera, 32, 32);
         game.debug.spriteCoords(player, 32, 500);
       }

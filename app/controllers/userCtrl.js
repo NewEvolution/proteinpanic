@@ -35,6 +35,7 @@ define([
     this.password = "";
     this.newEmail = "";
     this.radioVal = "";
+    this.mouse = true;
     this.music = 100;
     this.email = "";
 
@@ -50,7 +51,8 @@ define([
             currentKey = data[key].$id;
             this.username = data[key].username;
             this.effects = data[key].effects;
-						this.music = data[key].music;
+            this.mouse = data[key].mouse;
+            this.music = data[key].music;
             this.color = data[key].color;
 					}
 				}
@@ -102,6 +104,7 @@ define([
       usersObj[currentKey].effects = parseInt(this.effects);
       usersObj[currentKey].music = parseInt(this.music);
       usersObj[currentKey].username = this.username;
+      usersObj[currentKey].mouse = this.mouse;
       usersObj[currentKey].color = this.color;
       usersObj.$save().then(function(ref) {
         alert("User data saved sucessfully!");

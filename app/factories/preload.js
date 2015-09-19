@@ -44,6 +44,7 @@ define([
         game.load.image("splash", "images/splash_screen.png");
         game.load.image("background", "images/cell_bg.png");
         game.load.image("orline", "images/or_line.png");
+        game.load.image("hitbox", "images/hitbox.png");
         game.load.image("title", "images/title.png");
       };
   }]);

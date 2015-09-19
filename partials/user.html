@@ -7,6 +7,14 @@
     <h3>Player Color:</h3>
     <input type="color" id="color-input" ng-model="user.color">
     <hr>
+    <h3>Controls:</h3>
+    <div>
+      <input class="radio" type="radio" name="controls" ng-value="true" ng-model="user.mouse"><span> - Mouse Control</span>
+    </div>
+    <div>
+      <input class="radio" type="radio" name="controls" ng-value="false" ng-model="user.mouse"><span> - Keyboard Control</span>
+    </div>
+    <hr>
     <h3>Music Volume:</h3>
     <input type="range" class="slider" id="music-volume" min="0" max="100" step="1" ng-model="user.music">
     <input type="text" class="display" id="mv-display" readonly ng-model="user.music">
