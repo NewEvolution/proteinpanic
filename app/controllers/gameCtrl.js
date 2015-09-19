@@ -38,6 +38,7 @@ define([
           if(data[key].uid === currentUID) {
             userDoesNotExist = false;
             this.username = data[key].username;
+            playerColor = "0x" + data[key].color.slice(1);
           }
         }
         if(userDoesNotExist) {
@@ -51,6 +52,7 @@ define([
       }));
     }
 
+    var eyes;
     var player;
     var cursors;
     var ribosome;
@@ -58,6 +60,7 @@ define([
     var stateText;
     var spriteText;
     var aminoGroup;
+    var playerColor;
     var countHolder;
     var carriedAmino;
     var mouse = false;
@@ -86,10 +89,14 @@ define([
 
         // Player block ###########################################################################
         player = game.add.sprite(game.world.centerX, game.world.centerY, "player");
-        player.anchor.setTo(0.5, 0.5); //so it flips around its middle
         game.physics.arcade.enable(player);
         player.body.collideWorldBounds = true;
+        eyes = game.add.sprite(0, 0, "eyes");
+        player.anchor.setTo(0.5, 0.5);
+        eyes.anchor.setTo(0.5, 0.5);
         game.camera.follow(player);
+        player.tint = playerColor;
+        player.addChild(eyes);
 
         // Amino swarm block ######################################################################
         aminoGroup = game.add.group();
@@ -108,7 +115,7 @@ define([
             aminoY = game.rnd.integerInRange(0, 1200);
           }
           var anAmino = aminoGroup.create(aminoX, aminoY, theAmino);
-          anAmino.body.velocity.set(game.rnd.integerInRange(-100, 100), game.rnd.integerInRange(-100, 100));
+          anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
           anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
           anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
           anAmino.body.bounce.x = 0.6 + Math.random() * 0.35;
@@ -134,13 +141,13 @@ define([
         // Ribosome block #########################################################################
         ribosome = game.add.sprite(0, 0, "ribosome");
         game.physics.arcade.enable(ribosome);
-        eyes = game.add.sprite(0,0, "eyes");
+        riboeyes = game.add.sprite(0,0, "riboeyes");
         ribosome.fixedToCamera = true;
         ribosome.cameraOffset.x = 20;
         ribosome.cameraOffset.y = 410;
-        eyes.fixedToCamera = true;
-        eyes.cameraOffset.x = 85;
-        eyes.cameraOffset.y = 432;
+        riboeyes.fixedToCamera = true;
+        riboeyes.cameraOffset.x = 85;
+        riboeyes.cameraOffset.y = 432;
 
         // Gameover / win text ####################################################################
         spriteText = game.add.sprite(0, 0);
@@ -154,23 +161,26 @@ define([
         game.physics.arcade.collide(aminoGroup, aminoGroup, rotateBoth, null, this);
         game.physics.arcade.overlap(player, ribosome, inTheRibosome, null, this);
         game.physics.arcade.collide(player, aminoGroup, checkAmino, null, this);
+        game.physics.arcade.collide(ribosome, aminoGroup, nothing, null, this);
+
 
         // Ribosome blinking ######################################################################
         var blink = game.rnd.integerInRange(0, 300);
-        if(blink === 10 && eyes.frame === 0) {
-          eyes.frame = 1;
+        if(blink === 10 && riboeyes.frame === 0) {
+          riboeyes.frame = 1;
         }
-        if(eyes.frame === 1) {
+        if(riboeyes.frame === 1) {
           if(blinkCounter < 5) {
             blinkCounter++;
           } else {
             blinkCounter = 0;
-            eyes.frame = 0;
+            riboeyes.frame = 0;
           }
         }
 
         // Player Motion ##########################################################################
         player.frame = 0;
+        eyes.frame = 0;
         if(spinningOut) {
           player.rotation += 0.5;
         } else {
@@ -182,9 +192,11 @@ define([
             if (cursors.left.isDown) {
               player.body.velocity.x = -300;
               player.frame = 1;
+              eyes.frame = 1;
             } else if (cursors.right.isDown) {
               player.body.velocity.x = 300;
               player.frame = 1;
+              eyes.frame = 1;
             }
             if (cursors.up.isDown) {
               player.body.velocity.y = -300;
@@ -195,25 +207,28 @@ define([
 
           if(Math.abs(player.body.velocity.x) > 150) {
             player.frame = 1;
+            eyes.frame = 1;
           }
 
           if(player.body.velocity.y < -150) {
             player.frame = 2;
+            eyes.frame = 2;
           } else if(player.body.velocity.y > 150) {
             player.frame = 3;
+            eyes.frame = 3;
           }
 
           if(player.body.velocity.x > 0) {
             player.scale.x = -1;
-            if(player.children[0]) {
-              player.children[0].frame = 1;
-              player.children[0].scale.x = -1;
+            if(player.children[1]) {
+              player.children[1].frame = 1;
+              player.children[1].scale.x = -1;
             }
           } else if(player.body.velocity.x < 0) {
             player.scale.x = 1;
-            if(player.children[0]) {
-              player.children[0].frame = 0;
-              player.children[0].scale.x = 1;
+            if(player.children[1]) {
+              player.children[1].frame = 0;
+              player.children[1].scale.x = 1;
             }
           }
         }
@@ -226,7 +241,7 @@ define([
           }
           // If an amino is going to slow, speed it up
           if(Math.abs(aminoGroup.children[l].body.velocity.x) < 40 || Math.abs(aminoGroup.children[l].body.velocity.y) < 40) {
-            aminoGroup.children[l].body.velocity.set(game.rnd.integerInRange(-100, 100), game.rnd.integerInRange(-100, 100));
+            aminoGroup.children[l].body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
           }
           // Make sure the amino is facing the diretion it's traveling
           if(aminoGroup.children[l].body.velocity.x > 0) {
@@ -237,7 +252,7 @@ define([
         }
         // Always keep 15 aminos on screen
         if(aliveCount < 15) {
-          var theAmino = proteinAminos[0];
+          var theAmino = proteinAminos[1];
           console.log("theAmino", theAmino);
           if(theAmino !== undefined) { // if the array is empty i.e. the level is complete
             var anAminoX = 201;
@@ -247,7 +262,7 @@ define([
               anAminoY = game.rnd.integerInRange(0, 1200);
             }
             var anAmino = aminoGroup.create(anAminoX, anAminoY, theAmino);
-            anAmino.body.velocity.set(game.rnd.integerInRange(-100, 100), game.rnd.integerInRange(-100, 100));
+            anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
             anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
             anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
             anAmino.body.bounce.x = 0.6 + Math.random() * 0.35;
@@ -276,11 +291,11 @@ define([
           }
         }
 
-        function checkAmino (player, anAmino) {
-          if(proteinAminos[0] === anAmino.key && carryingAmino === false) {
-            goodAmino(player, anAmino);
+        function checkAmino (player, theAmino) {
+          if(proteinAminos[0] === theAmino.key && carryingAmino === false) {
+            goodAmino(player, theAmino);
           } else {
-            badAmino(player, anAmino);
+            badAmino(player, theAmino);
           }
         }
 
@@ -289,26 +304,39 @@ define([
           item2.rotation = game.rnd.realInRange(-0.2, 0.2);
         }
 
-        function goodAmino (player, anAmino) {
+        function goodAmino (player, theAmino) {
           if(!spinningOut && !carryingAmino) {
             carryingAmino = true;
-            anAmino.kill();
-            carriedAmino = game.add.sprite(0, -60, anAmino.key);
+            theAmino.kill();
+            carriedAmino = game.add.sprite(0, -60, theAmino.key);
             carriedAmino.anchor.setTo(0.5, 0.5);
             player.addChild(carriedAmino);
           }
         }
 
-        function badAmino (player, anAmino) {
+        function badAmino (player, theAmino) {
           spinningOut = true;
-          anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
+          theAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
           player.body.velocity.x = 0;
           player.body.velocity.y = 0;
           setTimeout(function() {
             spinningOut = false;
             player.rotation = 0;
           }, (1000));
+          if(carryingAmino) {
+            carryingAmino = false;
+            var anAmino = aminoGroup.create(player.body.x, player.body.y - 60, carriedAmino.key);
+            anAmino.body.velocity.set(game.rnd.integerInRange(-300, 300), -300);
+            anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
+            anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
+            anAmino.body.bounce.x = 0.6 + Math.random() * 0.35;
+            anAmino.body.collideWorldBounds = true;
+            anAmino.anchor.setTo(0.5, 0.5);
+            carriedAmino.destroy();
+          }
         }
+
+        function nothing() {} // So things can collide without doing anything other than bouncing off
 
       } 
 
