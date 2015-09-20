@@ -54,6 +54,12 @@ define([
             this.mouse = data[key].mouse;
             this.music = data[key].music;
             this.color = data[key].color;
+            if(currentUID.indexOf("github") === -1 && 
+            currentUID.indexOf("facebook") === -1 && 
+            currentUID.indexOf("twitter") === -1 && 
+            currentUID.indexOf("google") === -1) {
+              this.emailAuth = true;
+            }
 					}
 				}
         userMenu();

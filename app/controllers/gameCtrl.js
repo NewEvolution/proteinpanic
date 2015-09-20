@@ -32,7 +32,7 @@ define([
     } else {
       uid.setUid(authData.uid);
       currentUID = authData.uid;
-      usersArr.$loaded().then(angular.bind(this, function(data) {
+      usersArr.$loaded().then(function(data) {
         var userDoesNotExist = true;
         for(var key in data) {
           if(data[key].uid === currentUID) {
@@ -50,7 +50,7 @@ define([
         } else {
           theGame();
         }
-      }));
+      });
     }
 
     var eyes;
@@ -62,6 +62,7 @@ define([
     var stateText;
     var spriteText;
     var aminoGroup;
+    var codonGroup;
     var playerColor;
     var countHolder;
     var carriedAmino;
@@ -144,6 +145,7 @@ define([
         ribosome = game.add.sprite(0, 0, "ribosome");
         riboeyes = game.add.sprite(0, 0, "riboeyes");
         hitbox = game.add.sprite(0, 0, "hitbox");
+        codonGroup = game.add.group;
         game.physics.arcade.enable(ribosome);
         game.physics.arcade.enable(hitbox);
         ribosome.body.immovable = true;
@@ -159,10 +161,9 @@ define([
         hitbox.cameraOffset.x = 20;
         hitbox.cameraOffset.y = 500;
 
-        // Gameover / win text ####################################################################
-        spriteText = game.add.sprite(0, 0);
-        spriteText.fixedToCamera = true;
-        spriteText.visible = false;
+        // Codon block ############################################################################
+
+
       }
 
 //-------------------------------------------------------------------------------------------------

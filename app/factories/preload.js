@@ -46,6 +46,10 @@ define([
         game.load.image("orline", "images/or_line.png");
         game.load.image("hitbox", "images/hitbox.png");
         game.load.image("title", "images/title.png");
+        game.load.image("c", "images/Cytosine.png");
+        game.load.image("a", "images/Adenine.png");
+        game.load.image("g", "images/Guanine.png");
+        game.load.image("t", "images/Thymine.png");
       };
   }]);
 });

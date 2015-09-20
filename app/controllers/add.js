@@ -27,7 +27,7 @@ define([
       
       this.addProtein = function() {
         var theName = this.proteinName;
-        var theAminos = this.aminoString.split("-");
+        var theAminos = this.aminoString;
         var newProtein = {name: theName, sequence: theAminos};
         proteinArr.$add(newProtein);
         this.proteinName = "";
