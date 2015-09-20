@@ -4,15 +4,15 @@ define([
   "bootstrap",
   "angularRoute",
 ], function(angular, firebase, bootstrap, angularRoute) {
-  angular.module("AminoApp.howto", ["ngRoute"])
+  angular.module("AminoApp.stats", ["ngRoute"])
   .config(["$routeProvider", function($routeProvider) {
-    $routeProvider.when("/howto", {
-      templateUrl: "../partials/howto.html",
-      controller: "howtoCtrl",
-      controllerAs: "howto"
+    $routeProvider.when("/stats", {
+      templateUrl: "../partials/stats.html",
+      controller: "statsCtrl",
+      controllerAs: "stats"
     });
   }])
-  .controller("howtoCtrl", ["$firebaseArray", "uid", "proteinPanic", "preload",
+  .controller("statsCtrl", ["$firebaseArray", "uid", "proteinPanic", "preload",
   function($firebaseArray, uid, proteinPanic, preload) {
     
     var game = proteinPanic;

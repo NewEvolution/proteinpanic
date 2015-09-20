@@ -53,23 +53,21 @@ define([
 			game.state.add("mainMenu", {preload: preload, create: create});
       game.state.start("mainMenu");
 
+      var startBtn;
       var optionsBtn;
-      var resumeBtn;
-      var howtoBtn;
-      var newBtn;
+      var statsBtn;
 
 			function create(){
 		    game.physics.startSystem(Phaser.Physics.ARCADE);
 
 		    game.add.sprite(0, 0, "splash");
 		    game.add.sprite(433, 38, "title");
-		    newBtn = game.add.button(436, 123, "new_game", newFunc, this, 0, 1, 2, 0);
-        resumeBtn = game.add.button(712, 123, "resume_game", resumeFunc, this, 0, 1, 2, 0);
-        optionsBtn = game.add.button(436, 219, "options", optionsFunc, this, 0, 1, 2, 0);
-        howtoBtn = game.add.button(712, 219, "how_to_play", howFunc, this, 0, 1, 2, 0);
+        startBtn = game.add.button(432, 110, "start_game", startFunc, this, 0, 1, 2, 0);
+        optionsBtn = game.add.button(432, 177, "edit_options", optionsFunc, this, 0, 1, 2, 0);
+        statsBtn = game.add.button(432, 245, "view_statistics", statsFunc, this, 0, 1, 2, 0);
 		  }
 
-      function resumeFunc() {
+      function startFunc() {
         window.location ="#/game";
       }
 
@@ -77,12 +75,8 @@ define([
         window.location ="#/user";
       }
 
-      function howFunc() {
-        window.location ="#/howto";
-      }
-
-      function newFunc() {
-      	window.location ="#/game";
+      function statsFunc() {
+      	window.location ="#/stats";
       }
 
 		}

@@ -19,11 +19,11 @@ body {
   height: 0;
   position: relative; }
 
-.form-group, .login-group, .user-group, .howto-group {
+.form-group, .login-group, .user-group, .stats-group {
   font-size: 1.2em;
   position: absolute;
   text-align: center; }
-  .form-group input, .login-group input, .user-group input, .howto-group input {
+  .form-group input, .login-group input, .user-group input, .stats-group input {
     width: 100%;
     padding: 2px;
     font-size: 1.2em;
@@ -32,9 +32,9 @@ body {
     box-sizing: border-box;
     border: 1px solid black;
     font-family: "Nunito", Arial, sans-serif; }
-    .form-group input:invalid, .login-group input:invalid, .user-group input:invalid, .howto-group input:invalid {
+    .form-group input:invalid, .login-group input:invalid, .user-group input:invalid, .stats-group input:invalid {
       color: red; }
-  .form-group button, .login-group button, .user-group button, .howto-group button {
+  .form-group button, .login-group button, .user-group button, .stats-group button {
     padding: 2px 5px;
     font-size: 1.2em;
     border-radius: 5px;
@@ -42,12 +42,12 @@ body {
     border: 1px solid black;
     font-family: "Nunito", Arial, sans-serif;
     box-shadow: inset 3px 3px 3px white, inset -3px -3px 3px #777; }
-    .form-group button:hover, .login-group button:hover, .user-group button:hover, .howto-group button:hover {
+    .form-group button:hover, .login-group button:hover, .user-group button:hover, .stats-group button:hover {
       cursor: pointer;
       box-shadow: inset 0 0 6px white, inset 0 0 6px white, inset 3px 3px 3px white, inset -3px -3px 3px #777; }
-    .form-group button:active, .login-group button:active, .user-group button:active, .howto-group button:active {
+    .form-group button:active, .login-group button:active, .user-group button:active, .stats-group button:active {
       box-shadow: inset -3px -3px 3px white, inset 3px 3px 3px #777; }
-    .form-group button:focus, .login-group button:focus, .user-group button:focus, .howto-group button:focus {
+    .form-group button:focus, .login-group button:focus, .user-group button:focus, .stats-group button:focus {
       outline: none; }
 
 .login-group {
@@ -85,7 +85,7 @@ body {
   .user-group .radio {
     width: auto; }
 
-.howto-group {
+.stats-group {
   top: 40px;
   left: 415px;
   width: 565px;
