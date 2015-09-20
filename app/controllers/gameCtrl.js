@@ -22,6 +22,8 @@ define([
     var users = new Firebase("https://proteinpanic.firebaseio.com/users");
     var ref = new Firebase("https://proteinpanic.firebaseio.com");
     
+    var proteinsArr = $firebaseArray(proteins);
+    var aminosArr = $firebaseArray(aminos);
     var usersArr = $firebaseArray(users);
     var currentUID = null;
     var username = "";
@@ -48,7 +50,26 @@ define([
         if(username === "") {
           window.location = "#/user";
         } else {
-          theGame();
+          aminosArr.$loaded().then(function(aminosData) {
+            proteinsArr.$loaded().then(function(proteinsData) {
+              for(var p = 0; p < proteinsArr.length; p++) {
+                if(proteinsArr[p].name === chosenProtein) {
+                  proteinAminos = proteinsArr[p].sequence.split(""); // Grab the list of amino acids & build the array to grab
+                }
+                for(var pa = 0; pa < proteinAminos.length; pa++) {
+                  for (var a = 0; a < aminosArr.length; a++) {
+                    if(aminosArr[a].code === proteinAminos[pa]) { // If the amino matches the amino in our grabbing array...
+                      var theCodon = game.rnd.pick(aminosArr[a].codons); // grab one of its possible codons...
+                      for (var c = 0; c < theCodon.length; c++) {
+                        codonChain.push(theCodon[c].toLowerCase()); // and add each nucleotide in sequence to our DNA strand!
+                      }
+                    }
+                  }
+                }
+              }
+              theGame(); // All preparations are complete, get the party started!
+            });
+          });
         }
       });
     }
@@ -67,13 +88,15 @@ define([
     var countHolder;
     var carriedAmino;
     var mouse = false;
+    var codonChain = [];
     var aminosRemaining;
     var blinkCounter = 0;
+    var proteinAminos = [];
     var mousedOver = false;
     var aminoToCollectGroup;
     var spinningOut = false;
     var carryingAmino = false;
-    var proteinAminos = ["A", "R", "N", "D", "C", "Q", "H", "I", "L", "T"];
+    var chosenProtein = "Insulin";
 
     function theGame() {
       game.state.add("theGame", {preload: preload, create: create, update: update});
@@ -141,28 +164,23 @@ define([
         countHolder.cameraOffset.y = 10;
 
 
-        // Ribosome block #########################################################################
-        ribosome = game.add.sprite(0, 0, "ribosome");
-        riboeyes = game.add.sprite(0, 0, "riboeyes");
-        hitbox = game.add.sprite(0, 0, "hitbox");
-        codonGroup = game.add.group;
+        // Ribosome & codon block #################################################################
+        ribosome = game.add.sprite(20, 410, "ribosome");
+        riboeyes = game.add.sprite(85, 432, "riboeyes");
+        hitbox = game.add.sprite(20, 500, "hitbox");
         game.physics.arcade.enable(ribosome);
         game.physics.arcade.enable(hitbox);
+        codonGroup = game.add.group();
         ribosome.body.immovable = true;
         hitbox.body.immovable = true;
         ribosome.inputEnabled = true;
+        codonGroup.fixedToCamera = true;
         ribosome.fixedToCamera = true;
-        ribosome.cameraOffset.x = 20;
-        ribosome.cameraOffset.y = 410;
         riboeyes.fixedToCamera = true;
-        riboeyes.cameraOffset.x = 85;
-        riboeyes.cameraOffset.y = 432;
         hitbox.fixedToCamera = true;
-        hitbox.cameraOffset.x = 20;
-        hitbox.cameraOffset.y = 500;
-
-        // Codon block ############################################################################
-
+        for (var c = 0; c <codonChain.length; c++) {
+          var nucleotide = codonGroup.create(150 + (15 * c), 520, codonChain[c]);
+        }
 
       }
 
@@ -249,11 +267,15 @@ define([
 
         // Aminos on stage management #############################################################
         var aliveCount = 0;
-        for (var l = 0; l < aminoGroup.children.length; l++) {
+        var neededAminoAvailable = false;
+        for(var l = 0; l < aminoGroup.children.length; l++) {
           if(aminoGroup.children[l].alive === true) {
             aliveCount++;
+            if(aminoGroup.children[l].key === proteinAminos[1]) { // Check to see if the amino we need next is on stage & alive
+              neededAminoAvailable = true;
+            }
           }
-          // If an amino is going to slow, speed it up
+          // If an amino is going too slow, speed it up
           if(Math.abs(aminoGroup.children[l].body.velocity.x) < 40 || Math.abs(aminoGroup.children[l].body.velocity.y) < 40) {
             aminoGroup.children[l].body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
           }
@@ -266,26 +288,47 @@ define([
         }
         // Always keep 15 aminos on screen
         if(aliveCount < 15 && proteinAminos[1] !== undefined) { // if the array is empty i.e. the level is complete
-          var theAmino = proteinAminos[1];
-          var anAminoX = 201;
-          var anAminoY = 301;
-          while((anAminoX > player.x - 400 && anAminoX < player.x + 400) && (anAminoY > player.y - 400 && anAminoY < player.y + 400)) {
+          var theAmino = "";
+          if(neededAminoAvailable) { // if the next needed amino is available...
+            theAmino = game.rnd.pick(proteinAminos); // toss a random amino from the pile of needed aminos onto the stage...
+          } else {
+            theAmino = proteinAminos[1]; // otherwise, toss the one we need on stage.
+          }
+          var anAminoX = game.rnd.integerInRange(0, 1200);
+          var anAminoY = game.rnd.integerInRange(0, 1200);
+          while((anAminoX > player.x - 500 && anAminoX < player.x + 500) && (anAminoY > player.y - 500 && anAminoY < player.y + 500)) {
             anAminoX = game.rnd.integerInRange(0, 1200);
             anAminoY = game.rnd.integerInRange(0, 1200);
           }
-          var anAmino = aminoGroup.create(anAminoX, anAminoY, theAmino);
-          anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
-          anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
-          anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
-          anAmino.body.bounce.x = 0.6 + Math.random() * 0.35;
-          anAmino.body.collideWorldBounds = true;
-          anAmino.anchor.setTo(0.5, 0.5);
+          var anAmino;
+          var ableToRevive = false;
+          for(var ag = 0; ag < aminoGroup.children.length; ag++) {
+            if(aminoGroup.children[ag].alive === false && aminoGroup.children[ag].key === theAmino) {
+              aminoGroup.children[ag].reset(anAminoX, anAminoY); // revive an existing dead amino if we have one that matches
+              console.log("amino revived! " + aminoGroup.children.length + " extant aminos");
+              ableToRevive = true;
+              break;
+            }
+          } 
+          if(!ableToRevive) {
+            anAmino = aminoGroup.create(anAminoX, anAminoY, theAmino);
+            anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
+            anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
+            anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
+            anAmino.body.bounce.x = 0.6 + Math.random() * 0.35;
+            anAmino.body.collideWorldBounds = true;
+            anAmino.anchor.setTo(0.5, 0.5);
+            console.log("amino spawned! " + aminoGroup.children.length + " extant aminos");
+          }
         }
 
         // Called functions #######################################################################
         function inTheRibosome() {
           if(carriedAmino !== undefined && carryingAmino === true) {
             carryingAmino = false;
+            for (var cc = 2; cc >= 0; cc--) {
+              codonGroup.children[cc].destroy();
+            }
             if(proteinAminos.length === 1) {
               // won goes here
             }
@@ -332,13 +375,13 @@ define([
           }, (1000));
           if(carryingAmino) {
             carryingAmino = false;
-            var anAmino = aminoGroup.create(player.body.x, player.body.y - 60, carriedAmino.key);
-            anAmino.body.velocity.set(game.rnd.integerInRange(-300, 300), -300);
-            anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
-            anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
-            anAmino.body.bounce.x = 0.6 + Math.random() * 0.35;
-            anAmino.body.collideWorldBounds = true;
-            anAmino.anchor.setTo(0.5, 0.5);
+            for(var ca = 0; ca < aminoGroup.children.length; ca++) {
+              if(aminoGroup.children[ca].alive === false && aminoGroup.children[ca].key === carriedAmino.key) {
+                aminoGroup.children[ca].reset(player.body.x, player.body.y - 60); // revive an existing dead amino
+                console.log("amino revived! " + aminoGroup.children.length + " extant aminos");
+                break;
+              }
+            }
             carriedAmino.destroy();
           }
         }
