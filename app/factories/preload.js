@@ -51,6 +51,7 @@ define([
         game.load.image("a", "images/Adenine.png");
         game.load.image("g", "images/Guanine.png");
         game.load.image("t", "images/Thymine.png");
+        game.load.image("STOP", "images/STOP.png");
       };
   }]);
 });

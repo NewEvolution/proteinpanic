@@ -55,14 +55,15 @@ define([
               for(var p = 0; p < proteinsArr.length; p++) {
                 if(proteinsArr[p].name === chosenProtein) {
                   proteinAminos = proteinsArr[p].sequence.split(""); // Grab the list of amino acids & build the array to grab
+                  proteinAminos.push("STOP");
                 }
-                for(var pa = 0; pa < proteinAminos.length; pa++) {
-                  for (var a = 0; a < aminosArr.length; a++) {
-                    if(aminosArr[a].code === proteinAminos[pa]) { // If the amino matches the amino in our grabbing array...
-                      var theCodon = game.rnd.pick(aminosArr[a].codons); // grab one of its possible codons...
-                      for (var c = 0; c < theCodon.length; c++) {
-                        codonChain.push(theCodon[c].toLowerCase()); // and add each nucleotide in sequence to our DNA strand!
-                      }
+              }
+              for(var pa = 0; pa < proteinAminos.length; pa++) {
+                for (var a = 0; a < aminosArr.length; a++) {
+                  if(aminosArr[a].code === proteinAminos[pa]) { // If the amino matches the amino in our grabbing array...
+                    var theCodon = game.rnd.pick(aminosArr[a].codons); // grab one of its possible codons...
+                    for (var c = 0; c < theCodon.length; c++) {
+                      codonChain.push(theCodon[c].toLowerCase()); // and add each nucleotide in sequence to our DNA strand!
                     }
                   }
                 }
@@ -88,18 +89,22 @@ define([
     var codonGroup;
     var playerColor;
     var countHolder;
+    var proteinGroup;
     var carriedAmino;
     var mouse = false;
+    var aminoCount = 0;
     var codonChain = [];
     var aminosRemaining;
     var codonSliding = 0;
     var blinkCounter = 0;
+    var collectCodonGroup;
     var proteinAminos = [];
     var mousedOver = false;
     var aminoToCollectGroup;
     var spinningOut = false;
+    var extrudingProtein = 5;
     var carryingAmino = false;
-    var chosenProtein = "Insulin";
+    var chosenProtein = "Test";
 
     function theGame() {
       game.state.add("theGame", {preload: preload, create: create, update: update});
@@ -115,6 +120,10 @@ define([
         if(!mouse) {
           cursors = game.input.keyboard.createCursorKeys();
         }
+
+        // Built protein block ####################################################################
+        proteinGroup = game.add.group();
+        proteinGroup.fixedToCamera = true;
 
         // Player block ###########################################################################
         player = game.add.sprite(100, 1100, "player");
@@ -135,7 +144,9 @@ define([
           if(i < 5) {
             theAmino = proteinAminos[i];
           } else {
-            theAmino = game.rnd.pick(proteinAminos);
+            while(theAmino === "" || theAmino === "STOP") { // The stop shouldn't be on stage...
+              theAmino = game.rnd.pick(proteinAminos);
+            }
           }
           var aminoX = 0;
           var aminoY = 1200;
@@ -153,7 +164,7 @@ define([
         }
 
         // Aminos to collect count ################################################################
-        aminosRemaining = proteinAminos.length;
+        aminosRemaining = proteinAminos.length - 1; // -1 for the stop codon
         countHolder = game.add.sprite(0, 0);
         countHolder.fixedToCamera = true;
         countText = game.add.text(0, 0, aminosRemaining + " Left!");
@@ -181,15 +192,21 @@ define([
         hitbox.fixedToCamera = true;
         speech.fixedToCamera = true;
         for (var c = 0; c <codonChain.length; c++) {
-          var nucleotide = codonGroup.create(135 + (15 * c), 520, codonChain[c]);
+          var nucleotide = codonGroup.create(134 + (15 * c), 520, codonChain[c]);
         }
 
         // Collection instructions block ##########################################################
         aminoToCollectGroup = game.add.group();
         aminoToCollectGroup.fixedToCamera = true;
-        var aminoToCollect = aminoToCollectGroup.create(300, 444, proteinAminos[0]);
+        var aminoToCollect = aminoToCollectGroup.create(510, 444, proteinAminos[0]);
         aminoToCollect.y += (60 - aminoToCollect.height) / 2;
         aminoToCollect.x += (60 - aminoToCollect.width) / 2;
+
+        collectCodonGroup = game.add.group();
+        collectCodonGroup.fixedToCamera = true;
+        var firstNucleotide = collectCodonGroup.create(220, 464, codonChain[0]);
+        var secondtNucleotide = collectCodonGroup.create(235, 464, codonChain[1]);
+        var thirdNucleotide = collectCodonGroup.create(250, 464, codonChain[2]);
 
       }
 
@@ -298,30 +315,72 @@ define([
           codonSliding++;
         }
 
+        // Assembled protein on stage management ##################################################
+        if(extrudingProtein < 5) { 
+          proteinGroup.addAll("y", -1, true);
+          proteinGroup.addAll("scale.x", -0.005, true);
+          proteinGroup.addAll("scale.y", -0.005, true);
+          var firstLivingAmino = proteinGroup.getFirstAlive();
+          if(firstLivingAmino.scale.y < 0.08) {
+            firstLivingAmino.kill();
+          }
+          extrudingProtein++;
+        }
+
         // Called functions #######################################################################
         function inTheRibosome() {
           if(carriedAmino !== undefined && carryingAmino === true) {
+            carriedAmino.destroy();
             carryingAmino = false;
+            extrudingProtein = 0;
             codonSliding = 0;
             if(proteinAminos.length === 1) {
               // won goes here
             }
-            proteinAminos.splice(0, 1);
-            carriedAmino.destroy();
-            countText.text = proteinAminos.length + " Left!";
-            var justCollectedAmino = aminoToCollectGroup.getFirstAlive();
-            justCollectedAmino.kill();
-            var ableToRevive = false;
-            aminoToCollectGroup.forEachDead(function(deadAmino) {
-              if(deadAmino.key === proteinAminos[0] && !ableToRevive) {
-                deadAmino.reset(300, 444); // revive an existing dead amino if we have one that matches...
-                deadAmino.y += (60 - deadAmino.height) / 2;
-                deadAmino.x += (60 - deadAmino.width) / 2;
-                ableToRevive = true;
+            collectCodonGroup.forEachAlive(function(liveNucleotide) {
+              liveNucleotide.kill();
+            });
+            aminoCount++;
+            var codonSeqStart = aminoCount * 3;
+            for(var rn = 0; rn < 3; rn++) {
+              var ableToReviveNucleotide = false;
+              collectCodonGroup.forEachDead(function(deadNucleotide) {
+                if(deadNucleotide.key === codonChain[(codonSeqStart + rn)] && !ableToReviveNucleotide) {
+                  deadNucleotide.reset(220 + (15 * rn), 464); // revive an existing dead nucleotide if we have one that matches...
+                  ableToReviveNucleotide = true;
+                }
+              });
+              if(!ableToReviveNucleotide) { // otherwise spawn a new one
+                var newNucleotide = collectCodonGroup.create(220 + (15 * rn), 464, codonChain[(codonSeqStart + rn)]);
+              }
+            }
+            var ableToReviveInProteinGroup = false;
+            proteinGroup.forEachDead(function(deadAmino) {
+              if(deadAmino.key === proteinAminos[0] && !ableToReviveInProteinGroup) {
+                deadAmino.scale.x = 1;
+                deadAmino.scale.y = 1;
+                deadAmino.reset(60, 400); // revive an existing dead amino if we have one that matches...
+                ableToReviveInProteinGroup = true;
               }
             });
-            if(!ableToRevive) { // otherwise spawn a new one
-              var aminoToCollect = aminoToCollectGroup.create(300, 444, proteinAminos[0]);
+            if(!ableToReviveInProteinGroup) { // otherwise spawn a new one
+              var assembledAmino = proteinGroup.create(60, 400, proteinAminos[0], 1);
+            }
+            proteinAminos.splice(0, 1);
+            countText.text = (proteinAminos.length - 1) + " Left!";
+            var justCollectedAmino = aminoToCollectGroup.getFirstAlive();
+            justCollectedAmino.kill();
+            var ableToReviveInToCollect = false;
+            aminoToCollectGroup.forEachDead(function(deadAmino) {
+              if(deadAmino.key === proteinAminos[0] && !ableToReviveInToCollect) {
+                deadAmino.reset(510, 444); // revive an existing dead amino if we have one that matches...
+                deadAmino.y += (60 - deadAmino.height) / 2;
+                deadAmino.x += (60 - deadAmino.width) / 2;
+                ableToReviveInToCollect = true;
+              }
+            });
+            if(!ableToReviveInToCollect) { // otherwise spawn a new one
+              var aminoToCollect = aminoToCollectGroup.create(510, 444, proteinAminos[0]);
               aminoToCollect.y += (60 - aminoToCollect.height) / 2;
               aminoToCollect.x += (60 - aminoToCollect.width) / 2;
             }
@@ -357,10 +416,12 @@ define([
               }
             });
             // Always keep 15 aminos on screen
-            if((aliveCount < 15 || !neededAminoAvailable) && proteinAminos[1] !== undefined) { // if the array is empty i.e. the level is complete
+            if((aliveCount < 15 || !neededAminoAvailable) && proteinAminos[1] !== "STOP") { // we've reached the stop codon, level/protein complete
               theAmino = "";
               if(neededAminoAvailable) { // if the next needed amino is available...
-                theAmino = game.rnd.pick(proteinAminos); // toss a random amino from the pile of needed aminos onto the stage...
+                while(theAmino === "" || theAmino === "STOP") { // the STOP shouldn't be on stage...
+                  theAmino = game.rnd.pick(proteinAminos); // toss a random amino from the pile of needed aminos onto the stage...
+                }
               } else {
                 theAmino = proteinAminos[1]; // otherwise, toss the one we need on stage.
               }
