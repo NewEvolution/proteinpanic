@@ -12,8 +12,8 @@ define([
       controllerAs: "game"
     });
   }])
-  .controller("gameCtrl", ["$firebaseArray", "uid", "proteinPanic", "preload",
-  function($firebaseArray, uid, proteinPanic, preload) {
+  .controller("gameCtrl", ["$firebaseArray", "uid", "proteinPanic", "preload", "revival",
+  function($firebaseArray, uid, proteinPanic, preload, revival) {
     
     var game = proteinPanic;
 
@@ -75,6 +75,10 @@ define([
       });
     }
 
+    var wKey;
+    var aKey;
+    var sKey;
+    var dKey;
     var eyes;
     var player;
     var hitbox;
@@ -93,6 +97,7 @@ define([
     var carriedAmino;
     var mouse = false;
     var aminoCount = 0;
+    var noclip = false;
     var codonChain = [];
     var aminosRemaining;
     var codonSliding = 0;
@@ -102,7 +107,9 @@ define([
     var mousedOver = false;
     var aminoToCollectGroup;
     var spinningOut = false;
+    var checkpointCount = 10;
     var extrudingProtein = 5;
+    var intenseDebug = false;
     var carryingAmino = false;
     var chosenProtein = "Test";
 
@@ -114,6 +121,10 @@ define([
 
       function create() {
         // Generic setup ##########################################################################
+        wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+        aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
+        sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
+        dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.add.tileSprite(0, 0, 1200, 1200, "background");
         game.world.setBounds(0, 0, 1200, 1200);
@@ -123,6 +134,7 @@ define([
 
         // Built protein block ####################################################################
         proteinGroup = game.add.group();
+        proteinGroup.name = "proteinGroup";
         proteinGroup.fixedToCamera = true;
 
         // Player block ###########################################################################
@@ -138,6 +150,7 @@ define([
 
         // Amino swarm block ######################################################################
         aminoGroup = game.add.group();
+        aminoGroup.name = "aminoGroup";
         aminoGroup.enableBody = true;
         for (var i = 0; i < 15; i++) {
           var theAmino = "";
@@ -176,6 +189,7 @@ define([
         // Ribosome & codon block #################################################################
         ribounder = game.add.sprite(20, 410, "ribo-under");
         codonGroup = game.add.group();
+        codonGroup.name = "codonGroup";
         ribosome = game.add.sprite(20, 410, "ribosome");
         riboeyes = game.add.sprite(85, 432, "riboeyes");
         speech = game.add.sprite(170, 440, "speech_bubble");
@@ -197,12 +211,14 @@ define([
 
         // Collection instructions block ##########################################################
         aminoToCollectGroup = game.add.group();
+        aminoToCollectGroup.name = "aminoToCollectGroup";
         aminoToCollectGroup.fixedToCamera = true;
         var aminoToCollect = aminoToCollectGroup.create(510, 444, proteinAminos[0]);
         aminoToCollect.y += (60 - aminoToCollect.height) / 2;
         aminoToCollect.x += (60 - aminoToCollect.width) / 2;
 
         collectCodonGroup = game.add.group();
+        collectCodonGroup.name = "collectCodonGroup";
         collectCodonGroup.fixedToCamera = true;
         var firstNucleotide = collectCodonGroup.create(220, 464, codonChain[0]);
         var secondtNucleotide = collectCodonGroup.create(235, 464, codonChain[1]);
@@ -215,9 +231,8 @@ define([
       function update() {
         game.physics.arcade.collide(aminoGroup, aminoGroup, rotateBoth, null, this);
         game.physics.arcade.overlap(player, hitbox, inTheRibosome, null, this);
-        game.physics.arcade.collide(player, aminoGroup, checkAmino, null, this);
+        if(!noclip) {game.physics.arcade.collide(player, aminoGroup, checkAmino, null, this);}
         game.physics.arcade.collide(ribosome, aminoGroup, nothing, null, this);
-
 
         // Ribosome blinking ######################################################################
         var blink = game.rnd.integerInRange(0, 300);
@@ -234,7 +249,7 @@ define([
         }
 
         // Player Motion ##########################################################################
-        if (ribosome.input.pointerOver() && !mousedOver) {
+        if(ribosome.input.pointerOver() && !mousedOver) {
           mousedOver = true; // So we don't just hurtle off into the aether upon game start
         }
         player.frame = 0;
@@ -247,18 +262,18 @@ define([
           } else if(!mouse) { // Keyboard controls
             player.body.velocity.x = 0;
             player.body.velocity.y = 0;
-            if (cursors.left.isDown) {
+            if(cursors.left.isDown || aKey.isDown) {
               player.body.velocity.x = -300;
               player.frame = 1;
               eyes.frame = 1;
-            } else if (cursors.right.isDown) {
+            } else if(cursors.right.isDown || dKey.isDown) {
               player.body.velocity.x = 300;
               player.frame = 1;
               eyes.frame = 1;
             }
-            if (cursors.up.isDown) {
+            if(cursors.up.isDown || wKey.isDown) {
               player.body.velocity.y = -300;
-            } else if (cursors.down.isDown) {
+            } else if(cursors.down.isDown || sKey.isDown) {
               player.body.velocity.y = 300;
             }
           }
@@ -330,6 +345,12 @@ define([
         // Called functions #######################################################################
         function inTheRibosome() {
           if(carriedAmino !== undefined && carryingAmino === true) {
+            if(intenseDebug) {
+              console.log("Entering Ribosome --------------------------------------------------------");
+              aminoGroup.forEachAlive(function(liveAmino) {
+                console.log("liveAmino = ", liveAmino.key);
+              });
+            }
             carriedAmino.destroy();
             carryingAmino = false;
             extrudingProtein = 0;
@@ -342,48 +363,26 @@ define([
             });
             aminoCount++;
             var codonSeqStart = aminoCount * 3;
+            if(intenseDebug) {console.log("Building Codon -----------------------------------------------------------");}
             for(var rn = 0; rn < 3; rn++) {
-              var ableToReviveNucleotide = false;
-              collectCodonGroup.forEachDead(function(deadNucleotide) {
-                if(deadNucleotide.key === codonChain[(codonSeqStart + rn)] && !ableToReviveNucleotide) {
-                  deadNucleotide.reset(220 + (15 * rn), 464); // revive an existing dead nucleotide if we have one that matches...
-                  ableToReviveNucleotide = true;
-                }
-              });
-              if(!ableToReviveNucleotide) { // otherwise spawn a new one
-                var newNucleotide = collectCodonGroup.create(220 + (15 * rn), 464, codonChain[(codonSeqStart + rn)]);
-              }
+              var promisedNucleotide = revival(collectCodonGroup, codonChain[(codonSeqStart + rn)], 220 + (15 * rn), 464, intenseDebug);
             }
-            var ableToReviveInProteinGroup = false;
-            proteinGroup.forEachDead(function(deadAmino) {
-              if(deadAmino.key === proteinAminos[0] && !ableToReviveInProteinGroup) {
-                deadAmino.scale.x = 1;
-                deadAmino.scale.y = 1;
-                deadAmino.reset(60, 400); // revive an existing dead amino if we have one that matches...
-                ableToReviveInProteinGroup = true;
-              }
+            if(intenseDebug) {console.log("Building Protein ---------------------------------------------------------");}
+            var promisedAssembledAmino = revival(proteinGroup, proteinAminos[0], 60, 400, intenseDebug);
+            promisedAssembledAmino.then(function(assembledAmino) {
+              assembledAmino.scale.x = 1;
+              assembledAmino.scale.y = 1;
             });
-            if(!ableToReviveInProteinGroup) { // otherwise spawn a new one
-              var assembledAmino = proteinGroup.create(60, 400, proteinAminos[0], 1);
-            }
             proteinAminos.splice(0, 1);
             countText.text = (proteinAminos.length - 1) + " Left!";
             var justCollectedAmino = aminoToCollectGroup.getFirstAlive();
             justCollectedAmino.kill();
-            var ableToReviveInToCollect = false;
-            aminoToCollectGroup.forEachDead(function(deadAmino) {
-              if(deadAmino.key === proteinAminos[0] && !ableToReviveInToCollect) {
-                deadAmino.reset(510, 444); // revive an existing dead amino if we have one that matches...
-                deadAmino.y += (60 - deadAmino.height) / 2;
-                deadAmino.x += (60 - deadAmino.width) / 2;
-                ableToReviveInToCollect = true;
-              }
-            });
-            if(!ableToReviveInToCollect) { // otherwise spawn a new one
-              var aminoToCollect = aminoToCollectGroup.create(510, 444, proteinAminos[0]);
+            if(intenseDebug) {console.log("Building Collection Icon -------------------------------------------------");}
+            var promisedAminoToCollect = revival(aminoToCollectGroup, proteinAminos[0], 510, 444, intenseDebug);
+            promisedAminoToCollect.then(function(aminoToCollect) {
               aminoToCollect.y += (60 - aminoToCollect.height) / 2;
               aminoToCollect.x += (60 - aminoToCollect.width) / 2;
-            }
+            });
           }
         }
 
@@ -402,6 +401,7 @@ define([
 
         function goodAmino (player, theAmino) {
           if(!spinningOut && !carryingAmino) {
+            if(intenseDebug) {console.log("Good Amino Contact -------------------------------------------------------");}
             carryingAmino = true;
             theAmino.kill();
             carriedAmino = game.add.sprite(0, -60, theAmino.key);
@@ -410,20 +410,25 @@ define([
             var aliveCount = 0;
             var neededAminoAvailable = false;
             aminoGroup.forEachAlive(function(liveAmino) {
+              if(intenseDebug) {console.log("liveAmino = ", liveAmino.key);}
               aliveCount++;
               if(liveAmino.key === proteinAminos[1]) { // Check to see if the amino we need next is on stage & alive
                 neededAminoAvailable = true;
+                if(intenseDebug) {console.log("The needed amino, " + proteinAminos[1] + " is alive and onstage");}
               }
             });
             // Always keep 15 aminos on screen
+            if(intenseDebug) {console.log("there are " + aliveCount + " aminos live on stage");}
             if((aliveCount < 15 || !neededAminoAvailable) && proteinAminos[1] !== "STOP") { // we've reached the stop codon, level/protein complete
-              theAmino = "";
+              var theNewAmino = "";
               if(neededAminoAvailable) { // if the next needed amino is available...
-                while(theAmino === "" || theAmino === "STOP") { // the STOP shouldn't be on stage...
-                  theAmino = game.rnd.pick(proteinAminos); // toss a random amino from the pile of needed aminos onto the stage...
+                while(theNewAmino === "" || theNewAmino === "STOP") { // the STOP shouldn't be on stage...
+                  theNewAmino = game.rnd.pick(proteinAminos); // toss a random amino from the pile of needed aminos onto the stage...
+                  if(intenseDebug) {console.log("So we queued a " + theNewAmino + " up");}
                 }
               } else {
-                theAmino = proteinAminos[1]; // otherwise, toss the one we need on stage.
+                theNewAmino = proteinAminos[1]; // otherwise, toss the one we need on stage.
+                if(intenseDebug) {console.log("The needed amino was not here so we queued it, " + theNewAmino + ", up");}
               }
               var anAminoX = game.rnd.integerInRange(0, 1200);
               var anAminoY = game.rnd.integerInRange(0, 1200);
@@ -431,27 +436,26 @@ define([
                 anAminoX = game.rnd.integerInRange(0, 1200);
                 anAminoY = game.rnd.integerInRange(0, 1200);
               }
-              var ableToRevive = false;
-              aminoGroup.forEachDead(function(deadAmino) {
-                if(deadAmino.key === theAmino && !ableToRevive) {
-                  deadAmino.reset(anAminoX, anAminoY); // revive an existing dead amino if we have one that matches
-                  ableToRevive = true;
-                }
-              });
-              if(!ableToRevive) {
-                var anAmino = aminoGroup.create(anAminoX, anAminoY, theAmino);
+              var promisedGoodAmino = revival(aminoGroup, theNewAmino, anAminoX, anAminoY, intenseDebug);
+              promisedGoodAmino.then(function(anAmino) {
                 anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
                 anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
                 anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
                 anAmino.body.bounce.x = 0.6 + Math.random() * 0.35;
                 anAmino.body.collideWorldBounds = true;
                 anAmino.anchor.setTo(0.5, 0.5);
-              }
+              });
             }
           }
         }
 
         function badAmino (player, theAmino) {
+          if(intenseDebug) {
+            console.log("Bad Amino Contact ----------------------------------------------------------");
+            aminoGroup.forEachAlive(function(liveAmino) {
+                console.log("liveAmino = ", liveAmino.key);
+            });
+          }
           spinningOut = true;
           theAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
           player.body.velocity.x = 0;
@@ -462,23 +466,15 @@ define([
           }, (1000));
           if(carryingAmino) {
             carryingAmino = false;
-            var ableToRevive = false;
-            aminoGroup.forEachDead(function(deadAmino) {
-              if(deadAmino.key === carriedAmino.key && !ableToRevive) {
-                deadAmino.reset(player.body.x, player.body.y - 60); // revive an existing dead amino if we have one that matches
-                deadAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), -300);
-                ableToRevive = true;
-              }
-            });
-            if(!ableToRevive) {
-              var anAmino = aminoGroup.create(player.body.x, player.body.y - 60, carriedAmino.key);
+            var promisedBadAmino = revival(aminoGroup, carriedAmino.key, player.body.x, player.body.y - 60, intenseDebug);
+            promisedBadAmino.then(function(anAmino) {
               anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), -300);
               anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
               anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
               anAmino.body.bounce.x = 0.6 + Math.random() * 0.35;
               anAmino.body.collideWorldBounds = true;
               anAmino.anchor.setTo(0.5, 0.5);
-            }
+            });
             carriedAmino.destroy();
           }
         }

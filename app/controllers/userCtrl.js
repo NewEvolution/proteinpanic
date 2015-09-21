@@ -35,6 +35,7 @@ define([
     this.password = "";
     this.newEmail = "";
     this.radioVal = "";
+    this.intro = true;
     this.mouse = true;
     this.music = 100;
     this.email = "";
@@ -54,6 +55,7 @@ define([
             this.mouse = data[key].mouse;
             this.music = data[key].music;
             this.color = data[key].color;
+            this.intro = data[key].intro;
             if(currentUID.indexOf("github") === -1 && 
             currentUID.indexOf("facebook") === -1 && 
             currentUID.indexOf("twitter") === -1 && 
@@ -112,6 +114,7 @@ define([
       usersObj[currentKey].username = this.username;
       usersObj[currentKey].mouse = this.mouse;
       usersObj[currentKey].color = this.color;
+      usersObj[currentKey].intro = this.intro;
       usersObj.$save().then(function(ref) {
         alert("User data saved sucessfully!");
       });

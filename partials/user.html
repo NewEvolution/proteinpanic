@@ -15,6 +15,11 @@
       <input class="radio" type="radio" name="controls" ng-value="false" ng-model="user.mouse"><span> - Keyboard Control</span>
     </div>
     <hr>
+    <h3>Introduction:</h3>
+    <div>
+      <input class="radio" type="checkbox" name="intro" ng-true-value="true" ng-false-value="false" ng-model="user.intro"><span> - Play Introduction</span>
+    </div>
+    <hr>
     <h3>Music Volume:</h3>
     <input type="range" class="slider" id="music-volume" min="0" max="100" step="1" ng-model="user.music">
     <input type="text" class="display" id="mv-display" readonly ng-model="user.music">
