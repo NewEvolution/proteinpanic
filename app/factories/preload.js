@@ -13,6 +13,8 @@ define([
         game.load.spritesheet("twitter-btn", "images/twitter-btn.png", 246, 42);
         game.load.spritesheet("github-btn", "images/github-btn.png", 246, 42);
         game.load.spritesheet("google-btn", "images/google-btn.png", 246, 42);
+        game.load.spritesheet("next-btn", "images/next-btn.png", 34, 61);
+        game.load.spritesheet("prev-btn", "images/prev-btn.png", 34, 61);
         game.load.spritesheet("view_statistics", "images/view_statistics.png", 534, 53);
         game.load.spritesheet("edit_options", "images/edit_options.png", 534, 53);
         game.load.spritesheet("start_game", "images/start_game.png", 534, 53);
@@ -41,6 +43,7 @@ define([
         game.load.spritesheet("Y", "images/Tyrosine.png", 60, 38);
         game.load.spritesheet("V", "images/Valine.png", 60, 60);
         game.load.image("speech_bubble", "images/speech_bubble.png");
+        game.load.image("large_bubble", "images/large_bubble.png");
         game.load.image("ribo-under", "images/Ribosome-under.png");
         game.load.image("splash", "images/splash_screen.png");
         game.load.image("background", "images/cell_bg.png");

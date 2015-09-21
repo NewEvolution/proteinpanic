@@ -42,6 +42,7 @@ define([
             username = data[key].username;
             userDoesNotExist = false;
             mouse = data[key].mouse;
+            intro = data[key].intro;
           }
         }
         if(userDoesNotExist) {
@@ -80,11 +81,13 @@ define([
     var sKey;
     var dKey;
     var eyes;
+    var large;
     var player;
     var hitbox;
     var speech;
     var cursors;
     var ribosome;
+    var page = 0;
     var ribounder;
     var countText;
     var stateText;
@@ -95,23 +98,27 @@ define([
     var countHolder;
     var proteinGroup;
     var carriedAmino;
+    var intro = true;
     var mouse = false;
-    var aminoCount = 0;
     var noclip = false;
+    var aminoCount = 0;
+    var talkCycles = 0;
     var codonChain = [];
     var aminosRemaining;
-    var codonSliding = 0;
     var blinkCounter = 0;
     var collectCodonGroup;
+    var codonSliding = 45;
     var proteinAminos = [];
     var mousedOver = false;
     var aminoToCollectGroup;
     var spinningOut = false;
     var checkpointCount = 10;
+    var mouthOpenCounter = 0;
     var extrudingProtein = 5;
     var intenseDebug = false;
     var carryingAmino = false;
     var chosenProtein = "Test";
+    var mouthClosedCounter = 0;
 
     function theGame() {
       game.state.add("theGame", {preload: preload, create: create, update: update});
@@ -178,12 +185,10 @@ define([
 
         // Aminos to collect count ################################################################
         aminosRemaining = proteinAminos.length - 1; // -1 for the stop codon
-        countHolder = game.add.sprite(0, 0);
+        countHolder = game.add.sprite(10, 10);
         countHolder.fixedToCamera = true;
         countText = game.add.text(0, 0, aminosRemaining + " Left!");
         countHolder.addChild(countText);
-        countHolder.cameraOffset.x = 140;
-        countHolder.cameraOffset.y = 10;
 
 
         // Ribosome & codon block #################################################################
@@ -193,6 +198,10 @@ define([
         ribosome = game.add.sprite(20, 410, "ribosome");
         riboeyes = game.add.sprite(85, 432, "riboeyes");
         speech = game.add.sprite(170, 440, "speech_bubble");
+        large = game.add.sprite(170, 80, "large_bubble");
+
+        speech.visible = false;
+        large.visible = false;
         hitbox = game.add.sprite(20, 500, "hitbox");
         game.physics.arcade.enable(ribosome);
         game.physics.arcade.enable(hitbox);
@@ -205,11 +214,41 @@ define([
         riboeyes.fixedToCamera = true;
         hitbox.fixedToCamera = true;
         speech.fixedToCamera = true;
+        large.fixedToCamera = true;
         for (var c = 0; c <codonChain.length; c++) {
           var nucleotide = codonGroup.create(134 + (15 * c), 520, codonChain[c]);
         }
 
+        if(intro) {
+          large.visible = true;
+          prevBtn = game.add.button(220, 435, "prev-btn", prevFunc, this, 0, 1, 2, 0);
+          nextBtn = game.add.button(780, 435, "next-btn", nextFunc, this, 0, 1, 2, 0);
+          prevBtn.fixedToCamera = true;
+          nextBtn.fixedToCamera = true;
+          prevBtn.visible = false;
+        } else {
+          startGame();
+        }
+
+      }
+
+//-------------------------------------------------------------------------------------------------
+
+      function nextFunc() {
+        page++;
+        talkCycles = game.rnd.integerInRange(3, 8);
+      }
+
+      function prevFunc() {
+        if(page > 0) {
+          page--;
+        }
+      }
+
+      function startGame() {
         // Collection instructions block ##########################################################
+        codonSliding = 0;
+        speech.visible = true;
         aminoToCollectGroup = game.add.group();
         aminoToCollectGroup.name = "aminoToCollectGroup";
         aminoToCollectGroup.fixedToCamera = true;
@@ -223,7 +262,6 @@ define([
         var firstNucleotide = collectCodonGroup.create(220, 464, codonChain[0]);
         var secondtNucleotide = collectCodonGroup.create(235, 464, codonChain[1]);
         var thirdNucleotide = collectCodonGroup.create(250, 464, codonChain[2]);
-
       }
 
 //-------------------------------------------------------------------------------------------------
@@ -233,6 +271,13 @@ define([
         game.physics.arcade.overlap(player, hitbox, inTheRibosome, null, this);
         if(!noclip) {game.physics.arcade.collide(player, aminoGroup, checkAmino, null, this);}
         game.physics.arcade.collide(ribosome, aminoGroup, nothing, null, this);
+        if(intro) {
+          if(page > 0) {
+            prevBtn.visible = true;
+          } else {
+            prevBtn.visible = false;
+          }
+        }
 
         // Ribosome blinking ######################################################################
         var blink = game.rnd.integerInRange(0, 300);
@@ -245,6 +290,25 @@ define([
           } else {
             blinkCounter = 0;
             riboeyes.frame = 0;
+          }
+        }
+
+        // Ribosome talking #######################################################################
+        if(talkCycles > 0 && ribosome.frame === 0) {
+          if(mouthClosedCounter < game.rnd.integerInRange(3, 10)) {
+            mouthClosedCounter++;
+          } else {
+            mouthClosedCounter = 0;
+            ribosome.frame = 1;
+          }
+        }
+        if(ribosome.frame === 1) {
+          if(mouthOpenCounter < game.rnd.integerInRange(5, 20)) {
+            mouthOpenCounter++;
+          } else {
+            talkCycles--;
+            mouthOpenCounter = 0;
+            ribosome.frame = 0;
           }
         }
 
@@ -430,11 +494,11 @@ define([
                 theNewAmino = proteinAminos[1]; // otherwise, toss the one we need on stage.
                 if(intenseDebug) {console.log("The needed amino was not here so we queued it, " + theNewAmino + ", up");}
               }
-              var anAminoX = game.rnd.integerInRange(0, 1200);
-              var anAminoY = game.rnd.integerInRange(0, 1200);
+              var anAminoX = game.world.randomX;
+              var anAminoY = game.world.randomY;
               while((anAminoX > player.x - 500 && anAminoX < player.x + 500) && (anAminoY > player.y - 500 && anAminoY < player.y + 500)) {
-                anAminoX = game.rnd.integerInRange(0, 1200);
-                anAminoY = game.rnd.integerInRange(0, 1200);
+                anAminoX = game.world.randomX;
+                anAminoY = game.world.randomY;
               }
               var promisedGoodAmino = revival(aminoGroup, theNewAmino, anAminoX, anAminoY, intenseDebug);
               promisedGoodAmino.then(function(anAmino) {
