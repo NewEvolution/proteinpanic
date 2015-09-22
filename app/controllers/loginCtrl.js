@@ -135,16 +135,23 @@ define([
 	          console.log("Authenticated successfully with payload:", authData);
 	          currentUID = authData.uid;
 	          uid.setUid(currentUID);
-	          for (var i = 0; i < usersArr.length; i++) {
-	            if(usersArr[i].uid === currentUID) {
-	            	this.username = usersArr[i].username;
-	            }
-	          }
-	          if(this.username === "") {
-	          	window.location = "#/user";
-						} else {
-							window.location = "#/menu";
-						}
+	          usersArr.$loaded().then(angular.bind(this, function(data) {
+              var userDoesNotExist = true;
+              for(var key in data) {
+                if(data[key].uid === currentUID) {
+                  userDoesNotExist = false;
+                  this.username = data[key].username;
+                }
+              }
+              if(userDoesNotExist) {
+                usersArr.$add({uid: currentUID});
+              }
+              if(this.username === "") {
+                window.location = "#/user";
+              } else {
+                window.location = "#/menu";
+              }
+            }));
 	        }
 	      }.bind(this));
 	    }

@@ -506,6 +506,7 @@ define([
             }
             var promisedGoodAmino = spriteRevival(aminoGroup, theNewAmino, anAminoX, anAminoY);
             promisedGoodAmino.then(function(anAmino) {
+              if(intenseDebug) {console.log(anAmino.key + " placed on stage");}
               anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
               anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
               anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
@@ -536,6 +537,7 @@ define([
           carryingAmino = false;
           var promisedBadAmino = spriteRevival(aminoGroup, carriedAmino.key, player.body.x, player.body.y - 60);
           promisedBadAmino.then(function(anAmino) {
+            if(intenseDebug) {console.log(anAmino.key + " placed on stage");}
             anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), -300);
             anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
             anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
