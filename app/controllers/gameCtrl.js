@@ -81,19 +81,19 @@ define([
     var sKey;
     var dKey;
     var eyes;
-    var large;
+    var title;
     var player;
     var hitbox;
-    var speech;
     var cursors;
     var ribosome;
     var page = 0;
     var ribounder;
     var countText;
-    var stateText;
-    var spriteText;
+    var introText;
     var aminoGroup;
     var codonGroup;
+    var largeSpeech;
+    var smallSpeech;
     var playerColor;
     var countHolder;
     var proteinGroup;
@@ -103,13 +103,13 @@ define([
     var noclip = false;
     var aminoCount = 0;
     var talkCycles = 0;
-    var codonChain = [];
     var aminosRemaining;
+    var codonChain = [];
     var blinkCounter = 0;
     var collectCodonGroup;
     var codonSliding = 45;
-    var proteinAminos = [];
     var mousedOver = false;
+    var proteinAminos = [];
     var aminoToCollectGroup;
     var spinningOut = false;
     var checkpointCount = 10;
@@ -117,8 +117,14 @@ define([
     var extrudingProtein = 5;
     var intenseDebug = false;
     var carryingAmino = false;
+    var controlsLocked = true;
     var chosenProtein = "Test";
     var mouthClosedCounter = 0;
+    var introContent = [
+      "Welcome to\n\n\nThe collection game where you can build all the proteins in the human body!",
+      "This is some more text, imagine that",
+      "Yet some more text.  Woo."
+    ];
 
     function theGame() {
       game.state.add("theGame", {preload: preload, create: create, update: update});
@@ -197,11 +203,11 @@ define([
         codonGroup.name = "codonGroup";
         ribosome = game.add.sprite(20, 410, "ribosome");
         riboeyes = game.add.sprite(85, 432, "riboeyes");
-        speech = game.add.sprite(170, 440, "speech_bubble");
-        large = game.add.sprite(170, 80, "large_bubble");
+        smallSpeech = game.add.sprite(170, 440, "speech_bubble");
+        largeSpeech = game.add.sprite(170, 80, "large_bubble");
 
-        speech.visible = false;
-        large.visible = false;
+        smallSpeech.visible = false;
+        largeSpeech.visible = false;
         hitbox = game.add.sprite(20, 500, "hitbox");
         game.physics.arcade.enable(ribosome);
         game.physics.arcade.enable(hitbox);
@@ -213,18 +219,23 @@ define([
         ribosome.fixedToCamera = true;
         riboeyes.fixedToCamera = true;
         hitbox.fixedToCamera = true;
-        speech.fixedToCamera = true;
-        large.fixedToCamera = true;
+        smallSpeech.fixedToCamera = true;
+        largeSpeech.fixedToCamera = true;
         for (var c = 0; c <codonChain.length; c++) {
           var nucleotide = codonGroup.create(134 + (15 * c), 520, codonChain[c]);
         }
 
+        // Introductory instructions ##############################################################
         if(intro) {
-          large.visible = true;
+          largeSpeech.visible = true;
           prevBtn = game.add.button(220, 435, "prev-btn", prevFunc, this, 0, 1, 2, 0);
           nextBtn = game.add.button(780, 435, "next-btn", nextFunc, this, 0, 1, 2, 0);
+          introText = game.add.text(65, 25, introContent[0], {align: "center", wordWrap: true, wordWrapWidth: 575});
+          largeSpeech.addChild(introText);
+          title = game.add.sprite(250, 150, "title");
           prevBtn.fixedToCamera = true;
           nextBtn.fixedToCamera = true;
+          title.fixedToCamera = true;
           prevBtn.visible = false;
           talkCycles = game.rnd.integerInRange(3, 8);
         } else {
@@ -237,6 +248,11 @@ define([
 
       function nextFunc() {
         page++;
+        if(page > 0) {
+          prevBtn.visible = true;
+          title.visible = false;
+        }
+        introText.text = introContent[page];
         talkCycles = game.rnd.integerInRange(3, 8);
       }
 
@@ -244,12 +260,18 @@ define([
         if(page > 0) {
           page--;
         }
+        if(page === 0) {
+          prevBtn.visible = false;
+          title.visible = true;
+        }
+        introText.text = introContent[page];
       }
 
       function startGame() {
         // Collection instructions block ##########################################################
+        controlsLocked = false;
         codonSliding = 0;
-        speech.visible = true;
+        smallSpeech.visible = true;
         aminoToCollectGroup = game.add.group();
         aminoToCollectGroup.name = "aminoToCollectGroup";
         aminoToCollectGroup.fixedToCamera = true;
@@ -272,13 +294,6 @@ define([
         game.physics.arcade.overlap(player, hitbox, inTheRibosome, null, this);
         if(!noclip) {game.physics.arcade.collide(player, aminoGroup, checkAmino, null, this);}
         game.physics.arcade.collide(ribosome, aminoGroup, nothing, null, this);
-        if(intro) {
-          if(page > 0) {
-            prevBtn.visible = true;
-          } else {
-            prevBtn.visible = false;
-          }
-        }
 
         // Ribosome blinking ######################################################################
         var blink = game.rnd.integerInRange(0, 300);
@@ -321,7 +336,7 @@ define([
         eyes.frame = 0;
         if(spinningOut) {
           player.rotation += 0.5;
-        } else {
+        } else if(!controlsLocked) {
           if(mouse && mousedOver) { // Mouse-follow controls
             game.physics.arcade.moveToPointer(player, 60, game.input.activePointer, 400);
           } else if(!mouse) { // Keyboard controls
@@ -407,6 +422,14 @@ define([
           extrudingProtein++;
         }
 
+      }
+
+//-------------------------------------------------------------------------------------------------
+
+      function render() {
+        game.debug.body(hitbox);
+        game.debug.cameraInfo(game.camera, 32, 32);
+        game.debug.spriteCoords(player, 32, 500);
       }
 
 //-------------------------------------------------------------------------------------------------
@@ -571,14 +594,6 @@ define([
       }
 
       function nothing() {} // So things can collide without doing anything other than bouncing off
-
-//-------------------------------------------------------------------------------------------------
-
-      function render() {
-        game.debug.body(hitbox);
-        game.debug.cameraInfo(game.camera, 32, 32);
-        game.debug.spriteCoords(player, 32, 500);
-      }
 
     }
 
