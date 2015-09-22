@@ -89,6 +89,7 @@ define([
     var Adenine;
     var Guanine;
     var Thymine;
+    var Alanine;
     var Cytosine;
     var ribosome;
     var page = 0;
@@ -127,14 +128,20 @@ define([
     var chosenProtein = "Test";
     var mouthClosedCounter = 0;
     var introContent = [
-      "Welcome to\n\n\nThe collection game where you can build all the proteins in the human body!\n\nMy name's Riley, and I'm a ribosome. I'll be your guide throughout the game, but first, let's learn how to play.",
-      "Those little colorful beings bouncing around in the background are amino acids, the building blocks of protiens.\n\nAs a ribosome, my job is to assemble those amino acids in a specific order to build a protein, but there's more to it than that, and that's where you come in.",
-      "You see, as a ribosome, I'm fixed in place in the wall of the rough endoplasmic reticulum that surrounds the nucleus of the cell.  I can't run off and grab the amino acids we need to build the protein.\n\nGrabbing the right amino is up to you, the transport RNA!",
-      "The long colorful chain at the bottom of the screen is half of a strand of DNA, and it tells us what amino acids we need to build the protein.\n\nThe colored bars sticking up from the DNA backbone are called nucleotides, and come in one of four types:\n\nAdenine  Cytosine  Guanine  Thymine",
-      "Yet some more text.  Woo."
+      "",
+      "Those little colorful beings bouncing around in the background are amino acids, the building blocks of proteins.\n\nAs a ribosome, my job is to assemble those amino acids in a specific order to build a protein, but there's more to it than that, and that's where you come in.",
+      "You see, as a ribosome, I'm fixed in place in the wall of the rough endoplasmic reticulum that surrounds the nucleus of the cell.  I can't run off and grab the amino acids we need to build the protein.\n\nGrabbing the right amino acid is up to you, the transport RNA!",
+      "The long colorful chain at the bottom of the screen is half of a strand of DNA, and it gives us our instructions for building the protein.\n\nHow does it do that? Well, the colored bars sticking up from the DNA's green backbone are called nucleotides, and they come in one of four types:\n\nAdenine  Cytosine  Guanine  Thymine",
+      "Every amino acid can be represented by three nucleotides in a specific order. This group of three nucleotides is called a codon, and every amino acid has at least one codon, though some have more.\n\nFor example:\n\nis a codon for Alanine",
+      "I'll read the DNA one codon at a time and tell you which amino acid to go catch. Once you've caught the amino acid, bring it back to me and I'll add it to the protein we're building.\n\nBe careful not to run into any of the other amino acids floating about, as they'll make you spin out and drop any amino acid you're carrying!",
+      "Proteins can be very long, some contain thousands of amino acids! We'll start with a shorter one, but there will also be checkpoints along the way.\n\nOnce you've reached a checkpoint, you can restart from there later. You can change how often checkpoints happen in your user options.",
+      "You control your flight around the inside of the cell with either the W A S D keys or arrow keys, or with your mouse/touch.\n\nYou can switch your control type on your user option screen as well.",
+      "After completing a protein, or starting a new game you can choose your next protein to make.\n\nYou can only have one protein in progress at a time though, so starting a new protein will erase any progess you've made on an incomplete protein.",
+      "That's the end of the introduction, you're now ready to start building your first protein!\n\nIf you'd like to see this intro again, you can check off \"Play Introduction\" in your user options.\n\nClick \"Start\" to start the game, or you can click \"Options\" to edit your user options."
     ];
 
     function theGame() {
+      introContent[0] = "Welcome to\n\n\nThe collection game where you can build all the proteins in the human body!\n\nHi " + username + "! My name's Riley, and I'm a ribosome. I'll be your guide throughout the game, but first, let's learn how to play.";
       game.state.add("theGame", {preload: preload, create: create, update: update});
       game.state.start("theGame");
 
@@ -244,7 +251,9 @@ define([
           Cytosine = nucleotideGroup.create(275, 330, "c");
           Guanine = nucleotideGroup.create(395, 330, "g");
           Thymine = nucleotideGroup.create(520, 330, "t");
+          Alanine = nucleotideGroup.create(495, 305, "A");
           nucleotideGroup.visible = false;
+          Alanine.visible = false;
           tRNA = game.add.sprite(390, 315, "player");
           var t_eyes = game.add.sprite(0, 0, "eyes");
           tRNA.addChild(t_eyes);
@@ -270,6 +279,9 @@ define([
 
       function nextFunc() {
         page++;
+        if(page === introContent.length - 1) {
+          nextBtn.visible = false;
+        }
         if(page > 0) {
           prevBtn.visible = true;
           title.visible = false;
@@ -279,8 +291,9 @@ define([
         } else {
           tRNA.visible = false;
         }
-        if(page === 3) {
+        if(page === 3 || page === 4) {
           nucleotideGroup.visible = true;
+          nucleotideMover();
         } else {
           nucleotideGroup.visible = false;
         }
@@ -292,6 +305,9 @@ define([
         if(page > 0) {
           page--;
         }
+        if(page < introContent.length - 1) {
+          nextBtn.visible = true;
+        }
         if(page === 0) {
           prevBtn.visible = false;
           title.visible = true;
@@ -301,12 +317,36 @@ define([
         } else {
           tRNA.visible = false;
         }
-        if(page === 3) {
+        if(page === 3 || page === 4) {
           nucleotideGroup.visible = true;
+          nucleotideMover();
         } else {
           nucleotideGroup.visible = false;
         }
         introText.text = introContent[page];
+      }
+
+      function nucleotideMover() {
+        if(page === 3) {
+          Adenine.x = 150;
+          Adenine.y = 330;
+          Cytosine.x = 275;
+          Cytosine.y = 330;
+          Guanine.x = 395;
+          Guanine.y = 330;
+          Thymine.visible = true;
+          Alanine.visible = false;
+        }
+        if(page === 4) {
+          Adenine.x = 180;
+          Adenine.y = 325;
+          Cytosine.x = 165;
+          Cytosine.y = 325;
+          Guanine.x = 150;
+          Guanine.y = 325;
+          Thymine.visible = false;
+          Alanine.visible = true;
+        }
       }
 
       function startGame() {
