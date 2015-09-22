@@ -81,10 +81,15 @@ define([
     var sKey;
     var dKey;
     var eyes;
+    var tRNA;
     var title;
     var player;
     var hitbox;
     var cursors;
+    var Adenine;
+    var Guanine;
+    var Thymine;
+    var Cytosine;
     var ribosome;
     var page = 0;
     var ribounder;
@@ -104,6 +109,7 @@ define([
     var aminoCount = 0;
     var talkCycles = 0;
     var aminosRemaining;
+    var nucleotideGroup;
     var codonChain = [];
     var blinkCounter = 0;
     var collectCodonGroup;
@@ -124,6 +130,7 @@ define([
       "Welcome to\n\n\nThe collection game where you can build all the proteins in the human body!\n\nMy name's Riley, and I'm a ribosome. I'll be your guide throughout the game, but first, let's learn how to play.",
       "Those little colorful beings bouncing around in the background are amino acids, the building blocks of protiens.\n\nAs a ribosome, my job is to assemble those amino acids in a specific order to build a protein, but there's more to it than that, and that's where you come in.",
       "You see, as a ribosome, I'm fixed in place in the wall of the rough endoplasmic reticulum that surrounds the nucleus of the cell.  I can't run off and grab the amino acids we need to build the protein.\n\nGrabbing the right amino is up to you, the transport RNA!",
+      "The long colorful chain at the bottom of the screen is half of a strand of DNA, and it tells us what amino acids we need to build the protein.\n\nThe colored bars sticking up from the DNA backbone are called nucleotides, and come in one of four types:\n\nAdenine  Cytosine  Guanine  Thymine",
       "Yet some more text.  Woo."
     ];
 
@@ -232,7 +239,21 @@ define([
           prevBtn = game.add.button(220, 435, "prev-btn", prevFunc, this, 0, 1, 2, 0);
           nextBtn = game.add.button(780, 435, "next-btn", nextFunc, this, 0, 1, 2, 0);
           introText = game.add.text(65, 25, introContent[0], {align: "center", wordWrap: true, wordWrapWidth: 575});
+          nucleotideGroup = game.add.group();
+          Adenine = nucleotideGroup.create(150, 330, "a");
+          Cytosine = nucleotideGroup.create(275, 330, "c");
+          Guanine = nucleotideGroup.create(395, 330, "g");
+          Thymine = nucleotideGroup.create(520, 330, "t");
+          nucleotideGroup.visible = false;
+          tRNA = game.add.sprite(390, 315, "player");
+          var t_eyes = game.add.sprite(0, 0, "eyes");
+          tRNA.addChild(t_eyes);
+          tRNA.tint = playerColor;
+          tRNA.scale.x = -1;
+          tRNA.visible = false;
           largeSpeech.addChild(introText);
+          largeSpeech.addChild(tRNA);
+          largeSpeech.addChild(nucleotideGroup);
           title = game.add.sprite(250, 150, "title");
           prevBtn.fixedToCamera = true;
           nextBtn.fixedToCamera = true;
@@ -253,6 +274,16 @@ define([
           prevBtn.visible = true;
           title.visible = false;
         }
+        if(page === 2) {
+          tRNA.visible = true;
+        } else {
+          tRNA.visible = false;
+        }
+        if(page === 3) {
+          nucleotideGroup.visible = true;
+        } else {
+          nucleotideGroup.visible = false;
+        }
         introText.text = introContent[page];
         talkCycles = game.rnd.integerInRange(3, 8);
       }
@@ -264,6 +295,16 @@ define([
         if(page === 0) {
           prevBtn.visible = false;
           title.visible = true;
+        }
+        if(page === 2) {
+          tRNA.visible = true;
+        } else {
+          tRNA.visible = false;
+        }
+        if(page === 3) {
+          nucleotideGroup.visible = true;
+        } else {
+          nucleotideGroup.visible = false;
         }
         introText.text = introContent[page];
       }
