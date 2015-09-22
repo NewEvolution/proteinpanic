@@ -226,6 +226,7 @@ define([
           prevBtn.fixedToCamera = true;
           nextBtn.fixedToCamera = true;
           prevBtn.visible = false;
+          talkCycles = game.rnd.integerInRange(3, 8);
         } else {
           startGame();
         }
@@ -419,6 +420,7 @@ define([
               console.log("liveAmino = ", liveAmino.key);
             });
           }
+          talkCycles = game.rnd.integerInRange(5, 10);
           carriedAmino.destroy();
           carryingAmino = false;
           extrudingProtein = 0;
