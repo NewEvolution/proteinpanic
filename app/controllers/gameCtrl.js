@@ -12,8 +12,8 @@ define([
       controllerAs: "game"
     });
   }])
-  .controller("gameCtrl", ["$firebaseArray", "uid", "proteinPanic", "preload", "revival",
-  function($firebaseArray, uid, proteinPanic, preload, revival) {
+  .controller("gameCtrl", ["$q", "$firebaseArray", "uid", "proteinPanic", "preload",
+  function($q, $firebaseArray, uid, proteinPanic, preload) {
     
     var game = proteinPanic;
 
@@ -406,146 +406,167 @@ define([
           extrudingProtein++;
         }
 
-        // Called functions #######################################################################
-        function inTheRibosome() {
-          if(carriedAmino !== undefined && carryingAmino === true) {
-            if(intenseDebug) {
-              console.log("Entering Ribosome --------------------------------------------------------");
-              aminoGroup.forEachAlive(function(liveAmino) {
-                console.log("liveAmino = ", liveAmino.key);
-              });
-            }
-            carriedAmino.destroy();
-            carryingAmino = false;
-            extrudingProtein = 0;
-            codonSliding = 0;
-            if(proteinAminos.length === 1) {
-              // won goes here
-            }
-            collectCodonGroup.forEachAlive(function(liveNucleotide) {
-              liveNucleotide.kill();
-            });
-            aminoCount++;
-            var codonSeqStart = aminoCount * 3;
-            if(intenseDebug) {console.log("Building Codon -----------------------------------------------------------");}
-            for(var rn = 0; rn < 3; rn++) {
-              var promisedNucleotide = revival(collectCodonGroup, codonChain[(codonSeqStart + rn)], 220 + (15 * rn), 464, intenseDebug);
-            }
-            if(intenseDebug) {console.log("Building Protein ---------------------------------------------------------");}
-            var promisedAssembledAmino = revival(proteinGroup, proteinAminos[0], 60, 400, intenseDebug);
-            promisedAssembledAmino.then(function(assembledAmino) {
-              assembledAmino.scale.x = 1;
-              assembledAmino.scale.y = 1;
-            });
-            proteinAminos.splice(0, 1);
-            countText.text = (proteinAminos.length - 1) + " Left!";
-            var justCollectedAmino = aminoToCollectGroup.getFirstAlive();
-            justCollectedAmino.kill();
-            if(intenseDebug) {console.log("Building Collection Icon -------------------------------------------------");}
-            var promisedAminoToCollect = revival(aminoToCollectGroup, proteinAminos[0], 510, 444, intenseDebug);
-            promisedAminoToCollect.then(function(aminoToCollect) {
-              aminoToCollect.y += (60 - aminoToCollect.height) / 2;
-              aminoToCollect.x += (60 - aminoToCollect.width) / 2;
-            });
-          }
-        }
+      }
 
-        function checkAmino (player, theAmino) {
-          if(proteinAminos[0] === theAmino.key && carryingAmino === false) {
-            goodAmino(player, theAmino);
-          } else {
-            badAmino(player, theAmino);
-          }
-        }
+//-------------------------------------------------------------------------------------------------
 
-        function rotateBoth(item1, item2) {
-          item1.rotation = game.rnd.realInRange(-0.2, 0.2);
-          item2.rotation = game.rnd.realInRange(-0.2, 0.2);
-        }
-
-        function goodAmino (player, theAmino) {
-          if(!spinningOut && !carryingAmino) {
-            if(intenseDebug) {console.log("Good Amino Contact -------------------------------------------------------");}
-            carryingAmino = true;
-            theAmino.kill();
-            carriedAmino = game.add.sprite(0, -60, theAmino.key);
-            carriedAmino.anchor.setTo(0.5, 0.5);
-            player.addChild(carriedAmino);
-            var aliveCount = 0;
-            var neededAminoAvailable = false;
-            aminoGroup.forEachAlive(function(liveAmino) {
-              if(intenseDebug) {console.log("liveAmino = ", liveAmino.key);}
-              aliveCount++;
-              if(liveAmino.key === proteinAminos[1]) { // Check to see if the amino we need next is on stage & alive
-                neededAminoAvailable = true;
-                if(intenseDebug) {console.log("The needed amino, " + proteinAminos[1] + " is alive and onstage");}
-              }
-            });
-            // Always keep 15 aminos on screen
-            if(intenseDebug) {console.log("there are " + aliveCount + " aminos live on stage");}
-            if((aliveCount < 15 || !neededAminoAvailable) && proteinAminos[1] !== "STOP") { // we've reached the stop codon, level/protein complete
-              var theNewAmino = "";
-              if(neededAminoAvailable) { // if the next needed amino is available...
-                while(theNewAmino === "" || theNewAmino === "STOP") { // the STOP shouldn't be on stage...
-                  theNewAmino = game.rnd.pick(proteinAminos); // toss a random amino from the pile of needed aminos onto the stage...
-                  if(intenseDebug) {console.log("So we queued a " + theNewAmino + " up");}
-                }
-              } else {
-                theNewAmino = proteinAminos[1]; // otherwise, toss the one we need on stage.
-                if(intenseDebug) {console.log("The needed amino was not here so we queued it, " + theNewAmino + ", up");}
-              }
-              var anAminoX = game.world.randomX;
-              var anAminoY = game.world.randomY;
-              while((anAminoX > player.x - 500 && anAminoX < player.x + 500) && (anAminoY > player.y - 500 && anAminoY < player.y + 500)) {
-                anAminoX = game.world.randomX;
-                anAminoY = game.world.randomY;
-              }
-              var promisedGoodAmino = revival(aminoGroup, theNewAmino, anAminoX, anAminoY, intenseDebug);
-              promisedGoodAmino.then(function(anAmino) {
-                anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
-                anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
-                anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
-                anAmino.body.bounce.x = 0.6 + Math.random() * 0.35;
-                anAmino.body.collideWorldBounds = true;
-                anAmino.anchor.setTo(0.5, 0.5);
-              });
-            }
-          }
-        }
-
-        function badAmino (player, theAmino) {
+      // Called functions #######################################################################
+      function inTheRibosome() {
+        if(carriedAmino !== undefined && carryingAmino === true) {
           if(intenseDebug) {
-            console.log("Bad Amino Contact ----------------------------------------------------------");
+            console.log("Entering Ribosome --------------------------------------------------------");
             aminoGroup.forEachAlive(function(liveAmino) {
-                console.log("liveAmino = ", liveAmino.key);
+              console.log("liveAmino = ", liveAmino.key);
             });
           }
-          spinningOut = true;
-          theAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
-          player.body.velocity.x = 0;
-          player.body.velocity.y = 0;
-          setTimeout(function() {
-            spinningOut = false;
-            player.rotation = 0;
-          }, (1000));
-          if(carryingAmino) {
-            carryingAmino = false;
-            var promisedBadAmino = revival(aminoGroup, carriedAmino.key, player.body.x, player.body.y - 60, intenseDebug);
-            promisedBadAmino.then(function(anAmino) {
-              anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), -300);
+          carriedAmino.destroy();
+          carryingAmino = false;
+          extrudingProtein = 0;
+          codonSliding = 0;
+          if(proteinAminos.length === 1) {
+            // won goes here
+          }
+          collectCodonGroup.forEachAlive(function(liveNucleotide) {
+            liveNucleotide.kill();
+          });
+          aminoCount++;
+          var codonSeqStart = aminoCount * 3;
+          if(intenseDebug) {console.log("Building Codon -----------------------------------------------------------");}
+          for(var rn = 0; rn < 3; rn++) {
+            var promisedNucleotide = spriteRevival(collectCodonGroup, codonChain[(codonSeqStart + rn)], 220 + (15 * rn), 464);
+          }
+          if(intenseDebug) {console.log("Building Protein ---------------------------------------------------------");}
+          var promisedAssembledAmino = spriteRevival(proteinGroup, proteinAminos[0], 60, 400);
+          promisedAssembledAmino.then(function(assembledAmino) {
+            assembledAmino.scale.x = 1;
+            assembledAmino.scale.y = 1;
+          });
+          proteinAminos.splice(0, 1);
+          countText.text = (proteinAminos.length - 1) + " Left!";
+          var justCollectedAmino = aminoToCollectGroup.getFirstAlive();
+          justCollectedAmino.kill();
+          if(intenseDebug) {console.log("Building Collection Icon -------------------------------------------------");}
+          var promisedAminoToCollect = spriteRevival(aminoToCollectGroup, proteinAminos[0], 510, 444);
+          promisedAminoToCollect.then(function(aminoToCollect) {
+            aminoToCollect.y += (60 - aminoToCollect.height) / 2;
+            aminoToCollect.x += (60 - aminoToCollect.width) / 2;
+          });
+        }
+      }
+
+      function checkAmino (player, theAmino) {
+        if(proteinAminos[0] === theAmino.key && carryingAmino === false) {
+          goodAmino(player, theAmino);
+        } else {
+          badAmino(player, theAmino);
+        }
+      }
+
+      function rotateBoth(item1, item2) {
+        item1.rotation = game.rnd.realInRange(-0.2, 0.2);
+        item2.rotation = game.rnd.realInRange(-0.2, 0.2);
+      }
+
+      function goodAmino (player, theAmino) {
+        if(!spinningOut && !carryingAmino) {
+          if(intenseDebug) {console.log("Good Amino Contact -------------------------------------------------------");}
+          carryingAmino = true;
+          theAmino.kill();
+          carriedAmino = game.add.sprite(0, -60, theAmino.key);
+          carriedAmino.anchor.setTo(0.5, 0.5);
+          player.addChild(carriedAmino);
+          var aliveCount = 0;
+          var neededAminoAvailable = false;
+          aminoGroup.forEachAlive(function(liveAmino) {
+            if(intenseDebug) {console.log("liveAmino = ", liveAmino.key);}
+            aliveCount++;
+            if(liveAmino.key === proteinAminos[1]) { // Check to see if the amino we need next is on stage & alive
+              neededAminoAvailable = true;
+              if(intenseDebug) {console.log("The needed amino, " + proteinAminos[1] + " is alive and onstage");}
+            }
+          });
+          // Always keep 15 aminos on screen
+          if(intenseDebug) {console.log("there are " + aliveCount + " aminos live on stage");}
+          if((aliveCount < 15 || !neededAminoAvailable) && proteinAminos[1] !== "STOP") { // we've reached the stop codon, level/protein complete
+            var theNewAmino = "";
+            if(neededAminoAvailable) { // if the next needed amino is available...
+              while(theNewAmino === "" || theNewAmino === "STOP") { // the STOP shouldn't be on stage...
+                theNewAmino = game.rnd.pick(proteinAminos); // toss a random amino from the pile of needed aminos onto the stage...
+                if(intenseDebug) {console.log("So we queued a " + theNewAmino + " up");}
+              }
+            } else {
+              theNewAmino = proteinAminos[1]; // otherwise, toss the one we need on stage.
+              if(intenseDebug) {console.log("The needed amino was not here so we queued it, " + theNewAmino + ", up");}
+            }
+            var anAminoX = game.world.randomX;
+            var anAminoY = game.world.randomY;
+            while((anAminoX > player.x - 500 && anAminoX < player.x + 500) && (anAminoY > player.y - 500 && anAminoY < player.y + 500)) {
+              anAminoX = game.world.randomX;
+              anAminoY = game.world.randomY;
+            }
+            var promisedGoodAmino = spriteRevival(aminoGroup, theNewAmino, anAminoX, anAminoY);
+            promisedGoodAmino.then(function(anAmino) {
+              anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
               anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
               anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
               anAmino.body.bounce.x = 0.6 + Math.random() * 0.35;
               anAmino.body.collideWorldBounds = true;
               anAmino.anchor.setTo(0.5, 0.5);
             });
-            carriedAmino.destroy();
           }
         }
+      }
 
-        function nothing() {} // So things can collide without doing anything other than bouncing off
+      function badAmino (player, theAmino) {
+        if(intenseDebug) {
+          console.log("Bad Amino Contact ----------------------------------------------------------");
+          aminoGroup.forEachAlive(function(liveAmino) {
+              console.log("liveAmino = ", liveAmino.key);
+          });
+        }
+        spinningOut = true;
+        theAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
+        player.body.velocity.x = 0;
+        player.body.velocity.y = 0;
+        setTimeout(function() {
+          spinningOut = false;
+          player.rotation = 0;
+        }, (1000));
+        if(carryingAmino) {
+          carryingAmino = false;
+          var promisedBadAmino = spriteRevival(aminoGroup, carriedAmino.key, player.body.x, player.body.y - 60);
+          promisedBadAmino.then(function(anAmino) {
+            anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), -300);
+            anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
+            anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
+            anAmino.body.bounce.x = 0.6 + Math.random() * 0.35;
+            anAmino.body.collideWorldBounds = true;
+            anAmino.anchor.setTo(0.5, 0.5);
+          });
+          carriedAmino.destroy();
+        }
+      }
 
-      } 
+      function spriteRevival(targetedGroup, neededSprite, spriteX, spriteY) {
+        var deferred = $q.defer();
+        var ableToRevive = false;
+        targetedGroup.forEachDead(function(deadSprite) {
+          if(deadSprite.key === neededSprite && deadSprite.alive === false && !ableToRevive) {
+            deadSprite.reset(spriteX, spriteY); // revive an existing dead amino if we have one that matches
+            ableToRevive = true;
+            if(intenseDebug) {console.log("revived " + deadSprite.key + " at " + spriteX + "x" + spriteY + " in " + targetedGroup.name);}
+            deferred.resolve(deadSprite);
+          }
+        });
+        if(!ableToRevive) {
+          var spawnedSprite = targetedGroup.create(spriteX, spriteY, neededSprite);
+          if(intenseDebug) {console.log("spawned " + spawnedSprite.key + " at " + spriteX + "x" + spriteY + " in " + targetedGroup.name);}
+          deferred.resolve(spawnedSprite);
+        }
+        return deferred.promise;
+      }
+
+      function nothing() {} // So things can collide without doing anything other than bouncing off
 
 //-------------------------------------------------------------------------------------------------
 
