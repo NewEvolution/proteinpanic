@@ -121,8 +121,9 @@ define([
     var chosenProtein = "Test";
     var mouthClosedCounter = 0;
     var introContent = [
-      "Welcome to\n\n\nThe collection game where you can build all the proteins in the human body!",
-      "This is some more text, imagine that",
+      "Welcome to\n\n\nThe collection game where you can build all the proteins in the human body!\n\nMy name's Riley, and I'm a ribosome. I'll be your guide throughout the game, but first, let's learn how to play.",
+      "Those little colorful beings bouncing around in the background are amino acids, the building blocks of protiens.\n\nAs a ribosome, my job is to assemble those amino acids in a specific order to build a protein, but there's more to it than that, and that's where you come in.",
+      "You see, as a ribosome, I'm fixed in place in the wall of the rough endoplasmic reticulum that surrounds the nucleus of the cell.  I can't run off and grab the amino acids we need to build the protein.\n\nGrabbing the right amino is up to you, the transport RNA!",
       "Yet some more text.  Woo."
     ];
 
