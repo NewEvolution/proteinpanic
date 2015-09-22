@@ -12,8 +12,8 @@ define([
       controllerAs: "game"
     });
   }])
-  .controller("gameCtrl", ["$q", "$firebaseArray", "uid", "proteinPanic", "preload",
-  function($q, $firebaseArray, uid, proteinPanic, preload) {
+  .controller("gameCtrl", ["$q", "$firebaseArray", "$firebaseObject", "uid", "proteinPanic", "preload",
+  function($q, $firebaseArray, $firebaseObject, uid, proteinPanic, preload) {
     
     var game = proteinPanic;
 
@@ -24,8 +24,10 @@ define([
     
     var proteinsArr = $firebaseArray(proteins);
     var aminosArr = $firebaseArray(aminos);
+    var usersObj = $firebaseObject(users);
     var usersArr = $firebaseArray(users);
     var currentUID = null;
+    var currentKey = null;
     var username = "";
 
     var authData = ref.getAuth();
@@ -40,6 +42,7 @@ define([
           if(data[key].uid === currentUID) {
             playerColor = "0x" + data[key].color.slice(1);
             username = data[key].username;
+            currentKey = data[key].$id;
             userDoesNotExist = false;
             mouse = data[key].mouse;
             intro = data[key].intro;
@@ -85,6 +88,8 @@ define([
     var title;
     var player;
     var hitbox;
+    var prevBtn;
+    var nextBtn;
     var cursors;
     var Adenine;
     var Guanine;
@@ -92,16 +97,18 @@ define([
     var Alanine;
     var Cytosine;
     var ribosome;
+    var startBtn;
     var page = 0;
     var ribounder;
     var countText;
-    var introText;
+    var optionsBtn;
     var aminoGroup;
     var codonGroup;
     var largeSpeech;
     var smallSpeech;
     var playerColor;
     var countHolder;
+    var continueBtn;
     var proteinGroup;
     var carriedAmino;
     var intro = true;
@@ -112,6 +119,7 @@ define([
     var aminosRemaining;
     var nucleotideGroup;
     var codonChain = [];
+    var interstitialText;
     var blinkCounter = 0;
     var collectCodonGroup;
     var codonSliding = 45;
@@ -135,7 +143,7 @@ define([
       "Every amino acid can be represented by three nucleotides in a specific order. This group of three nucleotides is called a codon, and every amino acid has at least one codon, though some have more.\n\nFor example:\n\nis a codon for Alanine",
       "I'll read the DNA one codon at a time and tell you which amino acid to go catch. Once you've caught the amino acid, bring it back to me and I'll add it to the protein we're building.\n\nBe careful not to run into any of the other amino acids floating about, as they'll make you spin out and drop any amino acid you're carrying!",
       "Proteins can be very long, some contain thousands of amino acids! We'll start with a shorter one, but there will also be checkpoints along the way.\n\nOnce you've reached a checkpoint, you can restart from there later. You can change how often checkpoints happen in your user options.",
-      "You control your flight around the inside of the cell with either the W A S D keys or arrow keys, or with your mouse/touch.\n\nYou can switch your control type on your user option screen as well.",
+      "You control your flight around the inside of the cell with either the W A S D keys or arrow keys, or with your mouse/touch.\n\nYou can switch your control type on your user option screen as well.\n\nAt any point during the game you can press the \"P\" key to pause and check your progress.",
       "After completing a protein, or starting a new game you can choose your next protein to make.\n\nYou can only have one protein in progress at a time though, so starting a new protein will erase any progess you've made on an incomplete protein.",
       "That's the end of the introduction, you're now ready to start building your first protein!\n\nIf you'd like to see this intro again, you can check off \"Play Introduction\" in your user options.\n\nClick \"Start\" to start the game, or you can click \"Options\" to edit your user options."
     ];
@@ -220,9 +228,9 @@ define([
         riboeyes = game.add.sprite(85, 432, "riboeyes");
         smallSpeech = game.add.sprite(170, 440, "speech_bubble");
         largeSpeech = game.add.sprite(170, 80, "large_bubble");
+        title = game.add.sprite(250, 150, "title");
 
         smallSpeech.visible = false;
-        largeSpeech.visible = false;
         hitbox = game.add.sprite(20, 500, "hitbox");
         game.physics.arcade.enable(ribosome);
         game.physics.arcade.enable(hitbox);
@@ -236,6 +244,7 @@ define([
         hitbox.fixedToCamera = true;
         smallSpeech.fixedToCamera = true;
         largeSpeech.fixedToCamera = true;
+        title.fixedToCamera = true;
         for (var c = 0; c <codonChain.length; c++) {
           var nucleotide = codonGroup.create(134 + (15 * c), 520, codonChain[c]);
         }
@@ -243,9 +252,9 @@ define([
         // Introductory instructions ##############################################################
         if(intro) {
           largeSpeech.visible = true;
-          prevBtn = game.add.button(220, 435, "prev-btn", prevFunc, this, 0, 1, 2, 0);
-          nextBtn = game.add.button(780, 435, "next-btn", nextFunc, this, 0, 1, 2, 0);
-          introText = game.add.text(65, 25, introContent[0], {align: "center", wordWrap: true, wordWrapWidth: 575});
+          prevBtn = game.add.button(50, 355, "prev-btn", prevFunc, this, 0, 1, 2, 0);
+          nextBtn = game.add.button(610, 355, "next-btn", nextFunc, this, 0, 1, 2, 0);
+          interstitialText = game.add.text(65, 25, introContent[0], {align: "center", wordWrap: true, wordWrapWidth: 575});
           nucleotideGroup = game.add.group();
           Adenine = nucleotideGroup.create(150, 330, "a");
           Cytosine = nucleotideGroup.create(275, 330, "c");
@@ -260,17 +269,21 @@ define([
           tRNA.tint = playerColor;
           tRNA.scale.x = -1;
           tRNA.visible = false;
-          largeSpeech.addChild(introText);
+          startBtn = game.add.button(135, 365, "start-btn", pauseFunc, this, 0, 1, 2, 0);
+          optionsBtn = game.add.button(365, 365, "options-btn", optionsFunc, this, 0, 1, 2, 0);
+          largeSpeech.addChild(prevBtn);
+          largeSpeech.addChild(nextBtn);
+          largeSpeech.addChild(startBtn);
+          largeSpeech.addChild(optionsBtn);
+          largeSpeech.addChild(interstitialText);
           largeSpeech.addChild(tRNA);
           largeSpeech.addChild(nucleotideGroup);
-          title = game.add.sprite(250, 150, "title");
-          prevBtn.fixedToCamera = true;
-          nextBtn.fixedToCamera = true;
-          title.fixedToCamera = true;
           prevBtn.visible = false;
+          startBtn.visible = false;
+          optionsBtn.visible = false;
           talkCycles = game.rnd.integerInRange(3, 8);
         } else {
-          startGame();
+          pauseFunc();
         }
 
       }
@@ -281,6 +294,8 @@ define([
         page++;
         if(page === introContent.length - 1) {
           nextBtn.visible = false;
+          startBtn.visible = true;
+          optionsBtn.visible = true;
         }
         if(page > 0) {
           prevBtn.visible = true;
@@ -297,7 +312,7 @@ define([
         } else {
           nucleotideGroup.visible = false;
         }
-        introText.text = introContent[page];
+        interstitialText.text = introContent[page];
         talkCycles = game.rnd.integerInRange(3, 8);
       }
 
@@ -307,6 +322,8 @@ define([
         }
         if(page < introContent.length - 1) {
           nextBtn.visible = true;
+          startBtn.visible = false;
+          optionsBtn.visible = false;
         }
         if(page === 0) {
           prevBtn.visible = false;
@@ -323,7 +340,32 @@ define([
         } else {
           nucleotideGroup.visible = false;
         }
-        introText.text = introContent[page];
+        interstitialText.text = introContent[page];
+      }
+
+      function pauseFunc() {
+        if(intro) {
+          intro = false;
+          usersObj[currentKey].intro = false;
+          usersObj.$save();
+          prevBtn.destroy();
+          nextBtn.destroy();
+          startBtn.destroy();
+          optionsBtn.destroy();
+          nucleotideGroup.forEachExists(function(child) {
+            child.destroy();
+          });
+          nucleotideGroup.destroy();
+          interstitialText.text = "";
+        }
+        title.visible = true;
+        title.cameraOffset.y -= 50;
+      }
+
+      function optionsFunc() {
+        usersObj[currentKey].intro = false;
+        usersObj.$save();
+        window.location = "#/user";
       }
 
       function nucleotideMover() {
