@@ -45,6 +45,8 @@ define([
         game.load.spritesheet("W", "images/Tryptophan.png", 60, 31);
         game.load.spritesheet("Y", "images/Tyrosine.png", 60, 38);
         game.load.spritesheet("V", "images/Valine.png", 60, 60);
+        game.load.image("progress-holder", "images/progress-holder.png");
+        game.load.image("progress-bar", "images/progress-bar.png");
         game.load.image("speech_bubble", "images/speech_bubble.png");
         game.load.image("large_bubble", "images/large_bubble.png");
         game.load.image("ribo-under", "images/Ribosome-under.png");

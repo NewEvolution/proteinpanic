@@ -44,18 +44,23 @@ define([
         var userDoesNotExist = true;
         for(var key in data) {
           if(data[key].uid === currentUID) {
-            playerColor = "0x" + data[key].color.slice(1);
-            username = data[key].username;
-            currentKey = data[key].$id;
             userDoesNotExist = false;
             mouse = data[key].mouse;
             intro = data[key].intro;
-            if (intro || !data[key].proteinInProgress) {
+            currentKey = data[key].$id;
+            username = data[key].username;
+            replayedIntro = data[key].replayedIntro;
+            playerColor = "0x" + data[key].color.slice(1);
+            if (intro) {
               chosenProtein = "Insulin";
               if(intenseDebug) {console.log("Didn't find a protein in progress");}
-            } else {
+            } else if(data[key].proteinInProgress) {
               chosenProtein = data[key].proteinInProgress;
+              remainingProteinLength = data[key].remainingProteinLength;
               if(intenseDebug) {console.log("Found a protein in progress: " + data[key].proteinInProgress);}
+            } else {
+              chosenProtein = "Insulin";
+              goToProteinChooser = true;
             }
           }
         }
@@ -91,29 +96,30 @@ define([
     var startBtn;
     var page = 0;
     var ribounder;
-    var countText;
     var optionsBtn;
     var aminoGroup;
     var codonGroup;
     var largeSpeech;
     var smallSpeech;
     var playerColor;
-    var countHolder;
     var continueBtn;
+    var progressBar;
     var proteinGroup;
     var carriedAmino;
     var intro = true;
     var chosenProtein;
+    var goToProteinChooser;
+    var progressHolder;
     var noclip = false;
     var aminoCount = 0;
     var talkCycles = 0;
-    var aminosRemaining;
     var nucleotideGroup;
     var codonChain = [];
     var interstitialText;
     var blinkCounter = 0;
+    var fullProteinLength;
     var collectCodonGroup;
-    var codonSliding = 45;
+    var codonSliding = 0;
     var proteinDisplayName;
     var mousedOver = false;
     var proteinAminos = [];
@@ -122,8 +128,10 @@ define([
     var checkpointCount = 10;
     var mouthOpenCounter = 0;
     var extrudingProtein = 5;
+    var replayedIntro = false;
     var carryingAmino = false;
     var controlsLocked = true;
+    var remainingProteinLength;
     var mouthClosedCounter = 0;
     var introContent = [
       "",
@@ -144,6 +152,7 @@ define([
           for(var p = 0; p < proteinsArr.length; p++) {
             if(proteinsArr[p].name === chosenProtein) {
               proteinAminos = proteinsArr[p].sequence.split(""); // Grab the list of amino acids & build the array to grab
+              fullProteinLength = proteinAminos.length;
               proteinAminos.push("STOP");
             }
           }
@@ -232,52 +241,63 @@ define([
         anAmino.anchor.setTo(0.5, 0.5);
       }
 
-      // Aminos to collect count ################################################################
-      aminosRemaining = proteinAminos.length - 1; // -1 for the stop codon
-      countHolder = game.add.sprite(10, 10);
-      countHolder.fixedToCamera = true;
-      countText = game.add.text(0, 0, aminosRemaining + " Left!");
-      countHolder.addChild(countText);
-
-
       // Ribosome & codon block #################################################################
       ribounder = game.add.sprite(20, 410, "ribo-under");
+      ribounder.fixedToCamera = true;
       codonGroup = game.add.group();
       codonGroup.name = "codonGroup";
-      ribosome = game.add.sprite(20, 410, "ribosome");
-      riboeyes = game.add.sprite(85, 432, "riboeyes");
-      smallSpeech = game.add.sprite(170, 440, "speech_bubble");
-      largeSpeech = game.add.sprite(170, 80, "large_bubble");
-      interstitialText = game.add.text(0, 0, introContent[0], {align: "center", wordWrap: true, wordWrapWidth: 575});
-      interstitialText.setTextBounds(65, 25, 575, 400);
-      proteinDisplayName = game.add.text(0, 0, chosenProtein, {font: "bold 26pt Arial", fill: "navy", align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
-      proteinDisplayName.setTextBounds(65, 130, 575, 300);
-      title = game.add.sprite(80, 20, "title");
-      optionsBtn = game.add.button(365, 365, "options-btn", optionsFunc, this, 0, 1, 2, 0);
-      continueBtn = game.add.button(135, 365, "continue-btn", postIntroFunc, this, 0, 1, 2, 0);
-      largeSpeech.addChild(title);
-      largeSpeech.addChild(optionsBtn);
-      largeSpeech.addChild(continueBtn);
-      largeSpeech.addChild(interstitialText);
-      largeSpeech.addChild(proteinDisplayName);
-
-      smallSpeech.visible = false;
-      hitbox = game.add.sprite(20, 500, "hitbox");
-      game.physics.arcade.enable(ribosome);
-      game.physics.arcade.enable(hitbox);
-      ribosome.body.immovable = true;
-      hitbox.body.immovable = true;
-      ribosome.inputEnabled = true;
       codonGroup.fixedToCamera = true;
-      ribounder.fixedToCamera = true;
-      ribosome.fixedToCamera = true;
-      riboeyes.fixedToCamera = true;
-      hitbox.fixedToCamera = true;
-      smallSpeech.fixedToCamera = true;
-      largeSpeech.fixedToCamera = true;
       for (var c = 0; c <codonChain.length; c++) {
         var nucleotide = codonGroup.create(134 + (15 * c), 520, codonChain[c]);
       }
+      ribosome = game.add.sprite(20, 410, "ribosome");
+      game.physics.arcade.enable(ribosome);
+      ribosome.body.immovable = true;
+      ribosome.inputEnabled = true;
+      ribosome.fixedToCamera = true;
+      riboeyes = game.add.sprite(85, 432, "riboeyes");
+      riboeyes.fixedToCamera = true;
+      hitbox = game.add.sprite(20, 500, "hitbox");
+      game.physics.arcade.enable(hitbox);
+      hitbox.body.immovable = true;
+      hitbox.fixedToCamera = true;
+
+      // Small speech bubbble - collection instructions ###########################################
+      smallSpeech = game.add.sprite(170, 440, "speech_bubble");
+      smallSpeech.fixedToCamera = true;
+      aminoToCollectGroup = game.add.group();
+      aminoToCollectGroup.name = "aminoToCollectGroup";
+      smallSpeech.addChild(aminoToCollectGroup);
+      var aminoToCollect = aminoToCollectGroup.create(340, 4, proteinAminos[0]);
+      aminoToCollect.y += (60 - aminoToCollect.height) / 2;
+      aminoToCollect.x += (60 - aminoToCollect.width) / 2;
+      collectCodonGroup = game.add.group();
+      collectCodonGroup.name = "collectCodonGroup";
+      smallSpeech.addChild(collectCodonGroup);
+      var firstNucleotide = collectCodonGroup.create(50, 24, codonChain[0]);
+      var secondtNucleotide = collectCodonGroup.create(65, 24, codonChain[1]);
+      var thirdNucleotide = collectCodonGroup.create(80, 24, codonChain[2]);
+      smallSpeech.visible = false;
+
+      // Large speech bubble - intro/pause/success/protein selection ##############################
+      largeSpeech = game.add.sprite(170, 80, "large_bubble");
+      largeSpeech.fixedToCamera = true;
+      interstitialText = game.add.text(0, 0, introContent[0], {align: "center", wordWrap: true, wordWrapWidth: 575});
+      interstitialText.setTextBounds(65, 25, 575, 400);
+      largeSpeech.addChild(interstitialText);
+      proteinDisplayName = game.add.text(0, 0, chosenProtein, {font: "bold 26pt Arial", fill: "navy", align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
+      proteinDisplayName.setTextBounds(65, 130, 575, 300);
+      largeSpeech.addChild(proteinDisplayName);
+      title = game.add.sprite(80, 20, "title");
+      largeSpeech.addChild(title);
+      progressHolder = game.add.sprite(75, 260, "progress-holder");
+      largeSpeech.addChild(progressHolder);
+      progressBar = game.add.sprite(80, 265, "progress-bar");
+      largeSpeech.addChild(progressBar);
+      optionsBtn = game.add.button(365, 365, "options-btn", optionsFunc, this, 0, 1, 2, 0);
+      largeSpeech.addChild(optionsBtn);
+      continueBtn = game.add.button(135, 365, "continue-btn", continueFunc, this, 0, 1, 2, 0);
+      largeSpeech.addChild(continueBtn);
 
       // Introductory instructions ##############################################################
       if(intro) {
@@ -308,13 +328,15 @@ define([
         startBtn.visible = false;
         optionsBtn.visible = false;
         continueBtn.visible = false;
+        progressBar.visible = false;
+        progressHolder.visible = false;
         proteinDisplayName.visible = false;
         talkCycles = game.rnd.integerInRange(3, 8);
         title.y += 50;
-      } else if (chosenProtein === "") {
+      } else if (goToProteinChooser) {
         proteinChooser();
       } else {
-        pauseMenu();
+        pauseMenu(false);
       }
 
     }
@@ -523,7 +545,9 @@ define([
     function postIntroFunc() {
       intro = false;
       usersObj[currentKey].intro = false;
+      usersObj[currentKey].replayedIntro = true;
       usersObj[currentKey].proteinInProgress = "Insulin";
+      usersObj[currentKey].remainingProteinLength = proteinAminos.length;
       usersObj.$save();
       prevBtn.destroy();
       nextBtn.destroy();
@@ -536,23 +560,54 @@ define([
       title.visible = true;
       optionsBtn.visible = true;
       continueBtn.visible = true;
-      proteinDisplayName.visible = true;
-      pauseMenu();
+      if(replayedIntro) {
+        proteinChooser();
+      } else {
+        pauseMenu(false);
+      }
     }
 
     function proteinChooser() {
-      
+      largeSpeech.visible = true;
+      smallSpeech.visible = false;
+      progressBar.visible = false;
+      progressHolder.visible = false;
+      interstitialText.visible = false;
+      proteinDisplayName.visible = false;
     }
 
-    function pauseMenu() {
+    function pauseMenu(pause) {
+      if(pause) {
+
+      }
+      controlsLocked = true;
+      largeSpeech.visible = true;
+      progressBar.visible = true;
+      smallSpeech.visible = false;
+      progressHolder.visible = true;
+      interstitialText.visible = true;
+      proteinDisplayName.visible = true;
+      talkCycles = game.rnd.integerInRange(3, 7);
+      remainingProteinLength = proteinAminos.length - 1;
+      usersObj[currentKey].remainingProteinLength = remainingProteinLength;
+      usersObj.$save();
+      progressBar.scale.x = (fullProteinLength - remainingProteinLength) / fullProteinLength; 
       interstitialText.boundsAlignH = "center";
-      interstitialText.text = "\n\nCurrently building:";
+      interstitialText.text = "\n\nCurrently building:\n\n\n\n\n\n" + (fullProteinLength - remainingProteinLength) + " of " + fullProteinLength + " amino acids collected!";
     }
 
     function optionsFunc() {
       usersObj[currentKey].intro = false;
       usersObj.$save();
       window.location = "#/user";
+    }
+
+    function continueFunc() {
+      // unpause of some sort
+      largeSpeech.visible = false;
+      smallSpeech.visible = true;
+      controlsLocked = false;
+      talkCycles = game.rnd.integerInRange(3, 7);
     }
 
     function nucleotideMover() {
@@ -578,26 +633,6 @@ define([
       }
     }
 
-    function startGame() {
-      // Collection instructions block ##########################################################
-      controlsLocked = false;
-      codonSliding = 0;
-      smallSpeech.visible = true;
-      aminoToCollectGroup = game.add.group();
-      aminoToCollectGroup.name = "aminoToCollectGroup";
-      aminoToCollectGroup.fixedToCamera = true;
-      var aminoToCollect = aminoToCollectGroup.create(510, 444, proteinAminos[0]);
-      aminoToCollect.y += (60 - aminoToCollect.height) / 2;
-      aminoToCollect.x += (60 - aminoToCollect.width) / 2;
-
-      collectCodonGroup = game.add.group();
-      collectCodonGroup.name = "collectCodonGroup";
-      collectCodonGroup.fixedToCamera = true;
-      var firstNucleotide = collectCodonGroup.create(220, 464, codonChain[0]);
-      var secondtNucleotide = collectCodonGroup.create(235, 464, codonChain[1]);
-      var thirdNucleotide = collectCodonGroup.create(250, 464, codonChain[2]);
-    }
-
 //-------------------------------------------------------------------------------------------------
 
     function inTheRibosome() {
@@ -608,11 +643,11 @@ define([
             console.log("liveAmino = ", liveAmino.key);
           });
         }
-        talkCycles = game.rnd.integerInRange(5, 10);
+        talkCycles = game.rnd.integerInRange(3, 7);
         carriedAmino.destroy();
         carryingAmino = false;
-        extrudingProtein = 0;
-        codonSliding = 0;
+        extrudingProtein -= 5;
+        codonSliding -= 45;
         if(proteinAminos.length === 1) {
           // won goes here
         }
@@ -623,7 +658,7 @@ define([
         var codonSeqStart = aminoCount * 3;
         if(intenseDebug) {console.log("Building Codon -----------------------------------------------------------");}
         for(var rn = 0; rn < 3; rn++) {
-          var promisedNucleotide = spriteRevival(collectCodonGroup, codonChain[(codonSeqStart + rn)], 220 + (15 * rn), 464);
+          var promisedNucleotide = spriteRevival(collectCodonGroup, codonChain[(codonSeqStart + rn)], 50 + (15 * rn), 24);
         }
         if(intenseDebug) {console.log("Building Protein ---------------------------------------------------------");}
         var promisedAssembledAmino = spriteRevival(proteinGroup, proteinAminos[0], 60, 400);
@@ -632,11 +667,10 @@ define([
           assembledAmino.scale.y = 1;
         });
         proteinAminos.splice(0, 1);
-        countText.text = (proteinAminos.length - 1) + " Left!";
         var justCollectedAmino = aminoToCollectGroup.getFirstAlive();
         justCollectedAmino.kill();
         if(intenseDebug) {console.log("Building Collection Icon -------------------------------------------------");}
-        var promisedAminoToCollect = spriteRevival(aminoToCollectGroup, proteinAminos[0], 510, 444);
+        var promisedAminoToCollect = spriteRevival(aminoToCollectGroup, proteinAminos[0], 340, 4);
         promisedAminoToCollect.then(function(aminoToCollect) {
           aminoToCollect.y += (60 - aminoToCollect.height) / 2;
           aminoToCollect.x += (60 - aminoToCollect.width) / 2;
