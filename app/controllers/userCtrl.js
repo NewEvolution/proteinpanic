@@ -78,7 +78,7 @@ define([
 	    }
 		}
 
-		this.checkAvail = function(saving) {
+		this.checkAvail = function(saving, destination) {
       var usernameAvailable = false;
       for(var k = 0; k < usersArr.length; k++) {
         if(this.username === "") {
@@ -102,13 +102,13 @@ define([
         }
       }
       if(usernameAvailable && saving) {
-        this.saveUserData();
+        this.saveUserData(destination);
       } else if (usernameAvailable) {
         alert(this.username + " is available!");
       }
     };
 
-    this.saveUserData = function() {
+    this.saveUserData = function(destination) {
       usersObj[currentKey].effects = parseInt(this.effects);
       usersObj[currentKey].music = parseInt(this.music);
       usersObj[currentKey].username = this.username;
@@ -116,12 +116,8 @@ define([
       usersObj[currentKey].color = this.color;
       usersObj[currentKey].intro = this.intro;
       usersObj.$save().then(function(ref) {
-        alert("User data saved sucessfully!");
+        window.location = "#/" + destination;
       });
-    };
-
-    this.mainMenu = function() {
-      window.location = "#/menu";
     };
 
     this.changeEmail = function() {

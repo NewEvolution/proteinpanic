@@ -27,8 +27,8 @@
     <input type="range" class="slider" id="effects-volume" min="0" max="100" step="1" value="100" ng-model="user.effects">
     <input type="text" class="display" id="ev-display" readonly ng-model="user.effects">
     <hr>
-    <button id="save-btn" type="submit" ng-click="user.checkAvail(true)">Save Settings</button>
-    <button id="menu-btn" ng-click="user.mainMenu()">Go To Main Menu</button>
+    <button id="menu-btn" type="submit" ng-click="user.checkAvail(true, 'menu')">Go To Main Menu</button>
+    <button id="game-btn" ng-click="user.checkAvail(true, 'game')">Go To Game</button>
     <hr>
     <div ng-show="user.emailAuth">
       <h3>Account Settings:</h3>
