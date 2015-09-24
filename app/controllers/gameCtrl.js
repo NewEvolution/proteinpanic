@@ -49,7 +49,7 @@ define([
             intro = data[key].intro;
             currentKey = data[key].$id;
             username = data[key].username;
-            replayedIntro = data[key].replayedIntro;
+            completedIntro = data[key].completedIntro;
             playerColor = "0x" + data[key].color.slice(1);
             if (intro) {
               chosenProtein = "Insulin";
@@ -94,6 +94,7 @@ define([
     var Cytosine;
     var ribosome;
     var startBtn;
+    var pauseBtn;
     var page = 0;
     var ribounder;
     var optionsBtn;
@@ -119,7 +120,7 @@ define([
     var blinkCounter = 0;
     var fullProteinLength;
     var collectCodonGroup;
-    var codonSliding = 0;
+    var codonSliding = 45;
     var proteinDisplayName;
     var mousedOver = false;
     var proteinAminos = [];
@@ -128,7 +129,7 @@ define([
     var checkpointCount = 10;
     var mouthOpenCounter = 0;
     var extrudingProtein = 5;
-    var replayedIntro = false;
+    var completedIntro = false;
     var carryingAmino = false;
     var controlsLocked = true;
     var remainingProteinLength;
@@ -141,7 +142,7 @@ define([
       "Every amino acid can be represented by three nucleotides in a specific order. This group of three nucleotides is called a codon, and every amino acid has at least one codon, though some have more.\n\nFor example:\n\nis a codon for Alanine",
       "I'll read the DNA one codon at a time and tell you which amino acid to go catch. Once you've caught the amino acid, bring it back to me and I'll add it to the protein we're building.\n\nBe careful not to run into any of the other amino acids floating about, as they'll make you spin out and drop any amino acid you're carrying!",
       "Proteins can be very long, some contain thousands of amino acids! We'll start with a shorter one, but there will also be checkpoints along the way.\n\nOnce you've reached a checkpoint, you can restart from there later. You can change how often checkpoints happen in your user options.",
-      "You control your flight around the inside of the cell with either the W A S D keys or arrow keys, or with your mouse/touch.\n\nYou can switch your control type on your user option screen as well.\n\nAt any point during the game you can press the \"P\" key to pause and check your progress.",
+      "You control your flight around the inside of the cell with either the W A S D keys or arrow keys, or with your mouse/touch.\n\nYou can switch your control type on your user option screen as well.\n\nAt any time during the game you can click/tap the \"P\" button at the top left to pause and check your progress.",
       "After completing a protein, or starting a new game you can choose your next protein to make.\n\nYou can only have one protein in progress at a time though, so starting a new protein will erase any progess you've made on an incomplete protein.",
       "That's the end of the introduction, you're now ready to start building your first protein!\n\nIf you'd like to see this intro again, you can check off \"Play Introduction\" in your user options.\n\nClick \"Start\" to start the game, or you can click \"Options\" to edit your user options."
     ];
@@ -290,14 +291,17 @@ define([
       largeSpeech.addChild(proteinDisplayName);
       title = game.add.sprite(80, 20, "title");
       largeSpeech.addChild(title);
-      progressHolder = game.add.sprite(75, 260, "progress-holder");
+      progressHolder = game.add.sprite(73, 270, "progress-holder");
       largeSpeech.addChild(progressHolder);
-      progressBar = game.add.sprite(80, 265, "progress-bar");
+      progressBar = game.add.sprite(78, 275, "progress-bar");
       largeSpeech.addChild(progressBar);
       optionsBtn = game.add.button(365, 365, "options-btn", optionsFunc, this, 0, 1, 2, 0);
       largeSpeech.addChild(optionsBtn);
       continueBtn = game.add.button(135, 365, "continue-btn", continueFunc, this, 0, 1, 2, 0);
       largeSpeech.addChild(continueBtn);
+      pauseBtn = game.add.button(5, 5, "p-btn", pauseMenu, this, 0, 1, 2, 0);
+      pauseBtn.fixedToCamera = true;
+      pauseBtn.visible = false;
 
       // Introductory instructions ##############################################################
       if(intro) {
@@ -545,7 +549,7 @@ define([
     function postIntroFunc() {
       intro = false;
       usersObj[currentKey].intro = false;
-      usersObj[currentKey].replayedIntro = true;
+      usersObj[currentKey].completedIntro = true;
       usersObj[currentKey].proteinInProgress = "Insulin";
       usersObj[currentKey].remainingProteinLength = proteinAminos.length;
       usersObj.$save();
@@ -560,10 +564,10 @@ define([
       title.visible = true;
       optionsBtn.visible = true;
       continueBtn.visible = true;
-      if(replayedIntro) {
+      if(completedIntro) {
         proteinChooser();
       } else {
-        pauseMenu(false);
+        pauseMenu();
       }
     }
 
@@ -576,11 +580,11 @@ define([
       proteinDisplayName.visible = false;
     }
 
-    function pauseMenu(pause) {
-      if(pause) {
-
-      }
+    function pauseMenu() {
+      player.body.x = 30;
+      player.body.y = 1130;
       controlsLocked = true;
+      pauseBtn.visible = false;
       largeSpeech.visible = true;
       progressBar.visible = true;
       smallSpeech.visible = false;
@@ -603,7 +607,11 @@ define([
     }
 
     function continueFunc() {
-      // unpause of some sort
+      pauseBtn.visible = true;
+      pauseBtn.frame = 1;
+      if((fullProteinLength - remainingProteinLength) === 0) {
+        codonSliding -= 45;
+      }
       largeSpeech.visible = false;
       smallSpeech.visible = true;
       controlsLocked = false;

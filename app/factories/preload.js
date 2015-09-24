@@ -18,6 +18,7 @@ define([
         game.load.spritesheet("start-btn", "images/start-btn.png", 192, 42);
         game.load.spritesheet("options-btn", "images/options-btn.png", 192, 42);
         game.load.spritesheet("continue-btn", "images/continue-btn.png", 192, 42);
+        game.load.spritesheet("p-btn", "images/p-btn.png", 44, 44);
         game.load.spritesheet("view_statistics", "images/view_statistics.png", 534, 53);
         game.load.spritesheet("edit_options", "images/edit_options.png", 534, 53);
         game.load.spritesheet("start_game", "images/start_game.png", 534, 53);
