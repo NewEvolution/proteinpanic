@@ -30,6 +30,7 @@ define([
     this.emailAuth = false;
     this.color = "#00ff00";
     this.newPassword = "";
+    this.checkpoint = 10;
     this.effects = 100;
     this.username = "";
     this.password = "";
@@ -49,13 +50,14 @@ define([
 			usersArr.$loaded().then(angular.bind(this, function(data) {
 				for(var key in data) {
 					if(data[key].uid === currentUID) {
-            currentKey = data[key].$id;
+            this.checkpoint = data[key].checkpoint;
             this.username = data[key].username;
             this.effects = data[key].effects;
             this.mouse = data[key].mouse;
             this.music = data[key].music;
             this.color = data[key].color;
             this.intro = data[key].intro;
+            currentKey = data[key].$id;
             if(currentUID.indexOf("github") === -1 && 
             currentUID.indexOf("facebook") === -1 && 
             currentUID.indexOf("twitter") === -1 && 
@@ -109,6 +111,7 @@ define([
     };
 
     this.saveUserData = function(destination) {
+      usersObj[currentKey].checkpoint = parseInt(this.checkpoint);
       usersObj[currentKey].effects = parseInt(this.effects);
       usersObj[currentKey].music = parseInt(this.music);
       usersObj[currentKey].username = this.username;
