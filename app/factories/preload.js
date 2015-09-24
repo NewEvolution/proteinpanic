@@ -51,6 +51,7 @@ define([
         game.load.image("speech_bubble", "images/speech_bubble.png");
         game.load.image("large_bubble", "images/large_bubble.png");
         game.load.image("ribo-under", "images/Ribosome-under.png");
+        game.load.image("checkpoint", "images/checkpoint.png");
         game.load.image("splash", "images/splash_screen.png");
         game.load.image("background", "images/cell_bg.png");
         game.load.image("orline", "images/or_line.png");

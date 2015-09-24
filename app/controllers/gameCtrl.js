@@ -101,6 +101,7 @@ define([
     var optionsBtn;
     var aminoGroup;
     var codonGroup;
+    var checkpoint;
     var largeSpeech;
     var smallSpeech;
     var playerColor;
@@ -110,7 +111,7 @@ define([
     var carriedAmino;
     var intro = true;
     var chosenProtein;
-    var goToProteinChooser;
+    var checkpointText;
     var progressHolder;
     var noclip = false;
     var aminoCount = 0;
@@ -122,18 +123,20 @@ define([
     var fullProteinLength;
     var collectCodonGroup;
     var codonSliding = 45;
+    var goToProteinChooser;
     var proteinDisplayName;
     var mousedOver = false;
     var proteinAminos = [];
     var aminoToCollectGroup;
     var spinningOut = false;
+    var cpVisibleTimer = 120;
     var checkpointCount = 0;
     var mouthOpenCounter = 0;
     var extrudingProtein = 5;
-    var completedIntro = false;
     var carryingAmino = false;
     var controlsLocked = true;
     var remainingProteinLength;
+    var completedIntro = false;
     var mouthClosedCounter = 0;
     var checkpointInterval = 10;
     var introContent = [
@@ -232,8 +235,8 @@ define([
         var aminoX = 0;
         var aminoY = 1200;
         while(aminoX < 200 && aminoY > 1000) { // Don't spawn inside the ribosome
-          aminoX = game.rnd.integerInRange(0, 1200);
-          aminoY = game.rnd.integerInRange(0, 1200);
+          aminoX = game.world.randomX;
+          aminoY = game.world.randomY;
         }
         var anAmino = aminoGroup.create(aminoX, aminoY, theAmino);
         anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
@@ -301,11 +304,20 @@ define([
       largeSpeech.addChild(optionsBtn);
       continueBtn = game.add.button(135, 365, "continue-btn", continueFunc, this, 0, 1, 2, 0);
       largeSpeech.addChild(continueBtn);
+
+      // Checkpoint & pause button ################################################################
+      checkpoint = game.add.sprite(game.camera.width/2, 40, "checkpoint");
+      checkpointText = game.add.text(0, 5, "");
+      checkpointText.anchor.setTo(0.5, 0.5);
+      checkpoint.addChild(checkpointText);
+      checkpoint.anchor.setTo(0.5, 0.5);
+      checkpoint.fixedToCamera = true;
+      checkpoint.visible = false;
       pauseBtn = game.add.button(5, 5, "p-btn", pauseMenu, this, 0, 1, 2, 0);
       pauseBtn.fixedToCamera = true;
       pauseBtn.visible = false;
 
-      // Introductory instructions ##############################################################
+      // Introductory instructions ################################################################
       if(intro) {
         largeSpeech.visible = true;
         prevBtn = game.add.button(50, 355, "prev-btn", prevFunc, this, 0, 1, 2, 0);
@@ -385,6 +397,19 @@ define([
           talkCycles--;
           mouthOpenCounter = 0;
           ribosome.frame = 0;
+        }
+      }
+
+      // Checkpoint popup #######################################################################
+      if(checkpoint.visible) {
+        if(cpVisibleTimer > 10) {
+          cpVisibleTimer--;
+        } else if(cpVisibleTimer > 0) {
+          checkpoint.alpha -= 0.1;
+        } else {
+          checkpoint.visible = false;
+          cpVisibleTimer = 60;
+          checkpoint.alpha = 1;
         }
       }
 
@@ -599,7 +624,7 @@ define([
       usersObj.$save();
       progressBar.scale.x = (fullProteinLength - remainingProteinLength) / fullProteinLength; 
       interstitialText.boundsAlignH = "center";
-      interstitialText.text = "\n\nCurrently building:\n\n\n\nCheckpoint " + checkpointCount + " of " + fullProteinLength/checkpointInterval + "\n\n" + (fullProteinLength - remainingProteinLength) + " of " + fullProteinLength + " amino acids collected!";
+      interstitialText.text = "\n\nCurrently building:\n\n\n\n\n\n" + (fullProteinLength - remainingProteinLength) + " of " + fullProteinLength + " amino acids collected!";
     }
 
     function optionsFunc() {
@@ -680,6 +705,8 @@ define([
         remainingProteinLength = proteinAminos.length - 1;
         if(remainingProteinLength % checkpointInterval === 0) {
           checkpointCount++;
+          checkpointText.text = "Checkpoint " + checkpointCount + " of " + fullProteinLength/checkpointInterval + "!";
+          checkpoint.visible = true;
           usersObj[currentKey].remainingProteinLength = remainingProteinLength;
           usersObj.$save();
         }

@@ -53,6 +53,7 @@ define([
 
 		function loginMenu() {
 			game.state.add("loginMenu", {preload: preload, create: create});
+      game.stage.backgroundColor = 0x79C2B4;
       game.state.start("loginMenu");
 
 			var githubBtn;
