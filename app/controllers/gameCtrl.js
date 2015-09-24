@@ -93,6 +93,8 @@ define([
     var Guanine;
     var Thymine;
     var Alanine;
+    var victory;
+    var menuBtn;
     var Cytosine;
     var ribosome;
     var startBtn;
@@ -104,6 +106,7 @@ define([
     var aminoGroup;
     var codonGroup;
     var checkpoint;
+    var proteinBtn;
     var largeSpeech;
     var smallSpeech;
     var playerColor;
@@ -186,6 +189,7 @@ define([
     function theGame() {
       introContent[0] = "Welcome to\n\n\nThe collection game where you can build all the proteins in the human body!\n\nHi " + username + "! My name's Riley, and I'm a ribosome. I'll be your guide throughout the game, but first, let's learn how to play.";
       game.state.add("theGame", {preload: preload, create: create, update: update});
+      game.stage.backgroundColor = 0x79C2B4;
       game.state.start("theGame");
     }
 
@@ -270,7 +274,7 @@ define([
       hitbox.fixedToCamera = true;
 
       // Small speech bubbble - collection instructions ###########################################
-      smallSpeech = game.add.sprite(170, 440, "speech_bubble");
+      smallSpeech = game.add.sprite(170, 440, "speech-bubble");
       smallSpeech.fixedToCamera = true;
       aminoToCollectGroup = game.add.group();
       aminoToCollectGroup.name = "aminoToCollectGroup";
@@ -287,13 +291,21 @@ define([
       smallSpeech.visible = false;
 
       // Large speech bubble - intro/pause/success/protein selection ##############################
-      largeSpeech = game.add.sprite(170, 80, "large_bubble");
+      largeSpeech = game.add.sprite(170, 80, "large-bubble");
       largeSpeech.fixedToCamera = true;
       interstitialText = game.add.text(0, 0, introContent[0], {align: "center", wordWrap: true, wordWrapWidth: 575});
       interstitialText.setTextBounds(65, 25, 575, 400);
       largeSpeech.addChild(interstitialText);
-      proteinDisplayName = game.add.text(0, 0, chosenProtein, {font: "bold 26pt Arial", fill: "navy", align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
-      proteinDisplayName.setTextBounds(65, 130, 575, 300);
+      proteinDisplayName = game.add.text(0, 0, chosenProtein, {
+        font: "bold 26pt Arial",
+        boundsAlignH: "center",
+        boundsAlignV: "middle",
+        wordWrapWidth: 575,
+        align: "center",
+        wordWrap: true,
+        fill: "navy"
+      });
+      proteinDisplayName.setTextBounds(65, 130, 575, 125);
       largeSpeech.addChild(proteinDisplayName);
       title = game.add.sprite(80, 20, "title");
       largeSpeech.addChild(title);
@@ -307,7 +319,7 @@ define([
       largeSpeech.addChild(continueBtn);
 
       // Checkpoint & pause button ################################################################
-      checkpoint = game.add.sprite(game.camera.width/2, 40, "checkpoint");
+      checkpoint = game.add.sprite(game.camera.width / 2, 40, "checkpoint");
       checkpointText = game.add.text(0, 5, "");
       checkpointText.anchor.setTo(0.5, 0.5);
       checkpoint.addChild(checkpointText);
@@ -317,6 +329,24 @@ define([
       pauseBtn = game.add.button(5, 5, "p-btn", pauseMenu, this, 0, 1, 2, 0);
       pauseBtn.fixedToCamera = true;
       pauseBtn.visible = false;
+
+      // Victory screen ###########################################################################
+      victory = game.add.sprite(game.camera.width / 2, 10, "victory");
+      victory.anchor.setTo(0.5, 0);
+      victory.fixedToCamera = true;
+      var victoryText = game.add.text(0, 160, "You built\n\n\n\nfrom " + fullProteinLength + " amino acids!", {align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
+      victoryText.anchor.setTo(0.5, 0);
+      victory.addChild(victoryText);
+      var victoryProtein = game.add.text(0, 250, chosenProtein, {font: "bold 20pt Arial", fill: "green", align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
+      victoryProtein.anchor.setTo(0.5, 0.5);
+      victory.addChild(victoryProtein);
+      proteinBtn = game.add.button(-110, 355, "protein-btn", continueFunc, this, 0, 1, 2, 0);
+      proteinBtn.anchor.setTo(0.5, 0);
+      victory.addChild(proteinBtn);
+      menuBtn = game.add.button(110, 355, "menu-btn", continueFunc, this, 0, 1, 2, 0);
+      menuBtn.anchor.setTo(0.5, 0);
+      victory.addChild(menuBtn);
+      victory.visible = false;
 
       // Introductory instructions ################################################################
       if(intro) {
@@ -355,7 +385,8 @@ define([
       } else if (goToProteinChooser) {
         proteinChooser();
       } else {
-        pauseMenu(true);
+        justLoaded = true;
+        pauseMenu();
       }
 
     }
@@ -495,7 +526,7 @@ define([
 
       // Codons on stage management #############################################################
       var firstLivingCodon = codonGroup.getFirstAlive();
-      if(firstLivingCodon.x < -15) {
+      if(firstLivingCodon && firstLivingCodon.x < -15) {
         firstLivingCodon.kill();
       }
       if(codonSliding < 45) {
@@ -505,7 +536,7 @@ define([
 
       // Assembled protein on stage management ##################################################
       var firstLivingAmino = proteinGroup.getFirstAlive();
-      if(firstLivingAmino.scale.y < 0.08) {
+      if(firstLivingAmino && firstLivingAmino.scale.y < 0.08) {
         firstLivingAmino.kill();
       }
 
@@ -609,8 +640,7 @@ define([
       proteinDisplayName.visible = false;
     }
 
-    function pauseMenu(sent) {
-      justLoaded = sent;
+    function pauseMenu() {
       player.body.x = 30;
       player.body.y = 1130;
       controlsLocked = true;
@@ -622,17 +652,17 @@ define([
       interstitialText.visible = true;
       proteinDisplayName.visible = true;
       talkCycles = game.rnd.integerInRange(3, 7);
-      if(remainingProteinLength > proteinAminos.length - 1) {
+      if(remainingProteinLength >= proteinAminos.length - 1 || !remainingProteinLength) {
         remainingProteinLength = proteinAminos.length - 1;
         usersObj[currentKey].remainingProteinLength = remainingProteinLength;
         usersObj.$save();
       }
       if(justLoaded) {
-        checkpointCount = (fullProteinLength - remainingProteinLength) / checkpointInterval;
+        checkpointCount = Math.floor((fullProteinLength - remainingProteinLength) / checkpointInterval);
       }
       progressBar.scale.x = (fullProteinLength - remainingProteinLength) / fullProteinLength; 
       interstitialText.boundsAlignH = "center";
-      interstitialText.text = "\n\nCurrently building:\n\n\n\nCheckpoint " + checkpointCount + " of " + fullProteinLength/checkpointInterval + "\n\n" + (fullProteinLength - remainingProteinLength) + " of " + fullProteinLength + " amino acids collected!";
+      interstitialText.text = "\n\nCurrently building:\n\n\n\nCheckpoint " + checkpointCount + " of " + Math.floor(fullProteinLength/checkpointInterval) + "\n\n" + (fullProteinLength - remainingProteinLength) + " of " + fullProteinLength + " amino acids collected!";
     }
 
     function optionsFunc() {
@@ -697,8 +727,10 @@ define([
 
     function aminoCollectionRoutine(inRibosome) {
       codonSliding -= 45;
-      if(proteinAminos.length === 1) {
+      if(proteinAminos.length === 2) {
         // won goes here
+        pauseBtn.visible = false;
+        victory.visible = true;        
       }
       collectCodonGroup.forEachAlive(function(liveNucleotide) {
         liveNucleotide.kill();
@@ -723,7 +755,7 @@ define([
         remainingProteinLength = proteinAminos.length - 1;
         if(remainingProteinLength % checkpointInterval === 0) {
           checkpointCount++;
-          checkpointText.text = "Checkpoint " + checkpointCount + " of " + fullProteinLength/checkpointInterval + "!";
+          checkpointText.text = "Checkpoint " + checkpointCount + " of " + Math.floor(fullProteinLength/checkpointInterval) + "!";
           checkpoint.visible = true;
           usersObj[currentKey].remainingProteinLength = remainingProteinLength;
           usersObj.$save();
@@ -757,7 +789,7 @@ define([
         if(intenseDebug) {console.log("Good Amino Contact -------------------------------------------------------");}
         carryingAmino = true;
         theAmino.kill();
-        carriedAmino = game.add.sprite(0, -60, theAmino.key);
+        carriedAmino = game.add.sprite(0, -62, theAmino.key);
         carriedAmino.anchor.setTo(0.5, 0.5);
         player.addChild(carriedAmino);
         aminoStageCheck(false);

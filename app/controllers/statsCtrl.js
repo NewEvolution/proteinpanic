@@ -51,6 +51,7 @@ define([
 
     function howtoMenu() {
       game.state.add("howtoMenu", {preload: preload, create: create});
+      game.stage.backgroundColor = 0x79C2B4;
       game.state.start("howtoMenu");
 
       function create(){

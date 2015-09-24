@@ -51,6 +51,7 @@ define([
 
 		function mainMenu() {
 			game.state.add("mainMenu", {preload: preload, create: create});
+      game.stage.backgroundColor = 0x79C2B4;
       game.state.start("mainMenu");
 
       var startBtn;
@@ -62,9 +63,9 @@ define([
 
 		    game.add.sprite(0, 0, "splash");
 		    game.add.sprite(433, 38, "title");
-        startBtn = game.add.button(432, 110, "start_game", startFunc, this, 0, 1, 2, 0);
-        optionsBtn = game.add.button(432, 177, "edit_options", optionsFunc, this, 0, 1, 2, 0);
-        statsBtn = game.add.button(432, 245, "view_statistics", statsFunc, this, 0, 1, 2, 0);
+        startBtn = game.add.button(432, 110, "start-game", startFunc, this, 0, 1, 2, 0);
+        optionsBtn = game.add.button(432, 177, "edit-options", optionsFunc, this, 0, 1, 2, 0);
+        statsBtn = game.add.button(432, 245, "view-statistics", statsFunc, this, 0, 1, 2, 0);
 		  }
 
       function startFunc() {
