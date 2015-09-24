@@ -50,6 +50,7 @@ define([
             currentKey = data[key].$id;
             username = data[key].username;
             completedIntro = data[key].completedIntro;
+            checkpointInterval = data[key].checkpoint;
             playerColor = "0x" + data[key].color.slice(1);
             if (intro) {
               chosenProtein = "Insulin";
@@ -126,7 +127,7 @@ define([
     var proteinAminos = [];
     var aminoToCollectGroup;
     var spinningOut = false;
-    var checkpointCount = 10;
+    var checkpointCount = 0;
     var mouthOpenCounter = 0;
     var extrudingProtein = 5;
     var completedIntro = false;
@@ -134,6 +135,7 @@ define([
     var controlsLocked = true;
     var remainingProteinLength;
     var mouthClosedCounter = 0;
+    var checkpointInterval = 10;
     var introContent = [
       "",
       "Those little colorful beings bouncing around in the background are amino acids, the building blocks of proteins.\n\nAs a ribosome, my job is to assemble those amino acids in a specific order to build a protein, but there's more to it than that, and that's where you come in.",
@@ -291,9 +293,9 @@ define([
       largeSpeech.addChild(proteinDisplayName);
       title = game.add.sprite(80, 20, "title");
       largeSpeech.addChild(title);
-      progressHolder = game.add.sprite(73, 270, "progress-holder");
+      progressHolder = game.add.sprite(73, 280, "progress-holder");
       largeSpeech.addChild(progressHolder);
-      progressBar = game.add.sprite(78, 275, "progress-bar");
+      progressBar = game.add.sprite(78, 285, "progress-bar");
       largeSpeech.addChild(progressBar);
       optionsBtn = game.add.button(365, 365, "options-btn", optionsFunc, this, 0, 1, 2, 0);
       largeSpeech.addChild(optionsBtn);
@@ -597,7 +599,7 @@ define([
       usersObj.$save();
       progressBar.scale.x = (fullProteinLength - remainingProteinLength) / fullProteinLength; 
       interstitialText.boundsAlignH = "center";
-      interstitialText.text = "\n\nCurrently building:\n\n\n\n\n\n" + (fullProteinLength - remainingProteinLength) + " of " + fullProteinLength + " amino acids collected!";
+      interstitialText.text = "\n\nCurrently building:\n\n\n\nCheckpoint " + checkpointCount + " of " + fullProteinLength/checkpointInterval + "\n\n" + (fullProteinLength - remainingProteinLength) + " of " + fullProteinLength + " amino acids collected!";
     }
 
     function optionsFunc() {
@@ -675,6 +677,12 @@ define([
           assembledAmino.scale.y = 1;
         });
         proteinAminos.splice(0, 1);
+        remainingProteinLength = proteinAminos.length - 1;
+        if(remainingProteinLength % checkpointInterval === 0) {
+          checkpointCount++;
+          usersObj[currentKey].remainingProteinLength = remainingProteinLength;
+          usersObj.$save();
+        }
         var justCollectedAmino = aminoToCollectGroup.getFirstAlive();
         justCollectedAmino.kill();
         if(intenseDebug) {console.log("Building Collection Icon -------------------------------------------------");}
