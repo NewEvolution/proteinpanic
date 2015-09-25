@@ -91,7 +91,7 @@ define([
 		  function serviceAuth(service) {
         ref.authWithOAuthRedirect(service, function(error, authData) {
           if (error) {
-            console.log("Login Failed!", error);
+            alert("Login Failed!\n" + error);
           }
         });
       }
@@ -109,7 +109,6 @@ define([
 	        if (error) {
 	          alert("Error creating user:\n" + error);
 	        } else {
-	          console.log("Successfully created user account with uid:", userData.uid);
 	          this.logIn();
 	        }
 	      }.bind(this));
@@ -129,10 +128,8 @@ define([
             if(error.message === "The specified password is incorrect.") {
               this.passReset = true;
               $scope.$digest();
-              console.log("the existential horror that is this", this);
             }
 	        } else {
-	          console.log("Authenticated successfully with payload:", authData);
 	          currentUID = authData.uid;
 	          uid.setUid(currentUID);
 	          usersArr.$loaded().then(angular.bind(this, function(data) {
