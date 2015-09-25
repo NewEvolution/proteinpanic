@@ -12,8 +12,8 @@ define([
       controllerAs: "game"
     });
   }])
-  .controller("gameCtrl", ["$q", "$firebaseArray", "$firebaseObject", "uid", "proteinPanic", "preload",
-  function($q, $firebaseArray, $firebaseObject, uid, proteinPanic, preload) {
+  .controller("gameCtrl", ["$q", "$scope", "$firebaseArray", "$firebaseObject", "uid", "proteinPanic", "preload",
+  function($q, $scope, $firebaseArray, $firebaseObject, uid, proteinPanic, preload) {
     
     var game = proteinPanic;
 
@@ -34,6 +34,7 @@ define([
     this.arrayOfProteins = proteinsArr;
     this.arrayOfUsers = usersArr;
     this.selectedProtein = null;
+    $scope.proteinMenu = false;
 
     // Debugging tool variables
     var noclip = false;
@@ -126,6 +127,7 @@ define([
     var progressBar;
     var proteinGroup;
     var carriedAmino;
+    var _this = this;
     var intro = true;
     var chosenProtein;
     var victoryBubble;
@@ -197,7 +199,20 @@ define([
             initialLoad = false;
             theGame(); // All preparations are complete, get the party started!
           } else {
-            // kill EVERYTHING.
+            aminoGroup.setAllChildren("alive", false, true); // kill EVERYTHING.
+            codonGroup.forEachExists(function(codon) {
+              codon.destroy();
+            });
+            var toCollectAmino = aminoToCollectGroup.getFirstAlive();
+            toCollectAmino.kill();
+            for(var am = 0; am < 15; am++) {
+              aminoStageCheck(true);
+            }
+            usersObj[currentKey].remainingProteinLength = fullProteinLength;
+            dnaMaker();
+            codonMaker(0);
+            collectMaker();
+            pauseMenu();
           }
         });
       });
@@ -274,9 +289,7 @@ define([
       codonGroup = game.add.group();
       codonGroup.name = "codonGroup";
       codonGroup.fixedToCamera = true;
-      for (var c = 0; c <codonChain.length; c++) {
-        var nucleotide = codonGroup.create(134 + (15 * c), 520, codonChain[c]);
-      }
+      dnaMaker();
       ribosome = game.add.sprite(20, 410, "ribosome");
       game.physics.arcade.enable(ribosome);
       ribosome.body.immovable = true;
@@ -329,7 +342,7 @@ define([
       largeSpeech.addChild(progressHolder);
       progressBar = game.add.sprite(78, 285, "progress-bar");
       largeSpeech.addChild(progressBar);
-      startBtn = game.add.button(135, 365, "start-btn", postIntroFunc, this, 0, 1, 2, 0);
+      startBtn = game.add.button(135, 365, "start-btn", startFunc, this, 0, 1, 2, 0);
       largeSpeech.addChild(startBtn);
       optionsBtn = game.add.button(365, 365, "options-btn", optionsFunc, this, 0, 1, 2, 0);
       largeSpeech.addChild(optionsBtn);
@@ -553,7 +566,7 @@ define([
       // Codons on stage management #############################################################
       var firstLivingCodon = codonGroup.getFirstAlive();
       if(firstLivingCodon && firstLivingCodon.x < -15) {
-        firstLivingCodon.kill();
+        firstLivingCodon.destroy();
       }
       if(codonSliding < 45) {
         codonGroup.addAll("x", -1, true);
@@ -655,9 +668,17 @@ define([
       }
     }
 
-    function postIntroFunc() {
+    function startFunc() {
       if(goToProteinChooser) {
-        console.log("That shit worked");
+        if(_this.selectedProtein === null) {
+          alert("Please select a protein to build.");
+        } else {
+          $scope.proteinMenu = false;
+          $scope.$digest();
+          chosenProtein = _this.selectedProtein;
+          usersObj[currentKey].proteinInProgress = chosenProtein;
+          gameGeneration();
+        }
       } else {
         intro = false;
         usersObj[currentKey].intro = false;
@@ -686,6 +707,8 @@ define([
     }
 
     function proteinChooser() {
+      $scope.proteinMenu = true;
+      $scope.$digest();
       startBtn.visible = true;
       continueBtn.visible=false;
       largeSpeech.visible = true;
@@ -700,6 +723,8 @@ define([
       noclip = true;
       controlsLocked = true;
       pauseBtn.visible = false;
+      startBtn.visible = false;
+      continueBtn.visible = true;
       largeSpeech.visible = true;
       progressBar.visible = true;
       smallSpeech.visible = false;
@@ -767,6 +792,26 @@ define([
 
 //-------------------------------------------------------------------------------------------------
 
+    function dnaMaker() {
+      for (var c = 0; c <codonChain.length; c++) {
+        var nucleotide = codonGroup.create(134 + (15 * c), 520, codonChain[c]);
+      }
+    }
+
+    function codonMaker(codonSeqStart) {
+      for(var rn = 0; rn < 3; rn++) {
+        var promisedNucleotide = spriteRevival(collectCodonGroup, codonChain[(codonSeqStart + rn)], 50 + (15 * rn), 24);
+      }
+    }
+
+    function collectMaker() {
+      var promisedAminoToCollect = spriteRevival(aminoToCollectGroup, proteinAminos[0], 340, 4);
+      promisedAminoToCollect.then(function(aminoToCollect) {
+        aminoToCollect.y += (60 - aminoToCollect.height) / 2;
+        aminoToCollect.x += (60 - aminoToCollect.width) / 2;
+      });
+    }
+
     function inTheRibosome() {
       if(carriedAmino !== undefined && carryingAmino === true) {
         if(intenseDebug) {
@@ -790,9 +835,7 @@ define([
       aminoCount++;
       var codonSeqStart = aminoCount * 3;
       if(intenseDebug) {console.log("Building Codon -----------------------------------------------------------");}
-      for(var rn = 0; rn < 3; rn++) {
-        var promisedNucleotide = spriteRevival(collectCodonGroup, codonChain[(codonSeqStart + rn)], 50 + (15 * rn), 24);
-      }
+      codonMaker(codonSeqStart);
       if(intenseDebug) {console.log("Building Protein ---------------------------------------------------------");}
       var promisedAssembledAmino = spriteRevival(proteinGroup, proteinAminos[0], 60, 400);
       promisedAssembledAmino.then(function(assembledAmino) {
@@ -825,11 +868,7 @@ define([
       var justCollectedAmino = aminoToCollectGroup.getFirstAlive();
       justCollectedAmino.kill();
       if(intenseDebug) {console.log("Building Collection Icon -------------------------------------------------");}
-      var promisedAminoToCollect = spriteRevival(aminoToCollectGroup, proteinAminos[0], 340, 4);
-      promisedAminoToCollect.then(function(aminoToCollect) {
-        aminoToCollect.y += (60 - aminoToCollect.height) / 2;
-        aminoToCollect.x += (60 - aminoToCollect.width) / 2;
-      });
+      collectMaker();
     }
 
     function checkAmino (player, theAmino) {

@@ -1,7 +1,7 @@
 <div class="positioner">
-  <div class="protein-menu">
+  <div class="protein-menu" ng-show="proteinMenu">
     <section ng-repeat="protein in game.arrayOfProteins | orderBy: 'sequence.length'">
-      <input type="radio" name="protein-selection" value="protein.name" ng-model="game.selectedProtein">{{protein.name}}<span class="sequence-length">{{protein.sequence.length}}<span>AAs</span></span>
+      <input type="radio" name="protein-selection" ng-value="protein.name" ng-model="game.selectedProtein">{{protein.name}}<span class="sequence-length">{{protein.sequence.length}}<span>AAs</span></span>
       <hr>
     </section>
   </div>
