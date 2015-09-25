@@ -9,6 +9,7 @@ define([
     var game = proteinPanic;
 
     return function() {
+        game.stage.backgroundColor = 0x79C2B4;
         game.load.spritesheet("view-statistics", "images/view-statistics.png", 534, 53);
         game.load.spritesheet("facebook-btn", "images/facebook-btn.png", 246, 42);
         game.load.spritesheet("continue-btn", "images/continue-btn.png", 192, 42);

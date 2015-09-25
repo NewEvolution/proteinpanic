@@ -92,4 +92,21 @@ body {
   height: 260px;
   overflow: auto; }
 
+.protein-menu {
+  position: absolute;
+  top: 175px;
+  left: 250px;
+  width: 530px;
+  height: 250px;
+  overflow: auto;
+  font-size: 1.2em; }
+  .protein-menu input {
+    margin-right: 10px; }
+
+.sequence-length {
+  float: right;
+  margin-left: 10px; }
+  .sequence-length span {
+    font-size: 0.7em; }
+
 /*# sourceMappingURL=main.css.map */

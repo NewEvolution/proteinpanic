@@ -51,7 +51,6 @@ define([
 
 		function mainMenu() {
 			game.state.add("mainMenu", {preload: preload, create: create});
-      game.stage.backgroundColor = 0x79C2B4;
       game.state.start("mainMenu");
 
       var startBtn;

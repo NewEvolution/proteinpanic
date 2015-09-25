@@ -72,7 +72,6 @@ define([
 
 		function userMenu() {
 			game.state.add("userMenu", {preload: preload, create: create});
-      game.stage.backgroundColor = 0x79C2B4;
       game.state.start("userMenu");
 
 	    function create() {

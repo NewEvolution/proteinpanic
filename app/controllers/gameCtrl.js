@@ -31,6 +31,10 @@ define([
     var currentKey = null;
     var username = "";
 
+    this.arrayOfProteins = proteinsArr;
+    this.arrayOfUsers = usersArr;
+    this.selectedProtein = null;
+
     // Debugging tool variables
     var noclip = false;
     var intenseDebug = false;
@@ -61,11 +65,14 @@ define([
               chosenProtein = data[key].proteinInProgress;
               remainingProteinLength = data[key].remainingProteinLength;
               if(remainingProteinLength === 0) {
+                chosenProtein = "Insulin";
+                remainingProteinLength = 110;
                 goToProteinChooser = true;
               }
               if(intenseDebug) {console.log("Found a protein in progress: " + data[key].proteinInProgress);}
             } else {
               chosenProtein = "Insulin";
+              remainingProteinLength = 110;
               goToProteinChooser = true;
             }
           }
@@ -199,7 +206,6 @@ define([
     function theGame() {
       introContent[0] = "Welcome to\n\n\nThe collection game where you can build all the proteins in the human body!\n\nHi " + username + "! My name's Riley, and I'm a ribosome. I'll be your guide throughout the game, but first, let's learn how to play.";
       game.state.add("theGame", {preload: preload, create: create, update: update});
-      game.stage.backgroundColor = 0x79C2B4;
       game.state.start("theGame");
     }
 
@@ -323,6 +329,8 @@ define([
       largeSpeech.addChild(progressHolder);
       progressBar = game.add.sprite(78, 285, "progress-bar");
       largeSpeech.addChild(progressBar);
+      startBtn = game.add.button(135, 365, "start-btn", postIntroFunc, this, 0, 1, 2, 0);
+      largeSpeech.addChild(startBtn);
       optionsBtn = game.add.button(365, 365, "options-btn", optionsFunc, this, 0, 1, 2, 0);
       largeSpeech.addChild(optionsBtn);
       continueBtn = game.add.button(135, 365, "continue-btn", continueFunc, this, 0, 1, 2, 0);
@@ -353,10 +361,10 @@ define([
       victoryProtein = game.add.text(0, 250, chosenProtein, {font: "bold 20pt Arial", fill: "green", align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
       victoryProtein.anchor.setTo(0.5, 0.5);
       victoryBubble.addChild(victoryProtein);
-      proteinBtn = game.add.button(-110, 355, "protein-btn", continueFunc, this, 0, 1, 2, 0);
+      proteinBtn = game.add.button(-110, 355, "protein-btn", proteinFunc, this, 0, 1, 2, 0);
       proteinBtn.anchor.setTo(0.5, 0);
       victoryBubble.addChild(proteinBtn);
-      menuBtn = game.add.button(110, 355, "menu-btn", continueFunc, this, 0, 1, 2, 0);
+      menuBtn = game.add.button(110, 355, "menu-btn", menuFunc, this, 0, 1, 2, 0);
       menuBtn.anchor.setTo(0.5, 0);
       victoryBubble.addChild(menuBtn);
       victoryPrevBtn = game.add.button(-200, 285, "prev-btn", victoryPrevFunc, this, 0, 1, 2, 0);
@@ -387,10 +395,8 @@ define([
         tRNA.tint = playerColor;
         tRNA.scale.x = -1;
         tRNA.visible = false;
-        startBtn = game.add.button(135, 365, "start-btn", postIntroFunc, this, 0, 1, 2, 0);
         largeSpeech.addChild(prevBtn);
         largeSpeech.addChild(nextBtn);
-        largeSpeech.addChild(startBtn);
         largeSpeech.addChild(tRNA);
         largeSpeech.addChild(nucleotideGroup);
         prevBtn.visible = false;
@@ -650,31 +656,38 @@ define([
     }
 
     function postIntroFunc() {
-      intro = false;
-      usersObj[currentKey].intro = false;
-      usersObj[currentKey].completedIntro = true;
-      usersObj[currentKey].proteinInProgress = "Insulin";
-      usersObj[currentKey].remainingProteinLength = proteinAminos.length;
-      usersObj.$save();
-      prevBtn.destroy();
-      nextBtn.destroy();
-      startBtn.destroy();
-      nucleotideGroup.forEachExists(function(child) {
-        child.destroy();
-      });
-      nucleotideGroup.destroy();
-      title.y -= 50;
-      title.visible = true;
-      optionsBtn.visible = true;
-      continueBtn.visible = true;
-      if(completedIntro) {
-        proteinChooser();
+      if(goToProteinChooser) {
+        console.log("That shit worked");
       } else {
-        pauseMenu();
+        intro = false;
+        usersObj[currentKey].intro = false;
+        usersObj[currentKey].completedIntro = true;
+        usersObj[currentKey].proteinInProgress = "Insulin";
+        usersObj[currentKey].remainingProteinLength = proteinAminos.length;
+        usersObj.$save();
+        prevBtn.destroy();
+        nextBtn.destroy();
+        nucleotideGroup.forEachExists(function(child) {
+          child.destroy();
+        });
+        nucleotideGroup.destroy();
+        title.y -= 50;
+        title.visible = true;
+        startBtn.visible = false;
+        optionsBtn.visible = true;
+        continueBtn.visible = true;
+        if(completedIntro) {
+          goToProteinChooser = true;
+          proteinChooser();
+        } else {
+          pauseMenu();
+        }
       }
     }
 
     function proteinChooser() {
+      startBtn.visible = true;
+      continueBtn.visible=false;
       largeSpeech.visible = true;
       smallSpeech.visible = false;
       progressBar.visible = false;
@@ -744,6 +757,14 @@ define([
       victoryText.text = "This Protein's Achievements";
     }
 
+    function proteinFunc() {
+      proteinChooser();
+    }
+
+    function menuFunc() {
+      window.location = "#/menu";
+    }
+
 //-------------------------------------------------------------------------------------------------
 
     function inTheRibosome() {
@@ -763,14 +784,6 @@ define([
 
     function aminoCollectionRoutine(inRibosome) {
       codonSliding -= 45;
-      if(proteinAminos.length === 2) {
-        // won goes here
-        pauseBtn.visible = false;
-        victoryBubble.visible = true;
-        usersObj[currentKey].completedProteins = completedProteins + (chosenProtein + ",");
-        usersObj[currentKey].remainingProteinLength = 0;
-        usersObj.$save();
-      }
       collectCodonGroup.forEachAlive(function(liveNucleotide) {
         liveNucleotide.kill();
       });
@@ -791,6 +804,15 @@ define([
       }); 
       proteinAminos.splice(0, 1);
       if(inRibosome) {
+        if(proteinAminos.length === 1) {
+          // won goes here
+          noclip = true;
+          pauseBtn.visible = false;
+          victoryBubble.visible = true;
+          usersObj[currentKey].remainingProteinLength = 0;
+          usersObj[currentKey].completedProteins = completedProteins + (chosenProtein + ",");
+          usersObj.$save();
+        }
         remainingProteinLength = proteinAminos.length - 1;
         if((fullProteinLength - remainingProteinLength) % checkpointInterval === 0) {
           checkpointCount++;
