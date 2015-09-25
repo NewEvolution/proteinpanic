@@ -53,12 +53,16 @@ define([
             completedIntro = data[key].completedIntro;
             checkpointInterval = data[key].checkpoint;
             playerColor = "0x" + data[key].color.slice(1);
+            completedProteins = data[key].completedProteins;
             if (intro) {
               chosenProtein = "Insulin";
               if(intenseDebug) {console.log("Didn't find a protein in progress");}
             } else if(data[key].proteinInProgress) {
               chosenProtein = data[key].proteinInProgress;
               remainingProteinLength = data[key].remainingProteinLength;
+              if(remainingProteinLength === 0) {
+                goToProteinChooser = true;
+              }
               if(intenseDebug) {console.log("Found a protein in progress: " + data[key].proteinInProgress);}
             } else {
               chosenProtein = "Insulin";
@@ -110,13 +114,18 @@ define([
     var largeSpeech;
     var smallSpeech;
     var playerColor;
+    var victoryText;
     var continueBtn;
     var progressBar;
     var proteinGroup;
     var carriedAmino;
     var intro = true;
     var chosenProtein;
+    var victoryBubble;
     var mouse = false;
+    var victoryPrevBtn;
+    var victoryNextBtn;
+    var victoryProtein;
     var checkpointText;
     var progressHolder;
     var aminoCount = 0;
@@ -125,6 +134,7 @@ define([
     var codonChain = [];
     var interstitialText;
     var blinkCounter = 0;
+    var completedProteins;
     var fullProteinLength;
     var collectCodonGroup;
     var codonSliding = 45;
@@ -331,22 +341,32 @@ define([
       pauseBtn.visible = false;
 
       // Victory screen ###########################################################################
-      victory = game.add.sprite(game.camera.width / 2, 10, "victory");
+      victoryBubble = game.add.sprite(game.camera.width / 2, 10, "victory-bubble");
+      victoryBubble.anchor.setTo(0.5, 0);
+      victoryBubble.fixedToCamera = true;
+      victory = game.add.sprite(0, 30, "victory");
       victory.anchor.setTo(0.5, 0);
-      victory.fixedToCamera = true;
-      var victoryText = game.add.text(0, 160, "You built\n\n\n\nfrom " + fullProteinLength + " amino acids!", {align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
+      victoryBubble.addChild(victory);
+      victoryText = game.add.text(0, 20, "\n\n\n\nYou built\n\n\n\nfrom " + fullProteinLength + " amino acids!", {align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
       victoryText.anchor.setTo(0.5, 0);
-      victory.addChild(victoryText);
-      var victoryProtein = game.add.text(0, 250, chosenProtein, {font: "bold 20pt Arial", fill: "green", align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
+      victoryBubble.addChild(victoryText);
+      victoryProtein = game.add.text(0, 250, chosenProtein, {font: "bold 20pt Arial", fill: "green", align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
       victoryProtein.anchor.setTo(0.5, 0.5);
-      victory.addChild(victoryProtein);
+      victoryBubble.addChild(victoryProtein);
       proteinBtn = game.add.button(-110, 355, "protein-btn", continueFunc, this, 0, 1, 2, 0);
       proteinBtn.anchor.setTo(0.5, 0);
-      victory.addChild(proteinBtn);
+      victoryBubble.addChild(proteinBtn);
       menuBtn = game.add.button(110, 355, "menu-btn", continueFunc, this, 0, 1, 2, 0);
       menuBtn.anchor.setTo(0.5, 0);
-      victory.addChild(menuBtn);
-      victory.visible = false;
+      victoryBubble.addChild(menuBtn);
+      victoryPrevBtn = game.add.button(-200, 285, "prev-btn", victoryPrevFunc, this, 0, 1, 2, 0);
+      victoryPrevBtn.anchor.setTo(0.5, 0);
+      victoryBubble.addChild(victoryPrevBtn);
+      victoryNextBtn = game.add.button(200, 285, "next-btn", victoryNextFunc, this, 0, 1, 2, 0);
+      victoryNextBtn.anchor.setTo(0.5, 0);
+      victoryBubble.addChild(victoryNextBtn);
+      victoryPrevBtn.visible = false;
+      victoryBubble.visible = false;
 
       // Introductory instructions ################################################################
       if(intro) {
@@ -553,6 +573,33 @@ define([
 //-------------------------------------------------------------------------------------------------
 
     // Called functions #######################################################################
+    function prevFunc() {
+      if(page > 0) {
+        page--;
+      }
+      if(page < introContent.length - 1) {
+        nextBtn.visible = true;
+        startBtn.visible = false;
+        optionsBtn.visible = false;
+      }
+      if(page === 0) {
+        prevBtn.visible = false;
+        title.visible = true;
+      }
+      if(page === 2) {
+        tRNA.visible = true;
+      } else {
+        tRNA.visible = false;
+      }
+      if(page === 3 || page === 4) {
+        nucleotideGroup.visible = true;
+        nucleotideMover();
+      } else {
+        nucleotideGroup.visible = false;
+      }
+      interstitialText.text = introContent[page];
+    }
+
     function nextFunc() {
       page++;
       if(page === introContent.length - 1) {
@@ -579,31 +626,27 @@ define([
       talkCycles = game.rnd.integerInRange(3, 8);
     }
 
-    function prevFunc() {
-      if(page > 0) {
-        page--;
+    function nucleotideMover() {
+      if(page === 3) {
+        Adenine.x = 150;
+        Adenine.y = 330;
+        Cytosine.x = 275;
+        Cytosine.y = 330;
+        Guanine.x = 395;
+        Guanine.y = 330;
+        Thymine.visible = true;
+        Alanine.visible = false;
       }
-      if(page < introContent.length - 1) {
-        nextBtn.visible = true;
-        startBtn.visible = false;
-        optionsBtn.visible = false;
+      if(page === 4) {
+        Adenine.x = 180;
+        Adenine.y = 325;
+        Cytosine.x = 165;
+        Cytosine.y = 325;
+        Guanine.x = 150;
+        Guanine.y = 325;
+        Thymine.visible = false;
+        Alanine.visible = true;
       }
-      if(page === 0) {
-        prevBtn.visible = false;
-        title.visible = true;
-      }
-      if(page === 2) {
-        tRNA.visible = true;
-      } else {
-        tRNA.visible = false;
-      }
-      if(page === 3 || page === 4) {
-        nucleotideGroup.visible = true;
-        nucleotideMover();
-      } else {
-        nucleotideGroup.visible = false;
-      }
-      interstitialText.text = introContent[page];
     }
 
     function postIntroFunc() {
@@ -641,8 +684,7 @@ define([
     }
 
     function pauseMenu() {
-      player.body.x = 30;
-      player.body.y = 1130;
+      noclip = true;
       controlsLocked = true;
       pauseBtn.visible = false;
       largeSpeech.visible = true;
@@ -672,6 +714,7 @@ define([
     }
 
     function continueFunc() {
+      noclip = false;
       pauseBtn.visible = true;
       pauseBtn.frame = 1;
       if(justLoaded) {
@@ -685,27 +728,20 @@ define([
       talkCycles = game.rnd.integerInRange(3, 7);
     }
 
-    function nucleotideMover() {
-      if(page === 3) {
-        Adenine.x = 150;
-        Adenine.y = 330;
-        Cytosine.x = 275;
-        Cytosine.y = 330;
-        Guanine.x = 395;
-        Guanine.y = 330;
-        Thymine.visible = true;
-        Alanine.visible = false;
-      }
-      if(page === 4) {
-        Adenine.x = 180;
-        Adenine.y = 325;
-        Cytosine.x = 165;
-        Cytosine.y = 325;
-        Guanine.x = 150;
-        Guanine.y = 325;
-        Thymine.visible = false;
-        Alanine.visible = true;
-      }
+    function victoryPrevFunc() {
+      victoryPrevBtn.visible = false;
+      victoryProtein.visible = true;
+      victoryNextBtn.visible = true;
+      victory.visible = true;
+      victoryText.text = "\n\n\n\nYou built\n\n\n\nfrom " + fullProteinLength + " amino acids!";
+    }
+
+    function victoryNextFunc() {
+      victoryNextBtn.visible = false;
+      victoryProtein.visible = false;
+      victoryPrevBtn.visible = true;
+      victory.visible = false;
+      victoryText.text = "This Protein's Achievements";
     }
 
 //-------------------------------------------------------------------------------------------------
@@ -730,7 +766,10 @@ define([
       if(proteinAminos.length === 2) {
         // won goes here
         pauseBtn.visible = false;
-        victory.visible = true;        
+        victoryBubble.visible = true;
+        usersObj[currentKey].completedProteins = completedProteins + (chosenProtein + ",");
+        usersObj[currentKey].remainingProteinLength = 0;
+        usersObj.$save();
       }
       collectCodonGroup.forEachAlive(function(liveNucleotide) {
         liveNucleotide.kill();
@@ -753,7 +792,7 @@ define([
       proteinAminos.splice(0, 1);
       if(inRibosome) {
         remainingProteinLength = proteinAminos.length - 1;
-        if(remainingProteinLength % checkpointInterval === 0) {
+        if((fullProteinLength - remainingProteinLength) % checkpointInterval === 0) {
           checkpointCount++;
           checkpointText.text = "Checkpoint " + checkpointCount + " of " + Math.floor(fullProteinLength/checkpointInterval) + "!";
           checkpoint.visible = true;

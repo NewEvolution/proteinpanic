@@ -49,6 +49,7 @@ define([
         game.load.spritesheet("S", "images/Serine.png", 39, 60);
         game.load.spritesheet("V", "images/Valine.png", 60, 60);
         game.load.image("progress-holder", "images/progress-holder.png");
+        game.load.image("victory-bubble", "images/victory-bubble.png");
         game.load.image("speech-bubble", "images/speech-bubble.png");
         game.load.image("progress-bar", "images/progress-bar.png");
         game.load.image("large-bubble", "images/large-bubble.png");
