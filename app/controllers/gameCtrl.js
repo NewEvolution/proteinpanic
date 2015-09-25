@@ -113,25 +113,31 @@ define([
     var pauseBtn;
     var page = 0;
     var ribounder;
+    var toGetTime;
+    var pickupTime;
     var justLoaded;
     var optionsBtn;
     var aminoGroup;
     var codonGroup;
     var checkpoint;
     var proteinBtn;
+    var dropoffTime;
     var largeSpeech;
     var smallSpeech;
     var playerColor;
     var victoryText;
     var continueBtn;
     var progressBar;
+    var toReturnTime;
     var proteinGroup;
     var carriedAmino;
     var _this = this;
     var intro = true;
+    var hitCount = 0;
     var chosenProtein;
     var victoryBubble;
     var mouse = false;
+    var dropCount = 0;
     var victoryPrevBtn;
     var victoryNextBtn;
     var victoryProtein;
@@ -140,6 +146,7 @@ define([
     var aminoCount = 0;
     var talkCycles = 0;
     var nucleotideGroup;
+    var collectableName;
     var codonChain = [];
     var interstitialText;
     var blinkCounter = 0;
@@ -147,6 +154,7 @@ define([
     var fullProteinLength;
     var collectCodonGroup;
     var codonSliding = 45;
+    var collectDescription;
     var goToProteinChooser;
     var proteinDisplayName;
     var mousedOver = false;
@@ -317,6 +325,12 @@ define([
       var firstNucleotide = collectCodonGroup.create(50, 24, codonChain[0]);
       var secondtNucleotide = collectCodonGroup.create(65, 24, codonChain[1]);
       var thirdNucleotide = collectCodonGroup.create(80, 24, codonChain[2]);
+      collectDescription = game.add.text(0, 0, "is a codon for", {font: "bold 16pt Arial", boundsAlignH: "center"});
+      collectDescription.setTextBounds(110, 2, 225, 40);
+      smallSpeech.addChild(collectDescription);
+      collectableName = game.add.text(0, 0, getAminoName(proteinAminos[0]), {fill: "navy", boundsAlignH: "center"});
+      collectableName.setTextBounds(110, 25, 225, 40);
+      smallSpeech.addChild(collectableName);
       smallSpeech.visible = false;
 
       // Large speech bubble - intro/pause/success/protein selection ##############################
@@ -677,6 +691,7 @@ define([
           $scope.$digest();
           chosenProtein = _this.selectedProtein;
           usersObj[currentKey].proteinInProgress = chosenProtein;
+          remainingProteinLength = 2750000000000;
           gameGeneration();
         }
       } else {
@@ -731,6 +746,7 @@ define([
       progressHolder.visible = true;
       interstitialText.visible = true;
       proteinDisplayName.visible = true;
+      proteinDisplayName.text = chosenProtein;
       talkCycles = game.rnd.integerInRange(3, 7);
       if(remainingProteinLength >= proteinAminos.length - 1 || !remainingProteinLength) {
         remainingProteinLength = proteinAminos.length - 1;
@@ -792,6 +808,12 @@ define([
 
 //-------------------------------------------------------------------------------------------------
 
+    function getAminoName(value) {
+      for (var aa = 0; aa < aminosArr.length; aa++) {
+        if (aminosArr[aa].code == value) return aminosArr[aa].name;
+      }
+    }
+
     function dnaMaker() {
       for (var c = 0; c <codonChain.length; c++) {
         var nucleotide = codonGroup.create(134 + (15 * c), 520, codonChain[c]);
@@ -806,6 +828,7 @@ define([
 
     function collectMaker() {
       var promisedAminoToCollect = spriteRevival(aminoToCollectGroup, proteinAminos[0], 340, 4);
+      collectableName.text = getAminoName(proteinAminos[0]);
       promisedAminoToCollect.then(function(aminoToCollect) {
         aminoToCollect.y += (60 - aminoToCollect.height) / 2;
         aminoToCollect.x += (60 - aminoToCollect.width) / 2;
@@ -813,6 +836,7 @@ define([
     }
 
     function inTheRibosome() {
+      dropoffTime = game.time.now;
       if(carriedAmino !== undefined && carryingAmino === true) {
         if(intenseDebug) {
           console.log("Entering Ribosome --------------------------------------------------------");
@@ -820,10 +844,14 @@ define([
             console.log("liveAmino = ", liveAmino.key);
           });
         }
+        toReturnTime = dropoffTime - pickupTime;
+        console.log("Took " + toReturnTime + " to return");
         talkCycles = game.rnd.integerInRange(3, 7);
+        aminoCollectionRoutine(true);
         carriedAmino.destroy();
         carryingAmino = false;
-        aminoCollectionRoutine(true);
+        dropCount = 0;
+        hitCount = 0;
       }
     }
 
@@ -887,6 +915,9 @@ define([
     function goodAmino (player, theAmino) {
       if(!spinningOut && !carryingAmino) {
         if(intenseDebug) {console.log("Good Amino Contact -------------------------------------------------------");}
+        pickupTime = game.time.now;
+        toGetTime = pickupTime - dropoffTime;
+        console.log("Took " + toGetTime + " to get");
         carryingAmino = true;
         theAmino.kill();
         carriedAmino = game.add.sprite(0, -62, theAmino.key);
@@ -952,6 +983,7 @@ define([
             console.log("liveAmino = ", liveAmino.key);
         });
       }
+      hitCount++;
       spinningOut = true;
       theAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
       player.body.velocity.x = 0;
@@ -961,6 +993,7 @@ define([
         player.rotation = 0;
       }, (1000));
       if(carryingAmino) {
+        dropCount++;
         carryingAmino = false;
         var promisedBadAmino = spriteRevival(aminoGroup, carriedAmino.key, player.body.x, player.body.y - 60);
         promisedBadAmino.then(function(anAmino) {
