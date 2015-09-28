@@ -58,10 +58,26 @@ define([
             completedIntro = data[key].completedIntro;
             checkpointInterval = data[key].checkpoint;
             playerColor = "0x" + data[key].color.slice(1);
-            completedProteins = data[key].completedProteins;
+            if(data[key].completedProteins) {
+              completedProteins = data[key].completedProteins;
+            }
+            if(data[key].achievements.epicCollections) {
+              epicCollections = data[key].achievements.epicCollections;
+            }
+            if(data[key].achievements.hiddenAminoAcids) {
+              hiddenAminoAcids = data[key].achievements.hiddenAminoAcids;
+            }
+            if(data[key].achievements.longWayHomes) {
+              longWayHomes = data[key].achievements.longWayHomes;
+            }
+            if(data[key].achievements.cleanCollections) {
+              cleanCollections = data[key].achievements.cleanCollections;
+            }
+            if(data[key].achievements.quickCollections) {
+              quickCollections = data[key].achievements.quickCollections;
+            }
             if (intro) {
               chosenProtein = "Insulin";
-              if(intenseDebug) {console.log("Didn't find a protein in progress");}
             } else if(data[key].proteinInProgress) {
               chosenProtein = data[key].proteinInProgress;
               remainingProteinLength = data[key].remainingProteinLength;
@@ -75,6 +91,7 @@ define([
               chosenProtein = "Insulin";
               remainingProteinLength = 110;
               goToProteinChooser = true;
+              if(intenseDebug) {console.log("Didn't find a protein in progress");}
             }
           }
         }
@@ -107,6 +124,8 @@ define([
     var Alanine;
     var victory;
     var menuBtn;
+    var epicIcon;
+    var longIcon;
     var Cytosine;
     var ribosome;
     var startBtn;
@@ -114,6 +133,9 @@ define([
     var page = 0;
     var ribounder;
     var toGetTime;
+    var quickIcon;
+    var cleanIcon;
+    var hiddenIcon;
     var pickupTime;
     var justLoaded;
     var optionsBtn;
@@ -127,8 +149,6 @@ define([
     var playerColor;
     var victoryText;
     var continueBtn;
-    var epicAchieve;
-    var longAchieve;
     var progressBar;
     var toReturnTime;
     var proteinGroup;
@@ -136,9 +156,6 @@ define([
     var _this = this;
     var intro = true;
     var hitCount = 0;
-    var quickAchieve;
-    var cleanAchieve;
-    var hiddenAchieve;
     var chosenProtein;
     var victoryBubble;
     var mouse = false;
@@ -153,8 +170,8 @@ define([
     var codonChain = [];
     var checkAchieveText;
     var interstitialText;
+    var longWayHomes = 0;
     var blinkCounter = 0;
-    var completedProteins;
     var fullProteinLength;
     var collectCodonGroup;
     var codonSliding = 45;
@@ -165,13 +182,18 @@ define([
     var proteinAminos = [];
     var aminoToCollectGroup;
     var spinningOut = false;
+    var epicCollections = 0;
     var checkpointCount = 0;
     var cpVisibleTimer = 120;
+    var quickCollections = 0;
+    var cleanCollections = 0;
+    var hiddenAminoAcids = 0;
     var mouthOpenCounter = 0;
     var carryingAmino = false;
     var controlsLocked = true;
     var remainingProteinLength;
     var completedIntro = false;
+    var completedProteins = "";
     var mouthClosedCounter = 0;
     var checkpointInterval = 10;
     var introContent = [
@@ -188,6 +210,7 @@ define([
     ];
 
     function gameGeneration() {
+      codonChain = [];
       aminosArr.$loaded().then(function(aminosData) {
         proteinsArr.$loaded().then(function(proteinsData) {
           for(var p = 0; p < proteinsArr.length; p++) {
@@ -211,10 +234,10 @@ define([
             initialLoad = false;
             theGame(); // All preparations are complete, get the party started!
           } else {
-            aminoGroup.setAllChildren("alive", false, true); // kill EVERYTHING.
-            codonGroup.forEachExists(function(codon) {
-              codon.destroy();
+            aminoGroup.forEachAlive(function(amino) {
+              amino.kill();
             });
+            codonGroup.removeAll(true, false);
             var toCollectAmino = aminoToCollectGroup.getFirstAlive();
             toCollectAmino.kill();
             for(var am = 0; am < 15; am++) {
@@ -222,6 +245,7 @@ define([
             }
             usersObj[currentKey].remainingProteinLength = fullProteinLength;
             codonSliding = 45;
+            justLoaded = true;
             collectMaker();
             codonMaker(0);
             dnaMaker();
@@ -376,21 +400,21 @@ define([
       checkAchieveText = game.add.text(0, 5, "");
       checkAchieveText.anchor.setTo(0.5, 0.5);
       checkpoint.addChild(checkAchieveText);
-      hiddenAchieve = game.add.sprite(-270, -31, "hidden");
-      checkpoint.addChild(hiddenAchieve);
-      hiddenAchieve.visible = false;
-      longAchieve = game.add.sprite(-270, -31, "longhome");
-      checkpoint.addChild(longAchieve);
-      longAchieve.visible = false;
-      quickAchieve = game.add.sprite(-270, -31, "quick");
-      checkpoint.addChild(quickAchieve);
-      quickAchieve.visible = false;
-      cleanAchieve = game.add.sprite(-270, -31, "clean");
-      checkpoint.addChild(cleanAchieve);
-      cleanAchieve.visible = false;
-      epicAchieve = game.add.sprite(-270, -31, "epic");
-      checkpoint.addChild(epicAchieve);
-      epicAchieve.visible = false;
+      hiddenIcon = game.add.sprite(-270, -31, "hidden");
+      checkpoint.addChild(hiddenIcon);
+      hiddenIcon.visible = false;
+      longIcon = game.add.sprite(-270, -31, "longhome");
+      checkpoint.addChild(longIcon);
+      longIcon.visible = false;
+      quickIcon = game.add.sprite(-270, -31, "quick");
+      checkpoint.addChild(quickIcon);
+      quickIcon.visible = false;
+      cleanIcon = game.add.sprite(-270, -31, "clean");
+      checkpoint.addChild(cleanIcon);
+      cleanIcon.visible = false;
+      epicIcon = game.add.sprite(-270, -31, "epic");
+      checkpoint.addChild(epicIcon);
+      epicIcon.visible = false;
       pauseBtn = game.add.button(5, 5, "p-btn", pauseMenu, this, 0, 1, 2, 0);
       pauseBtn.fixedToCamera = true;
       pauseBtn.visible = false;
@@ -402,10 +426,10 @@ define([
       victory = game.add.sprite(0, 30, "victory");
       victory.anchor.setTo(0.5, 0);
       victoryBubble.addChild(victory);
-      victoryText = game.add.text(0, 20, "\n\n\n\nYou built\n\n\n\nfrom " + fullProteinLength + " amino acids!", {align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
+      victoryText = game.add.text(0, 20, "", {align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
       victoryText.anchor.setTo(0.5, 0);
       victoryBubble.addChild(victoryText);
-      victoryProtein = game.add.text(0, 250, chosenProtein, {font: "bold 20pt Arial", fill: "green", align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
+      victoryProtein = game.add.text(0, 250, "", {font: "bold 20pt Arial", fill: "green", align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
       victoryProtein.anchor.setTo(0.5, 0.5);
       victoryBubble.addChild(victoryProtein);
       proteinBtn = game.add.button(-110, 355, "protein-btn", proteinFunc, this, 0, 1, 2, 0);
@@ -520,11 +544,11 @@ define([
           checkpoint.alpha -= 0.1;
           cpVisibleTimer--;
         } else {
-          hiddenAchieve.visible = false;
-          quickAchieve.visible = false;
-          cleanAchieve.visible = false;
-          longAchieve.visible = false;
-          epicAchieve.visible = false;
+          hiddenIcon.visible = false;
+          quickIcon.visible = false;
+          cleanIcon.visible = false;
+          longIcon.visible = false;
+          epicIcon.visible = false;
           checkpoint.visible = false;
           cpVisibleTimer = 60;
           checkpoint.alpha = 1;
@@ -825,12 +849,21 @@ define([
     }
 
     function proteinFunc() {
+      victoryBubble.visible = false;
+      $scope.$digest();
       proteinChooser();
     }
 
     function menuFunc() {
       window.location = "#/menu";
     }
+
+    _this.hideCompleted = function(proteinName) {
+      if(completedProteins.indexOf(proteinName) > -1){
+        return false;
+      }
+      return true;
+    };
 
 //-------------------------------------------------------------------------------------------------
 
@@ -875,7 +908,6 @@ define([
         aminoCollectionRoutine(true);
         carriedAmino.destroy();
         carryingAmino = false;
-        achievementRoutine();
         hitCount = 0;
       }
     }
@@ -900,13 +932,26 @@ define([
       }); 
       proteinAminos.splice(0, 1);
       if(inRibosome) {
+        achievementRoutine();
         if(proteinAminos.length === 1) {
           // won goes here
           noclip = true;
           pauseBtn.visible = false;
           victoryBubble.visible = true;
-          usersObj[currentKey].remainingProteinLength = 0;
+          victoryProtein.text = chosenProtein;
+          victoryText.text = "\n\n\n\nYou built\n\n\n\nfrom " + fullProteinLength + " amino acids!";
+          usersObj[currentKey].achievements.totalHiddenAminoAcids = usersObj[currentKey].achievements.totalHiddenAminoAcids + hiddenAminoAcids;
+          usersObj[currentKey].achievements.totalCleanCollections = usersObj[currentKey].achievements.totalCleanCollections + cleanCollections;
+          usersObj[currentKey].achievements.totalQuickCollections = usersObj[currentKey].achievements.totalQuickCollections + quickCollections;
+          usersObj[currentKey].achievements.totalEpicCollections = usersObj[currentKey].achievements.totalEpicCollections + epicCollections;
+          usersObj[currentKey].achievements.totalLongWayHomes = usersObj[currentKey].achievements.totalLongWayHomes + longWayHomes;
           usersObj[currentKey].completedProteins = completedProteins + (chosenProtein + ",");
+          usersObj[currentKey].remainingProteinLength = 0;
+          usersObj[currentKey].achievements.hiddenAminoAcids = 0;
+          usersObj[currentKey].achievements.cleanCollections = 0;
+          usersObj[currentKey].achievements.quickCollections = 0;
+          usersObj[currentKey].achievements.epicCollections = 0;
+          usersObj[currentKey].achievements.longWayHomes = 0;
           usersObj.$save();
         }
         remainingProteinLength = proteinAminos.length - 1;
@@ -914,7 +959,12 @@ define([
           checkpointCount++;
           checkAchieveText.text = "Checkpoint " + checkpointCount + " of " + Math.floor(fullProteinLength / checkpointInterval) + "!";
           checkpoint.visible = true;
-          usersObj[currentKey].remainingProteinLength = remainingProteinLength;
+          usersObj[currentKey].achievements.remainingProteinLength = remainingProteinLength;
+          usersObj[currentKey].achievements.hiddenAminoAcids = hiddenAminoAcids;
+          usersObj[currentKey].achievements.cleanCollections = cleanCollections;
+          usersObj[currentKey].achievements.quickCollections = quickCollections;
+          usersObj[currentKey].achievements.epicCollections = epicCollections;
+          usersObj[currentKey].achievements.longWayHomes = longWayHomes;
           usersObj.$save();
         }
       }
@@ -926,28 +976,40 @@ define([
 
     function achievementRoutine() {
       if(hitCount === 0) {
+        var delay = 0;
         if((toGetTime + toReturnTime) > 14000) {
+          epicCollections++;
+          delay = 2000;
           checkAchieveText.text = "Epic Collection!";
-          epicAchieve.visible = true;
+          epicIcon.visible = true;
           checkpoint.visible = true;
         } else if(toGetTime > 7000) {
+          hiddenAminoAcids++;
+          delay = 2000;
           checkAchieveText.text = "Hidden Amino!";
-          hiddenAchieve.visible = true;
+          hiddenIcon.visible = true;
           checkpoint.visible = true;
         } else if(toReturnTime > 7000) {
+          longWayHomes++;
+          delay = 2000;
           checkAchieveText.text = "Long Way Home!";
-          longAchieve.visible = true;
+          longIcon.visible = true;
           checkpoint.visible = true;
         } else {
+          cleanCollections++;
+          delay = 2000;
           checkAchieveText.text = "Clean Collection!";
-          cleanAchieve.visible = true;
+          cleanIcon.visible = true;
           checkpoint.visible = true;
         }
-      }
-      if((toGetTime + toReturnTime) < 3000) {
-        checkAchieveText.text = "Quick Collection!";
-        quickAchieve.visible = true;
-        checkpoint.visible = true;
+        if((toGetTime + toReturnTime) < 3000) {
+          quickCollections++;
+          setTimeout(function(){
+            checkAchieveText.text = "Quick Collection!";
+            quickIcon.visible = true;
+            checkpoint.visible = true;
+          }, delay);
+        }
       }
     }
 

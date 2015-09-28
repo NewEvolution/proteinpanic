@@ -111,9 +111,22 @@ define([
     };
 
     this.saveUserData = function(destination) {
+      var achievements = {
+        epicCollections: 0,
+        totalEpicCollections: 0,
+        hiddenAminoAcids: 0,
+        totalHiddenAminoAcids: 0,
+        longWayHomes: 0,
+        totalLongWayHomes: 0,
+        cleanCollections: 0,
+        totalCleanCollections: 0,
+        quickCollections: 0,
+        totalQuickCollections: 0
+      };
       usersObj[currentKey].checkpoint = parseInt(this.checkpoint);
       usersObj[currentKey].effects = parseInt(this.effects);
       usersObj[currentKey].music = parseInt(this.music);
+      usersObj[currentKey].achievements = achievements;
       usersObj[currentKey].username = this.username;
       usersObj[currentKey].mouse = this.mouse;
       usersObj[currentKey].color = this.color;
