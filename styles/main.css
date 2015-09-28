@@ -100,7 +100,7 @@ body {
   height: 250px;
   overflow: auto;
   font-size: 1.2em; }
-  .protein-menu input {
+  .protein-menu .radiocheck {
     margin-right: 10px; }
 
 .sequence-length {

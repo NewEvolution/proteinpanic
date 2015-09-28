@@ -61,21 +61,7 @@ define([
             if(data[key].completedProteins) {
               completedProteins = data[key].completedProteins;
             }
-            if(data[key].achievements.epicCollections) {
-              epicCollections = data[key].achievements.epicCollections;
-            }
-            if(data[key].achievements.hiddenAminoAcids) {
-              hiddenAminoAcids = data[key].achievements.hiddenAminoAcids;
-            }
-            if(data[key].achievements.longWayHomes) {
-              longWayHomes = data[key].achievements.longWayHomes;
-            }
-            if(data[key].achievements.cleanCollections) {
-              cleanCollections = data[key].achievements.cleanCollections;
-            }
-            if(data[key].achievements.quickCollections) {
-              quickCollections = data[key].achievements.quickCollections;
-            }
+            achievements = data[key].achievements;
             if (intro) {
               chosenProtein = "Insulin";
             } else if(data[key].proteinInProgress) {
@@ -170,11 +156,11 @@ define([
     var codonChain = [];
     var checkAchieveText;
     var interstitialText;
-    var longWayHomes = 0;
     var blinkCounter = 0;
     var fullProteinLength;
     var collectCodonGroup;
     var codonSliding = 45;
+    var achievements = {};
     var collectDescription;
     var goToProteinChooser;
     var proteinDisplayName;
@@ -182,12 +168,8 @@ define([
     var proteinAminos = [];
     var aminoToCollectGroup;
     var spinningOut = false;
-    var epicCollections = 0;
     var checkpointCount = 0;
     var cpVisibleTimer = 120;
-    var quickCollections = 0;
-    var cleanCollections = 0;
-    var hiddenAminoAcids = 0;
     var mouthOpenCounter = 0;
     var carryingAmino = false;
     var controlsLocked = true;
@@ -738,7 +720,7 @@ define([
           alert("Please select a protein to build.");
         } else {
           $scope.proteinMenu = false;
-          $scope.$digest();
+          $scope.$apply();
           chosenProtein = _this.selectedProtein;
           usersObj[currentKey].proteinInProgress = chosenProtein;
           remainingProteinLength = 2750000000000;
@@ -773,7 +755,7 @@ define([
 
     function proteinChooser() {
       $scope.proteinMenu = true;
-      $scope.$digest();
+      $scope.$apply();
       startBtn.visible = true;
       continueBtn.visible=false;
       largeSpeech.visible = true;
@@ -849,9 +831,7 @@ define([
     }
 
     function proteinFunc() {
-      victoryBubble.visible = false;
-      $scope.$digest();
-      proteinChooser();
+      window.location = "#/game";
     }
 
     function menuFunc() {
@@ -936,22 +916,24 @@ define([
         if(proteinAminos.length === 1) {
           // won goes here
           noclip = true;
+          controlsLocked = true;
           pauseBtn.visible = false;
           victoryBubble.visible = true;
           victoryProtein.text = chosenProtein;
           victoryText.text = "\n\n\n\nYou built\n\n\n\nfrom " + fullProteinLength + " amino acids!";
-          usersObj[currentKey].achievements.totalHiddenAminoAcids = usersObj[currentKey].achievements.totalHiddenAminoAcids + hiddenAminoAcids;
-          usersObj[currentKey].achievements.totalCleanCollections = usersObj[currentKey].achievements.totalCleanCollections + cleanCollections;
-          usersObj[currentKey].achievements.totalQuickCollections = usersObj[currentKey].achievements.totalQuickCollections + quickCollections;
-          usersObj[currentKey].achievements.totalEpicCollections = usersObj[currentKey].achievements.totalEpicCollections + epicCollections;
-          usersObj[currentKey].achievements.totalLongWayHomes = usersObj[currentKey].achievements.totalLongWayHomes + longWayHomes;
+          achievements.totalHiddenAminoAcids = achievements.totalHiddenAminoAcids + achievements.hiddenAminoAcids;
+          achievements.totalCleanCollections = achievements.totalCleanCollections + achievements.cleanCollections;
+          achievements.totalQuickCollections = achievements.totalQuickCollections + achievements.quickCollections;
+          achievements.totalEpicCollections = achievements.totalEpicCollections + achievements.epicCollections;
+          achievements.totalLongWayHomes = achievements.totalLongWayHomes + achievements.longWayHomes;
+          achievements.hiddenAminoAcids = 0;
+          achievements.cleanCollections = 0;
+          achievements.quickCollections = 0;
+          achievements.epicCollections = 0;
+          achievements.longWayHomes = 0;
           usersObj[currentKey].completedProteins = completedProteins + (chosenProtein + ",");
+          usersObj[currentKey].achievements = achievements;
           usersObj[currentKey].remainingProteinLength = 0;
-          usersObj[currentKey].achievements.hiddenAminoAcids = 0;
-          usersObj[currentKey].achievements.cleanCollections = 0;
-          usersObj[currentKey].achievements.quickCollections = 0;
-          usersObj[currentKey].achievements.epicCollections = 0;
-          usersObj[currentKey].achievements.longWayHomes = 0;
           usersObj.$save();
         }
         remainingProteinLength = proteinAminos.length - 1;
@@ -959,12 +941,8 @@ define([
           checkpointCount++;
           checkAchieveText.text = "Checkpoint " + checkpointCount + " of " + Math.floor(fullProteinLength / checkpointInterval) + "!";
           checkpoint.visible = true;
-          usersObj[currentKey].achievements.remainingProteinLength = remainingProteinLength;
-          usersObj[currentKey].achievements.hiddenAminoAcids = hiddenAminoAcids;
-          usersObj[currentKey].achievements.cleanCollections = cleanCollections;
-          usersObj[currentKey].achievements.quickCollections = quickCollections;
-          usersObj[currentKey].achievements.epicCollections = epicCollections;
-          usersObj[currentKey].achievements.longWayHomes = longWayHomes;
+          usersObj[currentKey].remainingProteinLength = remainingProteinLength;
+          usersObj[currentKey].achievements = achievements;
           usersObj.$save();
         }
       }
@@ -978,32 +956,32 @@ define([
       if(hitCount === 0) {
         var delay = 0;
         if((toGetTime + toReturnTime) > 14000) {
-          epicCollections++;
+          achievements.epicCollections++;
           delay = 2000;
           checkAchieveText.text = "Epic Collection!";
           epicIcon.visible = true;
           checkpoint.visible = true;
         } else if(toGetTime > 7000) {
-          hiddenAminoAcids++;
+          achievements.hiddenAminoAcids++;
           delay = 2000;
           checkAchieveText.text = "Hidden Amino!";
           hiddenIcon.visible = true;
           checkpoint.visible = true;
         } else if(toReturnTime > 7000) {
-          longWayHomes++;
+          achievements.longWayHomes++;
           delay = 2000;
           checkAchieveText.text = "Long Way Home!";
           longIcon.visible = true;
           checkpoint.visible = true;
         } else {
-          cleanCollections++;
+          achievements.cleanCollections++;
           delay = 2000;
           checkAchieveText.text = "Clean Collection!";
           cleanIcon.visible = true;
           checkpoint.visible = true;
         }
         if((toGetTime + toReturnTime) < 3000) {
-          quickCollections++;
+          achievements.quickCollections++;
           setTimeout(function(){
             checkAchieveText.text = "Quick Collection!";
             quickIcon.visible = true;
