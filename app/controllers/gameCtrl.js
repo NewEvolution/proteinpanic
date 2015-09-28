@@ -127,6 +127,8 @@ define([
     var playerColor;
     var victoryText;
     var continueBtn;
+    var epicAchieve;
+    var longAchieve;
     var progressBar;
     var toReturnTime;
     var proteinGroup;
@@ -134,20 +136,22 @@ define([
     var _this = this;
     var intro = true;
     var hitCount = 0;
+    var quickAchieve;
+    var cleanAchieve;
+    var hiddenAchieve;
     var chosenProtein;
     var victoryBubble;
     var mouse = false;
-    var dropCount = 0;
     var victoryPrevBtn;
     var victoryNextBtn;
     var victoryProtein;
-    var checkpointText;
     var progressHolder;
     var aminoCount = 0;
     var talkCycles = 0;
     var nucleotideGroup;
     var collectableName;
     var codonChain = [];
+    var checkAchieveText;
     var interstitialText;
     var blinkCounter = 0;
     var completedProteins;
@@ -217,9 +221,10 @@ define([
               aminoStageCheck(true);
             }
             usersObj[currentKey].remainingProteinLength = fullProteinLength;
-            dnaMaker();
-            codonMaker(0);
+            codonSliding = 45;
             collectMaker();
+            codonMaker(0);
+            dnaMaker();
             pauseMenu();
           }
         });
@@ -363,14 +368,29 @@ define([
       continueBtn = game.add.button(135, 365, "continue-btn", continueFunc, this, 0, 1, 2, 0);
       largeSpeech.addChild(continueBtn);
 
-      // Checkpoint & pause button ################################################################
+      // Checkpoint, achievements & pause button ##################################################
       checkpoint = game.add.sprite(game.camera.width / 2, 40, "checkpoint");
-      checkpointText = game.add.text(0, 5, "");
-      checkpointText.anchor.setTo(0.5, 0.5);
-      checkpoint.addChild(checkpointText);
       checkpoint.anchor.setTo(0.5, 0.5);
       checkpoint.fixedToCamera = true;
       checkpoint.visible = false;
+      checkAchieveText = game.add.text(0, 5, "");
+      checkAchieveText.anchor.setTo(0.5, 0.5);
+      checkpoint.addChild(checkAchieveText);
+      hiddenAchieve = game.add.sprite(-270, -31, "hidden");
+      checkpoint.addChild(hiddenAchieve);
+      hiddenAchieve.visible = false;
+      longAchieve = game.add.sprite(-270, -31, "longhome");
+      checkpoint.addChild(longAchieve);
+      longAchieve.visible = false;
+      quickAchieve = game.add.sprite(-270, -31, "quick");
+      checkpoint.addChild(quickAchieve);
+      quickAchieve.visible = false;
+      cleanAchieve = game.add.sprite(-270, -31, "clean");
+      checkpoint.addChild(cleanAchieve);
+      cleanAchieve.visible = false;
+      epicAchieve = game.add.sprite(-270, -31, "epic");
+      checkpoint.addChild(epicAchieve);
+      epicAchieve.visible = false;
       pauseBtn = game.add.button(5, 5, "p-btn", pauseMenu, this, 0, 1, 2, 0);
       pauseBtn.fixedToCamera = true;
       pauseBtn.visible = false;
@@ -498,7 +518,13 @@ define([
           cpVisibleTimer--;
         } else if(cpVisibleTimer > 0) {
           checkpoint.alpha -= 0.1;
+          cpVisibleTimer--;
         } else {
+          hiddenAchieve.visible = false;
+          quickAchieve.visible = false;
+          cleanAchieve.visible = false;
+          longAchieve.visible = false;
+          epicAchieve.visible = false;
           checkpoint.visible = false;
           cpVisibleTimer = 60;
           checkpoint.alpha = 1;
@@ -845,12 +871,11 @@ define([
           });
         }
         toReturnTime = dropoffTime - pickupTime;
-        console.log("Took " + toReturnTime + " to return");
         talkCycles = game.rnd.integerInRange(3, 7);
         aminoCollectionRoutine(true);
         carriedAmino.destroy();
         carryingAmino = false;
-        dropCount = 0;
+        achievementRoutine();
         hitCount = 0;
       }
     }
@@ -887,7 +912,7 @@ define([
         remainingProteinLength = proteinAminos.length - 1;
         if((fullProteinLength - remainingProteinLength) % checkpointInterval === 0) {
           checkpointCount++;
-          checkpointText.text = "Checkpoint " + checkpointCount + " of " + Math.floor(fullProteinLength/checkpointInterval) + "!";
+          checkAchieveText.text = "Checkpoint " + checkpointCount + " of " + Math.floor(fullProteinLength / checkpointInterval) + "!";
           checkpoint.visible = true;
           usersObj[currentKey].remainingProteinLength = remainingProteinLength;
           usersObj.$save();
@@ -899,10 +924,40 @@ define([
       collectMaker();
     }
 
+    function achievementRoutine() {
+      if(hitCount === 0) {
+        if((toGetTime + toReturnTime) > 14000) {
+          checkAchieveText.text = "Epic Collection!";
+          epicAchieve.visible = true;
+          checkpoint.visible = true;
+        } else if(toGetTime > 7000) {
+          checkAchieveText.text = "Hidden Amino!";
+          hiddenAchieve.visible = true;
+          checkpoint.visible = true;
+        } else if(toReturnTime > 7000) {
+          checkAchieveText.text = "Long Way Home!";
+          longAchieve.visible = true;
+          checkpoint.visible = true;
+        } else {
+          checkAchieveText.text = "Clean Collection!";
+          cleanAchieve.visible = true;
+          checkpoint.visible = true;
+        }
+      }
+      if((toGetTime + toReturnTime) < 3000) {
+        checkAchieveText.text = "Quick Collection!";
+        quickAchieve.visible = true;
+        checkpoint.visible = true;
+      }
+    }
+
     function checkAmino (player, theAmino) {
       if(proteinAminos[0] === theAmino.key && carryingAmino === false) {
+        pickupTime = game.time.now;
+        toGetTime = pickupTime - dropoffTime;
         goodAmino(player, theAmino);
       } else {
+        hitCount++;
         badAmino(player, theAmino);
       }
     }
@@ -915,9 +970,6 @@ define([
     function goodAmino (player, theAmino) {
       if(!spinningOut && !carryingAmino) {
         if(intenseDebug) {console.log("Good Amino Contact -------------------------------------------------------");}
-        pickupTime = game.time.now;
-        toGetTime = pickupTime - dropoffTime;
-        console.log("Took " + toGetTime + " to get");
         carryingAmino = true;
         theAmino.kill();
         carriedAmino = game.add.sprite(0, -62, theAmino.key);
@@ -983,7 +1035,6 @@ define([
             console.log("liveAmino = ", liveAmino.key);
         });
       }
-      hitCount++;
       spinningOut = true;
       theAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
       player.body.velocity.x = 0;
@@ -993,7 +1044,6 @@ define([
         player.rotation = 0;
       }, (1000));
       if(carryingAmino) {
-        dropCount++;
         carryingAmino = false;
         var promisedBadAmino = spriteRevival(aminoGroup, carriedAmino.key, player.body.x, player.body.y - 60);
         promisedBadAmino.then(function(anAmino) {
