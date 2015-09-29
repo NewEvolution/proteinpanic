@@ -191,7 +191,7 @@ define([
       "You see, as a ribosome, I'm fixed in place in the wall of the rough endoplasmic reticulum that surrounds the nucleus of the cell.  I can't run off and grab the amino acids we need to build the protein.\n\nGrabbing the right amino acid is up to you, the transport RNA!",
       "The long colorful chain at the bottom of the screen is half of a strand of DNA, and it gives us our instructions for building the protein.\n\nHow does it do that? Well, the colored bars sticking up from the DNA's green backbone are called nucleotides, and they come in one of four types:\n\nAdenine  Cytosine  Guanine  Thymine",
       "Every amino acid can be represented by three nucleotides in a specific order. This group of three nucleotides is called a codon, and every amino acid has at least one codon, though some have more.\n\nFor example:\n\nis a codon for Alanine",
-      "I'll read the DNA one codon at a time and tell you which amino acid to go catch. Once you've caught the amino acid, bring it back to me and I'll add it to the protein we're building.\n\nBe careful not to run into any of the other amino acids floating about, as they'll make you spin out and drop any amino acid you're carrying!",
+      "I'll read the DNA one codon at a time and tell you which amino acid to catch. Once you've caught the amino acid, bring it back to me and I'll add it to the protein we're building.\n\nBe careful not to run into any of the other amino acids floating about, as they'll make you spin out and drop any amino acid you're carrying!",
       "Proteins can be very long, some contain thousands of amino acids! We'll start with a shorter one, but there will also be checkpoints along the way.\n\nOnce you've reached a checkpoint, you can restart from there later. You can change how often checkpoints happen in your user options.",
       "You control your flight around the inside of the cell with either the W A S D keys or arrow keys, or with your mouse/touch.\n\nYou can switch your control type on your user option screen as well.\n\nAt any time during the game you can click/tap the \"P\" button at the top left to pause and check your progress.",
       "After completing a protein, or starting a new game you can choose your next protein to make.\n\nYou can only have one protein in progress at a time though, so starting a new protein will erase any progess you've made on an incomplete protein.",
@@ -389,33 +389,6 @@ define([
       continueBtn = game.add.button(135, 365, "continue-btn", continueFunc, this, 0, 1, 2, 0);
       largeSpeech.addChild(continueBtn);
 
-      // Checkpoint, achievements & pause button ##################################################
-      checkpoint = game.add.sprite(game.camera.width / 2, 40, "checkpoint");
-      checkpoint.anchor.setTo(0.5, 0.5);
-      checkpoint.fixedToCamera = true;
-      checkpoint.visible = false;
-      checkAchieveText = game.add.text(0, 5, "");
-      checkAchieveText.anchor.setTo(0.5, 0.5);
-      checkpoint.addChild(checkAchieveText);
-      hiddenIcon = game.add.sprite(-270, -31, "hidden");
-      checkpoint.addChild(hiddenIcon);
-      hiddenIcon.visible = false;
-      longIcon = game.add.sprite(-270, -31, "longhome");
-      checkpoint.addChild(longIcon);
-      longIcon.visible = false;
-      quickIcon = game.add.sprite(-270, -31, "quick");
-      checkpoint.addChild(quickIcon);
-      quickIcon.visible = false;
-      cleanIcon = game.add.sprite(-270, -31, "clean");
-      checkpoint.addChild(cleanIcon);
-      cleanIcon.visible = false;
-      epicIcon = game.add.sprite(-270, -31, "epic");
-      checkpoint.addChild(epicIcon);
-      epicIcon.visible = false;
-      pauseBtn = game.add.button(5, 5, "p-btn", pauseMenu, this, 0, 1, 2, 0);
-      pauseBtn.fixedToCamera = true;
-      pauseBtn.visible = false;
-
       // Victory screen ###########################################################################
       victoryBubble = game.add.sprite(game.camera.width / 2, 10, "victory-bubble");
       victoryBubble.anchor.setTo(0.5, 0);
@@ -477,6 +450,33 @@ define([
       victoryNextBtn.anchor.setTo(0.5, 0);
       victoryBubble.addChild(victoryNextBtn);
       victoryBubble.visible = false;
+
+      // Checkpoint, achievements & pause button ##################################################
+      checkpoint = game.add.sprite(game.camera.width / 2, 40, "checkpoint");
+      checkpoint.anchor.setTo(0.5, 0.5);
+      checkpoint.fixedToCamera = true;
+      checkpoint.visible = false;
+      checkAchieveText = game.add.text(0, 5, "");
+      checkAchieveText.anchor.setTo(0.5, 0.5);
+      checkpoint.addChild(checkAchieveText);
+      hiddenIcon = game.add.sprite(-270, -31, "hidden");
+      checkpoint.addChild(hiddenIcon);
+      hiddenIcon.visible = false;
+      longIcon = game.add.sprite(-270, -31, "longhome");
+      checkpoint.addChild(longIcon);
+      longIcon.visible = false;
+      quickIcon = game.add.sprite(-270, -31, "quick");
+      checkpoint.addChild(quickIcon);
+      quickIcon.visible = false;
+      cleanIcon = game.add.sprite(-270, -31, "clean");
+      checkpoint.addChild(cleanIcon);
+      cleanIcon.visible = false;
+      epicIcon = game.add.sprite(-270, -31, "epic");
+      checkpoint.addChild(epicIcon);
+      epicIcon.visible = false;
+      pauseBtn = game.add.button(5, 5, "p-btn", pauseMenu, this, 0, 1, 2, 0);
+      pauseBtn.fixedToCamera = true;
+      pauseBtn.visible = false;
 
       // Introductory instructions ################################################################
       if(intro) {
