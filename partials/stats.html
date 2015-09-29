@@ -1,6 +1,29 @@
 <div class="positioner">
   <div class="stats-group">
-    <p>Statistics say, you're pretty good at this game!</p>
+    <section ng-repeat="(index, user) in stats.arrayOfUsers | orderBy: '!stats.userRank(user.completedProteins)'">
+      <div>
+        <span class="user-color" ng-style="stats.userColor(user.color)"></span>{{user.username}}<span class="sequence-length">{{stats.userRank(user.completedProteins)}} Completed Proteins</span>
+      </div>
+      <span class="rank">#{{index + 1}}</span>
+      <ul class="achievements">
+        <li>
+          {{user.achievements.totalCleanCollections}} - Clean Collections
+        </li>
+        <li>
+          {{user.achievements.totalQuickCollections}} - Quick Collections
+        </li>
+        <li>
+          {{user.achievements.totalHiddenAminoAcids}} - Hidden Amino Acids
+        </li>
+        <li>
+          {{user.achievements.totalLongWayHomes}} - Long Way Homes
+        </li>
+        <li>
+          {{user.achievements.totalEpicCollections}} - Epic Collections
+        </li>
+      </ul>
+      <hr>
+    </section>
     <button id="menu-btn" ng-click="stats.mainMenu()">Return to Main Menu</button>
   </div>
 </div>

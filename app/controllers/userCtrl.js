@@ -80,6 +80,11 @@ define([
 	    }
 		}
 
+    this.logOut = function() {
+      ref.unauth();
+      window.location.reload();
+    };
+
 		this.checkAvail = function(saving, destination) {
       var usernameAvailable = false;
       for(var k = 0; k < usersArr.length; k++) {

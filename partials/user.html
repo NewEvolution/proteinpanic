@@ -1,5 +1,9 @@
 <div class="positioner">
   <div class="user-group">
+    <div class="logout">
+      <button id="logout-btn" ng-click="user.logOut()">Logout</button>
+    </div>
+    <hr>
     <h3>Username:</h3>
     <input type="text" id="username-input" placeholder="Choose a username" ng-model="user.username">
     <button id="available-btn" ng-click="user.checkAvail()">Check Availability</button>

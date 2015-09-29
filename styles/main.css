@@ -75,6 +75,8 @@ body {
     height: 50px; }
     .user-group #color-input:hover {
       cursor: pointer; }
+  .user-group .logout {
+    text-align: right; }
   .user-group .slider {
     width: 80%; }
   .user-group .display {
@@ -91,6 +93,28 @@ body {
   width: 565px;
   height: 260px;
   overflow: auto; }
+  .stats-group section {
+    text-align: left; }
+  .stats-group .rank {
+    font-size: 2.3em;
+    float: left; }
+  .stats-group .user-color {
+    border: 1px solid black;
+    display: inline-block;
+    margin-bottom: -5px;
+    margin-right: 10px;
+    border-radius: 5px;
+    height: 20px;
+    width: 20px; }
+  .stats-group .achievements {
+    text-align: center;
+    font-size: 0.8em;
+    list-style: none;
+    margin: 5px 0;
+    padding: 0; }
+    .stats-group .achievements li {
+      display: inline-block;
+      width: 40%; }
 
 .protein-menu {
   position: absolute;

@@ -121,6 +121,10 @@ define([
     var toGetTime;
     var quickIcon;
     var cleanIcon;
+    var vEpicIcon;
+    var vLongIcon;
+    var vCleanIcon;
+    var vQuickIcon;
     var hiddenIcon;
     var pickupTime;
     var justLoaded;
@@ -129,6 +133,7 @@ define([
     var codonGroup;
     var checkpoint;
     var proteinBtn;
+    var vHiddenIcon;
     var dropoffTime;
     var largeSpeech;
     var smallSpeech;
@@ -154,6 +159,7 @@ define([
     var nucleotideGroup;
     var collectableName;
     var codonChain = [];
+    var achievementsList;
     var checkAchieveText;
     var interstitialText;
     var blinkCounter = 0;
@@ -414,19 +420,53 @@ define([
       victoryProtein = game.add.text(0, 250, "", {font: "bold 20pt Arial", fill: "green", align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
       victoryProtein.anchor.setTo(0.5, 0.5);
       victoryBubble.addChild(victoryProtein);
+      achievementsList = game.add.text(-100, 65, "");
+      achievementsList.lineSpacing = 20;
+      victoryBubble.addChild(achievementsList);
+      achievementsList.visible = false;
       proteinBtn = game.add.button(-110, 355, "protein-btn", proteinFunc, this, 0, 1, 2, 0);
       proteinBtn.anchor.setTo(0.5, 0);
       victoryBubble.addChild(proteinBtn);
       menuBtn = game.add.button(110, 355, "menu-btn", menuFunc, this, 0, 1, 2, 0);
       menuBtn.anchor.setTo(0.5, 0);
       victoryBubble.addChild(menuBtn);
+      vEpicIcon = game.add.sprite(-135, 58, "epic");
+      vEpicIcon.anchor.setTo(0.5, 0,5);
+      vEpicIcon.scale.x = 0.5;
+      vEpicIcon.scale.y = 0.5;
+      victoryBubble.addChild(vEpicIcon);
+      vEpicIcon.visible = false;
+      vHiddenIcon = game.add.sprite(-135, 115, "hidden");
+      vHiddenIcon.anchor.setTo(0.5, 0,5);
+      vHiddenIcon.scale.x = 0.5;
+      vHiddenIcon.scale.y = 0.5;
+      victoryBubble.addChild(vHiddenIcon);
+      vHiddenIcon.visible = false;
+      vLongIcon = game.add.sprite(-135, 172, "longhome");
+      vLongIcon.anchor.setTo(0.5, 0,5);
+      vLongIcon.scale.x = 0.5;
+      vLongIcon.scale.y = 0.5;
+      victoryBubble.addChild(vLongIcon);
+      vLongIcon.visible = false;
+      vCleanIcon = game.add.sprite(-135, 229, "clean");
+      vCleanIcon.anchor.setTo(0.5, 0,5);
+      vCleanIcon.scale.x = 0.5;
+      vCleanIcon.scale.y = 0.5;
+      victoryBubble.addChild(vCleanIcon);
+      vCleanIcon.visible = false;
+      vQuickIcon = game.add.sprite(-135, 286, "quick");
+      vQuickIcon.anchor.setTo(0.5, 0,5);
+      vQuickIcon.scale.x = 0.5;
+      vQuickIcon.scale.y = 0.5;
+      victoryBubble.addChild(vQuickIcon);
+      vQuickIcon.visible = false;
       victoryPrevBtn = game.add.button(-200, 285, "prev-btn", victoryPrevFunc, this, 0, 1, 2, 0);
       victoryPrevBtn.anchor.setTo(0.5, 0);
       victoryBubble.addChild(victoryPrevBtn);
+      victoryPrevBtn.visible = false;
       victoryNextBtn = game.add.button(200, 285, "next-btn", victoryNextFunc, this, 0, 1, 2, 0);
       victoryNextBtn.anchor.setTo(0.5, 0);
       victoryBubble.addChild(victoryNextBtn);
-      victoryPrevBtn.visible = false;
       victoryBubble.visible = false;
 
       // Introductory instructions ################################################################
@@ -815,23 +855,35 @@ define([
     }
 
     function victoryPrevFunc() {
+      achievementsList.visible = false;
       victoryPrevBtn.visible = false;
       victoryProtein.visible = true;
       victoryNextBtn.visible = true;
+      vHiddenIcon.visible = false;
+      vCleanIcon.visible = false;
+      vQuickIcon.visible = false;
+      vEpicIcon.visible = false;
+      vLongIcon.visible = false;
       victory.visible = true;
       victoryText.text = "\n\n\n\nYou built\n\n\n\nfrom " + fullProteinLength + " amino acids!";
     }
 
     function victoryNextFunc() {
+      achievementsList.visible = true;
       victoryNextBtn.visible = false;
       victoryProtein.visible = false;
       victoryPrevBtn.visible = true;
+      vHiddenIcon.visible = true;
+      vCleanIcon.visible = true;
+      vQuickIcon.visible = true;
+      vEpicIcon.visible = true;
+      vLongIcon.visible = true;
       victory.visible = false;
       victoryText.text = "This Protein's Achievements";
     }
 
     function proteinFunc() {
-      window.location = "#/game";
+      window.location.reload();
     }
 
     function menuFunc() {
@@ -926,6 +978,11 @@ define([
           achievements.totalQuickCollections = achievements.totalQuickCollections + achievements.quickCollections;
           achievements.totalEpicCollections = achievements.totalEpicCollections + achievements.epicCollections;
           achievements.totalLongWayHomes = achievements.totalLongWayHomes + achievements.longWayHomes;
+          achievementsList.text = achievements.epicCollections + " - Epic Collections\n" +
+            achievements.hiddenAminoAcids + " - Hidden Amino Acids\n" +
+            achievements.longWayHomes + " - Long Ways Home\n" +
+            achievements.cleanCollections + " - Clean Collections\n" +
+            achievements.quickCollections + " - Quick Collections";
           achievements.hiddenAminoAcids = 0;
           achievements.cleanCollections = 0;
           achievements.quickCollections = 0;

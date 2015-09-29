@@ -22,6 +22,8 @@ define([
     
     var usersArr = $firebaseArray(users);
     var currentUID = null;
+
+    this.arrayOfUsers = usersArr;
     this.username = "";
 
     var authData = ref.getAuth();
@@ -60,6 +62,14 @@ define([
       }
 
     }
+
+    this.userRank = function(proteinString) {
+      return proteinString.split(",").length - 1;
+    };
+
+    this.userColor = function(color) {
+      return {"background-color": color};
+    };
 
     this.mainMenu = function() {
       window.location = "#/menu";
