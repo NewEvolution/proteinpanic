@@ -56,12 +56,25 @@ define([
       game.state.start("loginMenu");
 
       var allAminos = ["D", "E", "F", "N", "I", "M", "W", "Q", "H", "T", "R", "C", "Y", "A", "G", "L", "P", "K", "S", "V"];
+
+      var valinePoints = {
+        x: [57, 57, 67, 67, 57],
+        y: [70, 80, 80, 70, 70]
+      };
+      var valineRotating = false;
+      var valinePath = [];
+      var valineStep = 0;
+      var valRot = 0;
+
       var argininePoints = {
         x: [725, 745, 725, 705, 725],
         y: [485, 505, 525, 505, 485]
       };
+      var arginineRotating = false;
       var argininePath = [];
       var arginineStep = 0;
+      var argRot = 0;
+
       var facebookBtn;
       var twitterBtn;
       var aminoGroup;
@@ -103,14 +116,23 @@ define([
         menuGroup.name = "menuGroup";
         menuGroup.fixedToCamera = true;
         menuGroup.create(0, 18, "splash-ribo");
-        valine = menuGroup.create(-22, -10, "splash-valine");
 
+        // Valine
+        valine = menuGroup.create(57, 70, "splash-valine");
+        valine.anchor.setTo(0.5, 0.5);
+        for (var vi = 0; vi <= 1; vi += 0.005) {
+            var vx = this.math.catmullRomInterpolation(valinePoints.x, vi);
+            var vy = this.math.catmullRomInterpolation(valinePoints.y, vi);
+            valinePath.push( { x: vx, y: vy });
+        }
+
+        // Arginine
         arginine = menuGroup.create(725, 485, "splash-arginine");
         arginine.anchor.setTo(0.5, 0.5);
         for (var ai = 0; ai <= 1; ai += 0.002) {
-            var px = this.math.catmullRomInterpolation(argininePoints.x, ai);
-            var py = this.math.catmullRomInterpolation(argininePoints.y, ai);
-            argininePath.push( { x: px, y: py });
+            var ax = this.math.catmullRomInterpolation(argininePoints.x, ai);
+            var ay = this.math.catmullRomInterpolation(argininePoints.y, ai);
+            argininePath.push( { x: ax, y: ay });
         }
 
         trna = menuGroup.create(170, -27, "splash-trna");
@@ -150,12 +172,42 @@ define([
           }
         });
 
+        // Valine movement ########################################################################
+        valine.x = valinePath[valineStep].x;
+        valine.y = valinePath[valineStep].y;
+        valineStep++;
+        if(valineStep >= valinePath.length) {
+          valineStep = 0;
+        }
+        if(!valineRotating) {
+          valineRotating = true;
+          valRot = (game.rnd.integerInRange(0, 500) / 1000); // JavaScript & floating points do NOT get along nicely
+        }
+        if(valine.rotation < valRot) {
+          valine.rotation = (Math.round((valine.rotation + 0.001) * 1000)) / 1000; // See above
+        } else if(valine.rotation > valRot) {
+          valine.rotation = (Math.floor((valine.rotation - 0.001) * 1000)) / 1000; // Ditto
+        } else {
+          valineRotating = false;
+        }
+
         // Arginine movement ######################################################################
         arginine.x = argininePath[arginineStep].x;
         arginine.y = argininePath[arginineStep].y;
         arginineStep++;
         if(arginineStep >= argininePath.length) {
           arginineStep = 0;
+        }
+        if(!arginineRotating) {
+          arginineRotating = true;
+          argRot = (game.rnd.integerInRange(-700, 0) / 1000); // JavaScript & floating points do NOT get along nicely
+        }
+        if(arginine.rotation < argRot) {
+          arginine.rotation = (Math.round((arginine.rotation + 0.001) * 1000)) / 1000; // See above
+        } else if(arginine.rotation > argRot) {
+          arginine.rotation = (Math.floor((arginine.rotation - 0.001) * 1000)) / 1000; // Ditto
+        } else {
+          arginineRotating = false;
         }
 
         // Panic vibration ########################################################################
