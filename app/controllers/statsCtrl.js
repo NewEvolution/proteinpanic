@@ -68,7 +68,11 @@ define([
     }
 
     this.userRank = function(proteinString) {
-      return proteinString.split(",").length - 1;
+      var rank = proteinString.split(",").length - 1;
+      if(rank > 0) {
+        return rank;
+      }
+      return 0;
     };
 
     this.userColor = function(color) {
