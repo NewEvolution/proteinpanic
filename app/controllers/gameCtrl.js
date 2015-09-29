@@ -253,14 +253,14 @@ define([
 
     function create() {
       // Generic setup ##########################################################################
-      wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
-      aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
-      sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
-      dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
       game.physics.startSystem(Phaser.Physics.ARCADE);
       game.add.tileSprite(0, 0, 1200, 1200, "background");
       game.world.setBounds(0, 0, 1200, 1200);
       if(!mouse) {
+        wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+        aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
+        sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
+        dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
         cursors = game.input.keyboard.createCursorKeys();
       }
 
