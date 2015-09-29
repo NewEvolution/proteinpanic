@@ -24,7 +24,7 @@ define([
     var usersObj = $firebaseObject(users);
     var currentUID = null;
     var currentKey = null;
-    var color = 0x00ff00;
+    var _this = this;
     this.deleteToggle = false;
     this.emailToggle = false;
     this.passToggle = false;
@@ -57,7 +57,6 @@ define([
             this.mouse = data[key].mouse;
             this.music = data[key].music;
             this.color = data[key].color;
-            color = "0x" + data[key].color.slice(1);
             this.intro = data[key].intro;
             currentKey = data[key].$id;
             if(currentUID.indexOf("github") === -1 && 
@@ -81,7 +80,7 @@ define([
 	    }
 
       function update() {
-        menuSplash.update(false, color);
+        menuSplash.update(false, "0x" + _this.color.slice(1));
       }
 		}
 
@@ -121,22 +120,9 @@ define([
     };
 
     this.saveUserData = function(destination) {
-      var achievements = {
-        epicCollections: 0,
-        totalEpicCollections: 0,
-        hiddenAminoAcids: 0,
-        totalHiddenAminoAcids: 0,
-        longWayHomes: 0,
-        totalLongWayHomes: 0,
-        cleanCollections: 0,
-        totalCleanCollections: 0,
-        quickCollections: 0,
-        totalQuickCollections: 0
-      };
       usersObj[currentKey].checkpoint = parseInt(this.checkpoint);
       usersObj[currentKey].effects = parseInt(this.effects);
       usersObj[currentKey].music = parseInt(this.music);
-      usersObj[currentKey].achievements = achievements;
       usersObj[currentKey].username = this.username;
       usersObj[currentKey].mouse = this.mouse;
       usersObj[currentKey].color = this.color;

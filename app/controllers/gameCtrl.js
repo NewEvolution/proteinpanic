@@ -98,7 +98,6 @@ define([
     var dKey;
     var eyes;
     var tRNA;
-    var title;
     var player;
     var hitbox;
     var prevBtn;
@@ -133,6 +132,8 @@ define([
     var codonGroup;
     var checkpoint;
     var proteinBtn;
+    var titleGroup;
+    var panicGroup;
     var vHiddenIcon;
     var dropoffTime;
     var largeSpeech;
@@ -367,8 +368,16 @@ define([
       });
       proteinDisplayName.setTextBounds(65, 130, 575, 125);
       largeSpeech.addChild(proteinDisplayName);
-      title = game.add.sprite(80, 20, "title");
-      largeSpeech.addChild(title);
+      titleGroup = game.add.group();
+      largeSpeech.addChild(titleGroup);
+      titleGroup.create(80, 20, "title");
+      panicGroup = game.add.group();
+      titleGroup.addChild(panicGroup);
+      panicGroup.create(375, 20, "panic-p");
+      panicGroup.create(420, 20, "panic-a");
+      panicGroup.create(482, 20, "panic-n");
+      panicGroup.create(540, 20, "panic-i");
+      panicGroup.create(564, 20, "panic-c");
       progressHolder = game.add.sprite(73, 280, "progress-holder");
       largeSpeech.addChild(progressHolder);
       progressBar = game.add.sprite(78, 285, "progress-bar");
@@ -500,7 +509,7 @@ define([
         progressHolder.visible = false;
         proteinDisplayName.visible = false;
         talkCycles = game.rnd.integerInRange(3, 8);
-        title.y += 50;
+        titleGroup.y += 50;
       } else if (goToProteinChooser) {
         proteinChooser();
       } else {
@@ -524,6 +533,18 @@ define([
         aminoCollectionRoutine();
         aminoStageCheck(true);
       }
+
+      // Panic vibration ##########################################################################
+      panicGroup.forEachExists(function(letter) {
+        var anchors = {p: 375, a: 420, n: 482, i: 540, c: 564, y: 20};
+        for(var keyName in anchors) {
+          if(letter.key === "panic-" + keyName) {
+            letter.x = game.rnd.realInRange((anchors[keyName] - 2),(anchors[keyName] + 2));
+          }
+          letter.y = game.rnd.realInRange((anchors.y - 2),(anchors.y + 2));
+          letter.rotation = game.rnd.realInRange(-0.05, 0.05);
+        }
+      });
 
       // Ribosome blinking ######################################################################
       var blink = game.rnd.integerInRange(0, 300);
@@ -689,7 +710,7 @@ define([
       }
       if(page === 0) {
         prevBtn.visible = false;
-        title.visible = true;
+        titleGroup.visible = true;
       }
       if(page === 2) {
         tRNA.visible = true;
@@ -714,7 +735,7 @@ define([
       }
       if(page > 0) {
         prevBtn.visible = true;
-        title.visible = false;
+        titleGroup.visible = false;
       }
       if(page === 2) {
         tRNA.visible = true;
@@ -779,8 +800,8 @@ define([
           child.destroy();
         });
         nucleotideGroup.destroy();
-        title.y -= 50;
-        title.visible = true;
+        titleGroup.y -= 50;
+        titleGroup.visible = true;
         startBtn.visible = false;
         optionsBtn.visible = true;
         continueBtn.visible = true;
