@@ -107,7 +107,6 @@ define([
     var Guanine;
     var Thymine;
     var Alanine;
-    var victory;
     var menuBtn;
     var epicIcon;
     var longIcon;
@@ -115,7 +114,15 @@ define([
     var ribosome;
     var startBtn;
     var pauseBtn;
+    var victoryV;
+    var victoryI;
+    var victoryC;
+    var victoryT;
+    var victoryO;
+    var victoryR;
+    var victoryY;
     var page = 0;
+    var victoryEx;
     var ribounder;
     var toGetTime;
     var quickIcon;
@@ -142,6 +149,7 @@ define([
     var victoryText;
     var continueBtn;
     var progressBar;
+    var victoryGroup;
     var toReturnTime;
     var proteinGroup;
     var carriedAmino;
@@ -393,9 +401,16 @@ define([
       victoryBubble = game.add.sprite(game.camera.width / 2, 10, "victory-bubble");
       victoryBubble.anchor.setTo(0.5, 0);
       victoryBubble.fixedToCamera = true;
-      victory = game.add.sprite(0, 30, "victory");
-      victory.anchor.setTo(0.5, 0);
-      victoryBubble.addChild(victory);
+      victoryGroup = game.add.group();
+      victoryV = victoryGroup.create(-409, 94, "victory-v");
+      victoryI = victoryGroup.create(-286, 75, "victory-i");
+      victoryC = victoryGroup.create(-227, 45, "victory-c");
+      victoryT = victoryGroup.create(-115, 30, "victory-t");
+      victoryO = victoryGroup.create(0, 30, "victory-o");
+      victoryR = victoryGroup.create(131, 48, "victory-r");
+      victoryY = victoryGroup.create(257, 78, "victory-y");
+      victoryEx = victoryGroup.create(328, 133, "victory-ex");
+      victoryBubble.addChild(victoryGroup);
       victoryText = game.add.text(0, 20, "", {align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
       victoryText.anchor.setTo(0.5, 0);
       victoryBubble.addChild(victoryText);
@@ -449,7 +464,7 @@ define([
       victoryNextBtn = game.add.button(200, 285, "next-btn", victoryNextFunc, this, 0, 1, 2, 0);
       victoryNextBtn.anchor.setTo(0.5, 0);
       victoryBubble.addChild(victoryNextBtn);
-      victoryBubble.visible = false;
+      // victoryBubble.visible = false;
 
       // Checkpoint, achievements & pause button ##################################################
       checkpoint = game.add.sprite(game.camera.width / 2, 40, "checkpoint");
@@ -596,6 +611,17 @@ define([
           cpVisibleTimer = 60;
           checkpoint.alpha = 1;
         }
+      }
+
+      // Victory jumping ########################################################################
+      if(victoryGroup.visible) {
+        victoryGroup.forEachExists(function(letter) {
+          var starty = letter.y;
+          var ytarget = starty + 20;
+          while(letter.y < ytarget) {
+            letter.y = "";
+          }
+        });
       }
 
       // Player Motion ##########################################################################
@@ -885,7 +911,7 @@ define([
       vQuickIcon.visible = false;
       vEpicIcon.visible = false;
       vLongIcon.visible = false;
-      victory.visible = true;
+      victoryGroup.visible = true;
       victoryText.text = "\n\n\n\nYou built\n\n\n\nfrom " + fullProteinLength + " amino acids!";
     }
 
@@ -899,7 +925,7 @@ define([
       vQuickIcon.visible = true;
       vEpicIcon.visible = true;
       vLongIcon.visible = true;
-      victory.visible = false;
+      victoryGroup.visible = false;
       victoryText.text = "This Protein's Achievements";
     }
 
