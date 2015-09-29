@@ -56,6 +56,12 @@ define([
       game.state.start("loginMenu");
 
       var allAminos = ["D", "E", "F", "N", "I", "M", "W", "Q", "H", "T", "R", "C", "Y", "A", "G", "L", "P", "K", "S", "V"];
+      var argininePoints = {
+        x: [725, 745, 725, 705, 725],
+        y: [485, 505, 525, 505, 485]
+      };
+      var argininePath = [];
+      var arginineStep = 0;
       var facebookBtn;
       var twitterBtn;
       var aminoGroup;
@@ -98,7 +104,15 @@ define([
         menuGroup.fixedToCamera = true;
         menuGroup.create(0, 18, "splash-ribo");
         valine = menuGroup.create(-22, -10, "splash-valine");
-        arginine = menuGroup.create(580, 353, "splash-arginine");
+
+        arginine = menuGroup.create(725, 485, "splash-arginine");
+        arginine.anchor.setTo(0.5, 0.5);
+        for (var ai = 0; ai <= 1; ai += 0.002) {
+            var px = this.math.catmullRomInterpolation(argininePoints.x, ai);
+            var py = this.math.catmullRomInterpolation(argininePoints.y, ai);
+            argininePath.push( { x: px, y: py });
+        }
+
         trna = menuGroup.create(170, -27, "splash-trna");
         trna.tint = 0x00FF00;
         trnaEyes = menuGroup.create(65, 90, "splash-trna-eyes");
@@ -136,6 +150,15 @@ define([
           }
         });
 
+        // Arginine movement ######################################################################
+        arginine.x = argininePath[arginineStep].x;
+        arginine.y = argininePath[arginineStep].y;
+        arginineStep++;
+        if(arginineStep >= argininePath.length) {
+          arginineStep = 0;
+        }
+
+        // Panic vibration ########################################################################
         panicGroup.forEachExists(function(letter) {
           var anchors = {p: 728, a: 773, n: 835, i: 893, c: 917, y: 38};
           for(var keyName in anchors) {
