@@ -50,7 +50,13 @@ define([
     }
 
     return {
-      create: function() {
+      create: function(hasTitle) {
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+        game.world.setBounds(0, 0, 1200, 1200);
+        game.add.tileSprite(0, 0, 1200, 1200, "background");
+        game.camera.x = (game.world.width - game.camera.width) / 2;
+        game.camera.y = (game.world.height - game.camera.height) / 2;
+
         // Floating amino block ###################################################################
         aminoGroup = game.add.group();
         aminoGroup.name = "aminoGroup";
@@ -105,17 +111,18 @@ define([
         }
 
         // Menu block #############################################################################
-        menuGroup.create(703, 119, "orline");
-        menuGroup.create(433, 38, "title");
-        panicGroup = game.add.group();
-        menuGroup.addChild(panicGroup);
-        panicGroup.create(728, 38, "panic-p");
-        panicGroup.create(773, 38, "panic-a");
-        panicGroup.create(835, 38, "panic-n");
-        panicGroup.create(893, 38, "panic-i");
-        panicGroup.create(917, 38, "panic-c");
+        if(hasTitle) {
+          menuGroup.create(433, 38, "title");
+          panicGroup = game.add.group();
+          menuGroup.addChild(panicGroup);
+          panicGroup.create(728, 38, "panic-p");
+          panicGroup.create(773, 38, "panic-a");
+          panicGroup.create(835, 38, "panic-n");
+          panicGroup.create(893, 38, "panic-i");
+          panicGroup.create(917, 38, "panic-c");
+        }
       },
-      update: function() {
+      update: function(hasTitle, trnaTint) {
         // Aminos on stage management #############################################################
         game.physics.arcade.collide(aminoGroup, aminoGroup, rotateBoth, null, this);
         aminoGroup.forEachAlive(function(liveAmino) {
@@ -170,6 +177,9 @@ define([
         }
 
         // tRNA movement ######################################################################
+        if(trnaTint && trna.tint != trnaTint) {
+          trna.tint = trnaTint;
+        }
         trna.x = trnaPath[trnaStep].x;
         trna.y = trnaPath[trnaStep].y;
         trnaStep++;
@@ -189,16 +199,18 @@ define([
         }
 
         // Panic vibration ########################################################################
-        panicGroup.forEachExists(function(letter) {
-          var anchors = {p: 728, a: 773, n: 835, i: 893, c: 917, y: 38};
-          for(var keyName in anchors) {
-            if(letter.key === "panic-" + keyName) {
-              letter.x = game.rnd.realInRange((anchors[keyName] - 2),(anchors[keyName] + 2));
+        if(hasTitle) {
+          panicGroup.forEachExists(function(letter) {
+            var anchors = {p: 728, a: 773, n: 835, i: 893, c: 917, y: 38};
+            for(var keyName in anchors) {
+              if(letter.key === "panic-" + keyName) {
+                letter.x = game.rnd.realInRange((anchors[keyName] - 2),(anchors[keyName] + 2));
+              }
+              letter.y = game.rnd.realInRange((anchors.y - 2),(anchors.y + 2));
+              letter.rotation = game.rnd.realInRange(-0.05, 0.05);
             }
-            letter.y = game.rnd.realInRange((anchors.y - 2),(anchors.y + 2));
-            letter.rotation = game.rnd.realInRange(-0.05, 0.05);
-          }
-        });
+          });
+        }
       }
     };
   }]);

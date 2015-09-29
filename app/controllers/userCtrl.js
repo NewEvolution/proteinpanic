@@ -12,8 +12,8 @@ define([
 			controllerAs: "user"
 		});
 	}])
-	.controller("userCtrl", ["$firebaseArray", "$firebaseObject", "uid", "proteinPanic", "preload",
-	function($firebaseArray, $firebaseObject, uid, proteinPanic, preload) {
+	.controller("userCtrl", ["$firebaseArray", "$firebaseObject", "uid", "proteinPanic", "menuSplash", "preload",
+	function($firebaseArray, $firebaseObject, uid, proteinPanic, menuSplash, preload) {
 
 		var game = proteinPanic;
 
@@ -24,6 +24,7 @@ define([
     var usersObj = $firebaseObject(users);
     var currentUID = null;
     var currentKey = null;
+    var color = 0x00ff00;
     this.deleteToggle = false;
     this.emailToggle = false;
     this.passToggle = false;
@@ -56,6 +57,7 @@ define([
             this.mouse = data[key].mouse;
             this.music = data[key].music;
             this.color = data[key].color;
+            color = "0x" + data[key].color.slice(1);
             this.intro = data[key].intro;
             currentKey = data[key].$id;
             if(currentUID.indexOf("github") === -1 && 
@@ -71,13 +73,16 @@ define([
 		}
 
 		function userMenu() {
-			game.state.add("userMenu", {preload: preload, create: create});
+			game.state.add("userMenu", {preload: preload, create: create, update: update});
       game.state.start("userMenu");
 
 	    function create() {
-	      game.physics.startSystem(Phaser.Physics.ARCADE);
-	      game.add.sprite(0, 0, "splash");
+        menuSplash.create(false);
 	    }
+
+      function update() {
+        menuSplash.update(false, color);
+      }
 		}
 
     this.logOut = function() {

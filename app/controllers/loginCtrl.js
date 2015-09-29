@@ -25,7 +25,6 @@ define([
     this.passReset = false;
     this.username = "";
 
-
     var authData = ref.getAuth();
     if(authData === null) {
   		loginMenu();
@@ -56,14 +55,11 @@ define([
       game.state.start("loginMenu");
 
 			function create() {
-		    game.physics.startSystem(Phaser.Physics.ARCADE);
-        game.world.setBounds(0, 0, 1200, 1200);
-        game.add.tileSprite(0, 0, 1200, 1200, "background");
-        game.camera.x = (game.world.width - game.camera.width) / 2;
-        game.camera.y = (game.world.height - game.camera.height) / 2;
-
-        menuSplash.create();
-
+        menuSplash.create(true);
+        menuGroup = game.add.group();
+        menuGroup.name = "menuGroup";
+        menuGroup.fixedToCamera = true;
+        menuGroup.create(697, 119, "orline");
         game.add.button(827, 430, "github-btn", githubRedir, this, 0, 1, 2, 0);
         game.add.button(827, 480, "facebook-btn", facebookRedir, this, 0, 1, 2, 0);
         game.add.button(827, 529, "google-btn", googleRedir, this, 0, 1, 2, 0);
@@ -71,7 +67,7 @@ define([
       }
 
       function update() {
-        menuSplash.update();
+        menuSplash.update(true);
       }
 
       function facebookRedir() {

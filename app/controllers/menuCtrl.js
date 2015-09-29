@@ -12,8 +12,8 @@ define([
 			controllerAs: "menu"
 		});
 	}])
-	.controller("menuCtrl", ["$firebaseArray", "uid", "proteinPanic", "preload",
-	function($firebaseArray, uid, proteinPanic, preload) {
+	.controller("menuCtrl", ["$firebaseArray", "uid", "proteinPanic", "menuSplash", "preload",
+	function($firebaseArray, uid, proteinPanic, menuSplash, preload) {
 		
     var game = proteinPanic;
 
@@ -22,6 +22,7 @@ define([
     
     var usersArr = $firebaseArray(users);
     var currentUID = null;
+    var color = 0x00ff00;
     this.username = "";
 
     var authData = ref.getAuth();
@@ -36,6 +37,7 @@ define([
           if(data[key].uid === currentUID) {
             userDoesNotExist = false;
             this.username = data[key].username;
+            color = "0x" + data[key].color.slice(1);
           }
         }
         if(userDoesNotExist) {
@@ -50,22 +52,19 @@ define([
     }
 
 		function mainMenu() {
-			game.state.add("mainMenu", {preload: preload, create: create});
+			game.state.add("mainMenu", {preload: preload, create: create, update: update});
       game.state.start("mainMenu");
 
-      var startBtn;
-      var optionsBtn;
-      var statsBtn;
-
 			function create(){
-		    game.physics.startSystem(Phaser.Physics.ARCADE);
-
-		    game.add.sprite(0, 0, "splash");
-		    game.add.sprite(433, 38, "title");
-        startBtn = game.add.button(432, 110, "start-game", startFunc, this, 0, 1, 2, 0);
-        optionsBtn = game.add.button(432, 177, "edit-options", optionsFunc, this, 0, 1, 2, 0);
-        statsBtn = game.add.button(432, 245, "view-statistics", statsFunc, this, 0, 1, 2, 0);
+        menuSplash.create(true);
+        game.add.button(520, 422, "start-game", startFunc, this, 0, 1, 2, 0);
+        game.add.button(520, 489, "edit-options", optionsFunc, this, 0, 1, 2, 0);
+        game.add.button(520, 557, "view-statistics", statsFunc, this, 0, 1, 2, 0);
 		  }
+
+      function update() {
+        menuSplash.update(true, color);
+      }
 
       function startFunc() {
         window.location ="#/game";

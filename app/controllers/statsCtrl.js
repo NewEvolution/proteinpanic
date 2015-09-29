@@ -12,8 +12,8 @@ define([
       controllerAs: "stats"
     });
   }])
-  .controller("statsCtrl", ["$firebaseArray", "uid", "proteinPanic", "preload",
-  function($firebaseArray, uid, proteinPanic, preload) {
+  .controller("statsCtrl", ["$firebaseArray", "uid", "proteinPanic", "menuSplash", "preload",
+  function($firebaseArray, uid, proteinPanic, menuSplash, preload) {
     
     var game = proteinPanic;
 
@@ -22,6 +22,7 @@ define([
     
     var usersArr = $firebaseArray(users);
     var currentUID = null;
+    var color = 0x00ff00;
 
     this.arrayOfUsers = usersArr;
     this.username = "";
@@ -38,6 +39,7 @@ define([
           if(data[key].uid === currentUID) {
             userDoesNotExist = false;
             this.username = data[key].username;
+            color = "0x" + data[key].color.slice(1);
           }
         }
         if(userDoesNotExist) {
@@ -52,13 +54,15 @@ define([
     }
 
     function howtoMenu() {
-      game.state.add("howtoMenu", {preload: preload, create: create});
+      game.state.add("howtoMenu", {preload: preload, create: create, update: update});
       game.state.start("howtoMenu");
 
-      function create(){
-        game.physics.startSystem(Phaser.Physics.ARCADE);
+      function create() {
+        menuSplash.create(false);
+      }
 
-        game.add.sprite(0, 0, "splash");
+      function update() {
+        menuSplash.update(false, color);
       }
 
     }
