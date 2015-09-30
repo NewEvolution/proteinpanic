@@ -24,6 +24,7 @@ define([
     var usersObj = $firebaseObject(users);
     var currentUID = null;
     var currentKey = null;
+    var promisedCreation;
     var _this = this;
     this.deleteToggle = false;
     this.emailToggle = false;
@@ -67,26 +68,25 @@ define([
             }
 					}
 				}
-        userMenu();
+        if(menuSplash.menusLoadedGetter() === false) {
+          console.log("Building from scratch");
+          menuSplash.menusLoadedSetter(true);
+          menuSplash.hasTitleSetter(false);
+          promisedCreation = menuSplash.menuStarter();
+          promisedCreation.then(function() {
+            menuSplash.trnaTintSetter("0x" + _this.color.slice(1));
+          });
+        } else {
+          console.log("Loading overtop");
+          menuSplash.hasTitleSetter(false);
+          menuSplash.trnaTintSetter("0x" + this.color.slice(1));
+        }
 			}));
-		}
-
-		function userMenu() {
-			game.state.add("userMenu", {preload: preload, create: create, update: update});
-      game.state.start("userMenu");
-
-	    function create() {
-        menuSplash.create(false);
-	    }
-
-      function update() {
-        menuSplash.update(false, "0x" + _this.color.slice(1));
-      }
 		}
 
     this.logOut = function() {
       ref.unauth();
-      window.location.reload();
+      window.location = "#/";
     };
 
 		this.checkAvail = function(saving, destination) {
@@ -117,6 +117,10 @@ define([
       } else if (usernameAvailable) {
         alert(this.username + " is available!");
       }
+    };
+
+    this.colorChange = function() {
+      menuSplash.trnaTintSetter("0x" + this.color.slice(1));
     };
 
     this.saveUserData = function(destination) {

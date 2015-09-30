@@ -12,8 +12,8 @@ define([
 			controllerAs: "login"
 		});
 	}])
-	.controller("loginCtrl", ["$scope", "$firebaseArray", "uid", "proteinPanic", "menuSplash", "preload",
-	function($scope, $firebaseArray, uid, proteinPanic, menuSplash, preload) {
+	.controller("loginCtrl", ["$scope", "$firebaseArray", "uid", "proteinPanic", "menuSplash",
+	function($scope, $firebaseArray, uid, proteinPanic, menuSplash) {
 	
   	var game = proteinPanic;
 
@@ -22,12 +22,25 @@ define([
   
     var usersArr = $firebaseArray(users);
     var currentUID = null;
+    var promisedCreation;
     this.passReset = false;
     this.username = "";
 
     var authData = ref.getAuth();
     if(authData === null) {
-  		loginMenu();
+  		if(menuSplash.menusLoadedGetter() === false) {
+        console.log("Building from scratch");
+        menuSplash.menusLoadedSetter(true);
+        menuSplash.hasTitleSetter(true);
+        promisedCreation = menuSplash.menuStarter();
+        promisedCreation.then(function() {
+          create();
+        });
+      } else {
+        console.log("Loading overtop");
+        menuSplash.hasTitleSetter(true);
+        create();
+      }
 		} else {
 		  uid.setUid(authData.uid);
 		  currentUID = authData.uid;
@@ -63,52 +76,46 @@ define([
 				}
 			}));
 		}
+    var githubBtn;
+    var facebookBtn;
+    var googleBtn;
+    var twitterBtn;
+    var orline;
 
-		function loginMenu() {
-			game.state.add("loginMenu", {preload: preload, create: create, update: update});
-      game.state.start("loginMenu");
+		function create() {
+      menuGroup = game.add.group();
+      menuGroup.name = "menuGroup";
+      menuGroup.fixedToCamera = true;
+      orline = menuGroup.create(697, 119, "orline");
+      githubBtn = game.add.button(827, 430, "github-btn", githubRedir, this, 0, 1, 2, 0);
+      facebookBtn = game.add.button(827, 480, "facebook-btn", facebookRedir, this, 0, 1, 2, 0);
+      googleBtn = game.add.button(827, 529, "google-btn", googleRedir, this, 0, 1, 2, 0);
+      twitterBtn = game.add.button(827, 577, "twitter-btn", twitterRedir, this, 0, 1, 2, 0);
+    }
 
-			function create() {
-        menuSplash.create(true);
-        menuGroup = game.add.group();
-        menuGroup.name = "menuGroup";
-        menuGroup.fixedToCamera = true;
-        menuGroup.create(697, 119, "orline");
-        game.add.button(827, 430, "github-btn", githubRedir, this, 0, 1, 2, 0);
-        game.add.button(827, 480, "facebook-btn", facebookRedir, this, 0, 1, 2, 0);
-        game.add.button(827, 529, "google-btn", googleRedir, this, 0, 1, 2, 0);
-        game.add.button(827, 577, "twitter-btn", twitterRedir, this, 0, 1, 2, 0);
-      }
+    function facebookRedir() {
+    	serviceAuth("facebook");
+    }
 
-      function update() {
-        menuSplash.update(true);
-      }
+    function twitterRedir() {
+    	serviceAuth("twitter");
+    }
 
-      function facebookRedir() {
-      	serviceAuth("facebook");
-      }
+    function githubRedir() {
+    	serviceAuth("github");
+    }
 
-      function twitterRedir() {
-      	serviceAuth("twitter");
-      }
+    function googleRedir() {
+    	serviceAuth("google");
+    }
 
-      function githubRedir() {
-      	serviceAuth("github");
-      }
-
-      function googleRedir() {
-      	serviceAuth("google");
-      }
-
-		  function serviceAuth(service) {
-        ref.authWithOAuthRedirect(service, function(error, authData) {
-          if (error) {
-            alert("Login Failed!\n" + error);
-          }
-        });
-      }
-
-		}
+	  function serviceAuth(service) {
+      ref.authWithOAuthRedirect(service, function(error, authData) {
+        if (error) {
+          alert("Login Failed!\n" + error);
+        }
+      });
+    }
 
 	  this.signUp = function() {
 	  	if(this.email === undefined || this.email.indexOf("@") === -1 || this.password.length < 6) {
@@ -155,6 +162,11 @@ define([
               if(userDoesNotExist) {
                 usersArr.$add({uid: currentUID});
               }
+              orline.destroy();
+              githubBtn.destroy();
+              googleBtn.destroy();
+              twitterBtn.destroy();
+              facebookBtn.destroy();
               if(this.username === "") {
                 window.location = "#/user";
               } else {

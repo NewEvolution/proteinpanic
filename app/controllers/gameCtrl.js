@@ -12,8 +12,8 @@ define([
       controllerAs: "game"
     });
   }])
-  .controller("gameCtrl", ["$q", "$scope", "$firebaseArray", "$firebaseObject", "uid", "proteinPanic", "preload",
-  function($q, $scope, $firebaseArray, $firebaseObject, uid, proteinPanic, preload) {
+  .controller("gameCtrl", ["$q", "$scope", "$firebaseArray", "$firebaseObject", "uid", "proteinPanic", "preload", "menuSplash",
+  function($q, $scope, $firebaseArray, $firebaseObject, uid, proteinPanic, preload, menuSplash) {
     
     var game = proteinPanic;
 
@@ -44,6 +44,7 @@ define([
     if(authData === null) {
       window.location = "/";
     } else {
+      menuSplash.menusLoadedSetter(false);
       uid.setUid(authData.uid);
       currentUID = authData.uid;
       usersArr.$loaded().then(function(data) {
@@ -284,10 +285,10 @@ define([
       game.add.tileSprite(0, 0, 1200, 1200, "background");
       game.world.setBounds(0, 0, 1200, 1200);
       if(!mouse) {
-        wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
-        aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
-        sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
-        dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
+        wKey = game.input.keyboard.addKeyCapture(Phaser.Keyboard.W);
+        aKey = game.input.keyboard.addKeyCapture(Phaser.Keyboard.A);
+        sKey = game.input.keyboard.addKeyCapture(Phaser.Keyboard.S);
+        dKey = game.input.keyboard.addKeyCapture(Phaser.Keyboard.D);
         cursors = game.input.keyboard.createCursorKeys();
       }
 
@@ -750,6 +751,12 @@ define([
 
 //-------------------------------------------------------------------------------------------------
 
+  function shutdown() {
+    game.input.keyboard.destroy();
+  }
+
+//-------------------------------------------------------------------------------------------------
+
     function render() {
       game.debug.body(hitbox);
       game.debug.cameraInfo(game.camera, 32, 32);
@@ -917,6 +924,7 @@ define([
     function optionsFunc() {
       usersObj[currentKey].intro = false;
       usersObj.$save();
+      shutdown();
       window.location = "#/user";
     }
 

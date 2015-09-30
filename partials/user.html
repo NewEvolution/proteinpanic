@@ -9,7 +9,7 @@
     <button id="available-btn" ng-click="user.checkAvail()">Check Availability</button>
     <hr>
     <h3>Player Color:</h3>
-    <input type="color" id="color-input" ng-model="user.color">
+    <input type="color" id="color-input" ng-model="user.color" ng-change="user.colorChange()">
     <hr>
     <h3>Controls:</h3>
     <div>

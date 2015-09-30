@@ -48,23 +48,19 @@ define([
         if(this.username === "") {
           window.location = "#/user";
         } else {
-          howtoMenu();
+          if(menuSplash.menusLoadedGetter() === false) {
+            console.log("Building from scratch");
+            menuSplash.menusLoadedSetter(true);
+            menuSplash.hasTitleSetter(false);
+            menuSplash.trnaTintSetter(color);
+            menuSplash.menuStarter();
+          } else {
+            console.log("Loading overtop");
+            menuSplash.hasTitleSetter(false);
+            menuSplash.trnaTintSetter(color);
+          }
         }
       }));
-    }
-
-    function howtoMenu() {
-      game.state.add("howtoMenu", {preload: preload, create: create, update: update});
-      game.state.start("howtoMenu");
-
-      function create() {
-        menuSplash.create(false);
-      }
-
-      function update() {
-        menuSplash.update(false, color);
-      }
-
     }
 
     this.userRank = function(proteinString) {

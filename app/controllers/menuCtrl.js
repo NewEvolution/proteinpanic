@@ -23,6 +23,7 @@ define([
     var usersArr = $firebaseArray(users);
     var currentUID = null;
     var color = 0x00ff00;
+    var promisedCreation;
     this.username = "";
 
     var authData = ref.getAuth();
@@ -46,39 +47,55 @@ define([
         if(this.username === "") {
           window.location = "#/user";
         } else {
-          mainMenu();
+          if(menuSplash.menusLoadedGetter() === false) {
+            console.log("Building from scratch");
+            menuSplash.menusLoadedSetter(true);
+            menuSplash.hasTitleSetter(true);
+            menuSplash.trnaTintSetter(color);
+            promisedCreation = menuSplash.menuStarter();
+            promisedCreation.then(function() {
+              create();
+            });
+          } else {
+            console.log("Loading overtop");
+            menuSplash.hasTitleSetter(true);
+            menuSplash.trnaTintSetter(color);
+            create();
+          }
         }
       }));
     }
 
-		function mainMenu() {
-			game.state.add("mainMenu", {preload: preload, create: create, update: update});
-      game.state.start("mainMenu");
+    var startBtn;
+    var statsBtn;
+    var editBtn;
 
-			function create(){
-        menuSplash.create(true);
-        game.add.button(520, 422, "start-game", startFunc, this, 0, 1, 2, 0);
-        game.add.button(520, 489, "edit-options", optionsFunc, this, 0, 1, 2, 0);
-        game.add.button(520, 557, "view-statistics", statsFunc, this, 0, 1, 2, 0);
-		  }
+		function create(){
+      startBtn = game.add.button(520, 422, "start-game", startFunc, this, 0, 1, 2, 0);
+      editBtn = game.add.button(520, 489, "edit-options", optionsFunc, this, 0, 1, 2, 0);
+      statsBtn = game.add.button(520, 557, "view-statistics", statsFunc, this, 0, 1, 2, 0);
+    }
 
-      function update() {
-        menuSplash.update(true, color);
-      }
+    function btnKiller() {
+      startBtn.destroy();
+      editBtn.destroy();
+      statsBtn.destroy();
+    }
 
-      function startFunc() {
-        window.location ="#/game";
-      }
+    function startFunc() {
+      btnKiller();
+      window.location ="#/game";
+    }
 
-      function optionsFunc() {
-        window.location ="#/user";
-      }
+    function optionsFunc() {
+      btnKiller();
+      window.location ="#/user";
+    }
 
-      function statsFunc() {
-      	window.location ="#/stats";
-      }
-
-		}
+    function statsFunc() {
+      btnKiller();
+      window.location ="#/stats";
+    }
 
 	}]);
 });
