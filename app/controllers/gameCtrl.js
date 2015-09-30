@@ -615,13 +615,7 @@ define([
 
       // Victory jumping ########################################################################
       if(victoryGroup.visible) {
-        victoryGroup.forEachExists(function(letter) {
-          var starty = letter.y;
-          var ytarget = starty + 20;
-          while(letter.y < ytarget) {
-            letter.y = "";
-          }
-        });
+        // ugh.
       }
 
       // Player Motion ##########################################################################
