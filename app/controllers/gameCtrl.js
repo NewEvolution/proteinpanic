@@ -273,8 +273,8 @@ define([
 
     function theGame() {
       introContent[0] = "Welcome to\n\n\nThe collection game where you can build all the proteins in the human body!\n\nHi " + username + "! My name's Riley, and I'm a ribosome. I'll be your guide throughout the game, but first, let's learn how to play.";
-      game.state.add("theGame", {preload: preload, create: create, update: update});
-      game.state.start("theGame");
+      game.state.add("theGame", {preload: preload, create: create, update: update}, true);
+      game.state.remove("allMenus");
     }
 
 //-------------------------------------------------------------------------------------------------      
@@ -285,10 +285,10 @@ define([
       game.add.tileSprite(0, 0, 1200, 1200, "background");
       game.world.setBounds(0, 0, 1200, 1200);
       if(!mouse) {
-        wKey = game.input.keyboard.addKeyCapture(Phaser.Keyboard.W);
-        aKey = game.input.keyboard.addKeyCapture(Phaser.Keyboard.A);
-        sKey = game.input.keyboard.addKeyCapture(Phaser.Keyboard.S);
-        dKey = game.input.keyboard.addKeyCapture(Phaser.Keyboard.D);
+        wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+        aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
+        sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
+        dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
         cursors = game.input.keyboard.createCursorKeys();
       }
 
@@ -751,7 +751,7 @@ define([
 
 //-------------------------------------------------------------------------------------------------
 
-  function shutdown() {
+  function onExit() {
     game.input.keyboard.destroy();
   }
 
@@ -924,7 +924,7 @@ define([
     function optionsFunc() {
       usersObj[currentKey].intro = false;
       usersObj.$save();
-      shutdown();
+      onExit();
       window.location = "#/user";
     }
 

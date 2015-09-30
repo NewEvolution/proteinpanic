@@ -48,7 +48,6 @@ define([
           window.location = "#/user";
         } else {
           if(menuSplash.menusLoadedGetter() === false) {
-            console.log("Building from scratch");
             menuSplash.menusLoadedSetter(true);
             menuSplash.hasTitleSetter(true);
             menuSplash.trnaTintSetter(color);
@@ -57,7 +56,6 @@ define([
               create();
             });
           } else {
-            console.log("Loading overtop");
             menuSplash.hasTitleSetter(true);
             menuSplash.trnaTintSetter(color);
             create();

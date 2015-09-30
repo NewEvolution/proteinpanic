@@ -69,7 +69,6 @@ define([
 					}
 				}
         if(menuSplash.menusLoadedGetter() === false) {
-          console.log("Building from scratch");
           menuSplash.menusLoadedSetter(true);
           menuSplash.hasTitleSetter(false);
           promisedCreation = menuSplash.menuStarter();
@@ -77,7 +76,6 @@ define([
             menuSplash.trnaTintSetter("0x" + _this.color.slice(1));
           });
         } else {
-          console.log("Loading overtop");
           menuSplash.hasTitleSetter(false);
           menuSplash.trnaTintSetter("0x" + this.color.slice(1));
         }
@@ -86,6 +84,7 @@ define([
 
     this.logOut = function() {
       ref.unauth();
+      game.state.remove("theGame");
       window.location = "#/";
     };
 

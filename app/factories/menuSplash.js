@@ -70,8 +70,7 @@ define([
     };
 
     function allMenus() {
-      game.state.add("allMenus", {preload: preload, create: create, update: update});
-      game.state.start("allMenus");
+      game.state.add("allMenus", {preload: preload, create: create, update: update}, true);
     }
 
     function create() {

@@ -29,7 +29,6 @@ define([
     var authData = ref.getAuth();
     if(authData === null) {
   		if(menuSplash.menusLoadedGetter() === false) {
-        console.log("Building from scratch");
         menuSplash.menusLoadedSetter(true);
         menuSplash.hasTitleSetter(true);
         promisedCreation = menuSplash.menuStarter();
@@ -37,7 +36,6 @@ define([
           create();
         });
       } else {
-        console.log("Loading overtop");
         menuSplash.hasTitleSetter(true);
         create();
       }
