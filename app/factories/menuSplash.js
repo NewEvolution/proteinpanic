@@ -83,19 +83,19 @@ define([
         // Valine
         valine = menuGroup.create(57, 70, "splash-valine");
         valine.anchor.setTo(0.5, 0.5);
-        for (var vi = 0; vi <= 1; vi += 0.005) {
-            var vx = game.math.catmullRomInterpolation(valinePoints.x, vi);
-            var vy = game.math.catmullRomInterpolation(valinePoints.y, vi);
-            valinePath.push( { x: vx, y: vy });
+        for(var vi = 0; vi <= 1; vi += 0.005) {
+          var vx = game.math.catmullRomInterpolation(valinePoints.x, vi);
+          var vy = game.math.catmullRomInterpolation(valinePoints.y, vi);
+          valinePath.push( { x: vx, y: vy });
         }
 
         // Arginine
         arginine = menuGroup.create(725, 485, "splash-arginine");
         arginine.anchor.setTo(0.5, 0.5);
-        for (var ai = 0; ai <= 1; ai += 0.002) {
-            var ax = game.math.catmullRomInterpolation(argininePoints.x, ai);
-            var ay = game.math.catmullRomInterpolation(argininePoints.y, ai);
-            argininePath.push( { x: ax, y: ay });
+        for(var ai = 0; ai <= 1; ai += 0.002) {
+          var ax = game.math.catmullRomInterpolation(argininePoints.x, ai);
+          var ay = game.math.catmullRomInterpolation(argininePoints.y, ai);
+          argininePath.push( { x: ax, y: ay });
         }
 
         // tRNA
@@ -104,10 +104,10 @@ define([
         trna.tint = 0x00FF00;
         trnaEyes = menuGroup.create(-35, -58, "splash-trna-eyes");
         trna.addChild(trnaEyes);
-        for (var ti = 0; ti <= 1; ti += 0.001) {
-            var tx = game.math.catmullRomInterpolation(trnaPoints.x, ti);
-            var ty = game.math.catmullRomInterpolation(trnaPoints.y, ti);
-            trnaPath.push( { x: tx, y: ty });
+        for(var ti = 0; ti <= 1; ti += 0.001) {
+          var tx = game.math.catmullRomInterpolation(trnaPoints.x, ti);
+          var ty = game.math.catmullRomInterpolation(trnaPoints.y, ti);
+          trnaPath.push( { x: tx, y: ty });
         }
 
         // Menu block #############################################################################

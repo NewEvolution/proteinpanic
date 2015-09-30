@@ -121,8 +121,8 @@ define([
     var victoryO;
     var victoryR;
     var victoryY;
+    var victoryX;
     var page = 0;
-    var victoryEx;
     var ribounder;
     var toGetTime;
     var quickIcon;
@@ -141,6 +141,14 @@ define([
     var proteinBtn;
     var titleGroup;
     var panicGroup;
+    var pathV = [];
+    var pathI = [];
+    var pathC = [];
+    var pathT = [];
+    var pathO = [];
+    var pathR = [];
+    var pathY = [];
+    var pathX = [];
     var vHiddenIcon;
     var dropoffTime;
     var largeSpeech;
@@ -163,6 +171,7 @@ define([
     var victoryNextBtn;
     var victoryProtein;
     var progressHolder;
+    var letterStep = 0;
     var aminoCount = 0;
     var talkCycles = 0;
     var nucleotideGroup;
@@ -171,6 +180,7 @@ define([
     var achievementsList;
     var checkAchieveText;
     var interstitialText;
+    var victoryMoveMaker;
     var blinkCounter = 0;
     var fullProteinLength;
     var collectCodonGroup;
@@ -193,6 +203,14 @@ define([
     var completedProteins = "";
     var mouthClosedCounter = 0;
     var checkpointInterval = 10;
+    var pointsV = [94, 74, 94, 94, 94, 94, 94, 94, 94, 94];
+    var pointsI = [75, 75, 55, 75, 75, 75, 75, 75, 75, 75];
+    var pointsC = [45, 45, 45, 25, 45, 45, 45, 45, 45, 45];
+    var pointsT = [30, 30, 30, 30, 10, 30, 30, 30, 30, 30];
+    var pointsO = [30, 30, 30, 30, 30, 10, 30, 30, 30, 30];
+    var pointsR = [48, 48, 48, 48, 48, 48, 28, 48, 48, 48];
+    var pointsY = [78, 78, 78, 78, 78, 78, 78, 58, 78, 78];
+    var pointsX = [133, 133, 133, 133, 133, 133, 133, 133, 113, 133];
     var introContent = [
       "",
       "Those little colorful beings bouncing around in the background are amino acids, the building blocks of proteins.\n\nAs a ribosome, my job is to assemble those amino acids in a specific order to build a protein, but there's more to it than that, and that's where you come in.",
@@ -409,7 +427,23 @@ define([
       victoryO = victoryGroup.create(0, 30, "victory-o");
       victoryR = victoryGroup.create(131, 48, "victory-r");
       victoryY = victoryGroup.create(257, 78, "victory-y");
-      victoryEx = victoryGroup.create(328, 133, "victory-ex");
+      victoryX = victoryGroup.create(328, 133, "victory-x");
+      victoryMoveMaker = [
+        [victoryV, pathV, pointsV],
+        [victoryI, pathI, pointsI],
+        [victoryC, pathC, pointsC],
+        [victoryT, pathT, pointsT],
+        [victoryO, pathO, pointsO],
+        [victoryR, pathR, pointsR],
+        [victoryY, pathY, pointsY],
+        [victoryX, pathX, pointsX]
+      ];
+      for(var vmm = 0; vmm < victoryMoveMaker.length; vmm++) {
+        for(var vl = 0; vl <= 1; vl += 0.02) {
+          var ty = game.math.catmullRomInterpolation(victoryMoveMaker[vmm][2], vl);
+          victoryMoveMaker[vmm][1].push(ty);
+        }
+      }
       victoryBubble.addChild(victoryGroup);
       victoryText = game.add.text(0, 20, "", {align: "center", boundsAlignH: "center", wordWrap: true, wordWrapWidth: 575});
       victoryText.anchor.setTo(0.5, 0);
@@ -445,18 +479,18 @@ define([
       vLongIcon.scale.y = 0.5;
       victoryBubble.addChild(vLongIcon);
       vLongIcon.visible = false;
-      vCleanIcon = game.add.sprite(-135, 229, "clean");
-      vCleanIcon.anchor.setTo(0.5, 0,5);
-      vCleanIcon.scale.x = 0.5;
-      vCleanIcon.scale.y = 0.5;
-      victoryBubble.addChild(vCleanIcon);
-      vCleanIcon.visible = false;
-      vQuickIcon = game.add.sprite(-135, 286, "quick");
+      vQuickIcon = game.add.sprite(-135, 229, "quick");
       vQuickIcon.anchor.setTo(0.5, 0,5);
       vQuickIcon.scale.x = 0.5;
       vQuickIcon.scale.y = 0.5;
       victoryBubble.addChild(vQuickIcon);
       vQuickIcon.visible = false;
+      vCleanIcon = game.add.sprite(-135, 286, "clean");
+      vCleanIcon.anchor.setTo(0.5, 0,5);
+      vCleanIcon.scale.x = 0.5;
+      vCleanIcon.scale.y = 0.5;
+      victoryBubble.addChild(vCleanIcon);
+      vCleanIcon.visible = false;
       victoryPrevBtn = game.add.button(-200, 285, "prev-btn", victoryPrevFunc, this, 0, 1, 2, 0);
       victoryPrevBtn.anchor.setTo(0.5, 0);
       victoryBubble.addChild(victoryPrevBtn);
@@ -464,7 +498,7 @@ define([
       victoryNextBtn = game.add.button(200, 285, "next-btn", victoryNextFunc, this, 0, 1, 2, 0);
       victoryNextBtn.anchor.setTo(0.5, 0);
       victoryBubble.addChild(victoryNextBtn);
-      // victoryBubble.visible = false;
+      victoryBubble.visible = false;
 
       // Checkpoint, achievements & pause button ##################################################
       checkpoint = game.add.sprite(game.camera.width / 2, 40, "checkpoint");
@@ -614,8 +648,14 @@ define([
       }
 
       // Victory jumping ########################################################################
-      if(victoryGroup.visible) {
-        // ugh.
+      if(victoryBubble.visible && victoryGroup.visible) {
+        for(var lj = 0; lj < victoryMoveMaker.length; lj++) {
+          victoryMoveMaker[lj][0].y = victoryMoveMaker[lj][1][letterStep];
+        }
+        letterStep++;
+        if(letterStep >= pathV.length) {
+          letterStep = 0;
+        }
       }
 
       // Player Motion ##########################################################################
@@ -1021,9 +1061,9 @@ define([
           achievements.totalLongWayHomes = achievements.totalLongWayHomes + achievements.longWayHomes;
           achievementsList.text = achievements.epicCollections + " - Epic Collections\n" +
             achievements.hiddenAminoAcids + " - Hidden Amino Acids\n" +
-            achievements.longWayHomes + " - Long Ways Home\n" +
-            achievements.cleanCollections + " - Clean Collections\n" +
-            achievements.quickCollections + " - Quick Collections";
+            achievements.longWayHomes + " - Long Way Homes\n" +
+            achievements.quickCollections + " - Quick Collections\n" +
+            achievements.cleanCollections + " - Clean Collections";
           achievements.hiddenAminoAcids = 0;
           achievements.cleanCollections = 0;
           achievements.quickCollections = 0;
@@ -1071,20 +1111,17 @@ define([
           checkAchieveText.text = "Long Way Home!";
           longIcon.visible = true;
           checkpoint.visible = true;
+        } else if((toGetTime + toReturnTime) < 3000) {
+          achievements.quickCollections++;
+          checkAchieveText.text = "Quick Collection!";
+          quickIcon.visible = true;
+          checkpoint.visible = true;
         } else {
           achievements.cleanCollections++;
           delay = 2000;
           checkAchieveText.text = "Clean Collection!";
           cleanIcon.visible = true;
           checkpoint.visible = true;
-        }
-        if((toGetTime + toReturnTime) < 3000) {
-          achievements.quickCollections++;
-          setTimeout(function(){
-            checkAchieveText.text = "Quick Collection!";
-            quickIcon.visible = true;
-            checkpoint.visible = true;
-          }, delay);
         }
       }
     }

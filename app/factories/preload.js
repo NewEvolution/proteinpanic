@@ -61,7 +61,6 @@ define([
         game.load.image("splash-ribo", "images/SplashRibo.png");
         game.load.image("splash-trna", "images/SplashtRNA.png");
         game.load.image("checkpoint", "images/checkpoint.png");
-        game.load.image("victory-ex", "images/victory-ex.png");
         game.load.image("splash", "images/splash-screen.png");
         game.load.image("victory-v", "images/victory-v.png");
         game.load.image("victory-i", "images/victory-i.png");
@@ -70,6 +69,7 @@ define([
         game.load.image("victory-o", "images/victory-o.png");
         game.load.image("victory-r", "images/victory-r.png");
         game.load.image("victory-y", "images/victory-y.png");
+        game.load.image("victory-x", "images/victory-x.png");
         game.load.image("background", "images/cell-bg.png");
         game.load.image("longhome", "images/longhome.png");
         game.load.image("orline", "images/or-line.png");
