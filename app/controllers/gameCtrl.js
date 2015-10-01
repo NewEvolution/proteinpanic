@@ -56,6 +56,8 @@ define([
             intro = data[key].intro;
             currentKey = data[key].$id;
             username = data[key].username;
+            musicVolume = data[key].music * 0.01;
+            effectsVolume = data[key].effects * 0.01;
             completedIntro = data[key].completedIntro;
             checkpointInterval = data[key].checkpoint;
             playerColor = "0x" + data[key].color.slice(1);
@@ -99,6 +101,7 @@ define([
     var dKey;
     var eyes;
     var tRNA;
+    var dropA;
     var player;
     var hitbox;
     var prevBtn;
@@ -109,6 +112,7 @@ define([
     var Thymine;
     var Alanine;
     var menuBtn;
+    var impactA;
     var epicIcon;
     var longIcon;
     var Cytosine;
@@ -123,6 +127,7 @@ define([
     var victoryR;
     var victoryY;
     var victoryX;
+    var captureA;
     var page = 0;
     var ribounder;
     var toGetTime;
@@ -152,12 +157,15 @@ define([
     var pathX = [];
     var vHiddenIcon;
     var dropoffTime;
+    var checkpointA;
+    var collectionA;
     var largeSpeech;
     var smallSpeech;
     var playerColor;
     var victoryText;
     var continueBtn;
     var progressBar;
+    var achievementA;
     var victoryGroup;
     var toReturnTime;
     var proteinGroup;
@@ -178,6 +186,7 @@ define([
     var nucleotideGroup;
     var collectableName;
     var codonChain = [];
+    var musicVolume = 0;
     var achievementsList;
     var checkAchieveText;
     var interstitialText;
@@ -187,6 +196,7 @@ define([
     var collectCodonGroup;
     var codonSliding = 45;
     var achievements = {};
+    var effectsVolume = 1;
     var collectDescription;
     var goToProteinChooser;
     var proteinDisplayName;
@@ -204,6 +214,7 @@ define([
     var completedProteins = "";
     var mouthClosedCounter = 0;
     var checkpointInterval = 10;
+    var controlsDestroyed = false;
     var pointsV = [94, 74, 94, 94, 94, 94, 94, 94, 94, 94];
     var pointsI = [75, 75, 55, 75, 75, 75, 75, 75, 75, 75];
     var pointsC = [45, 45, 45, 25, 45, 45, 45, 45, 45, 45];
@@ -285,19 +296,23 @@ define([
       game.add.tileSprite(0, 0, 1200, 1200, "background");
       game.world.setBounds(0, 0, 1200, 1200);
       if(!mouse) {
-        wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
-        aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
-        sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
-        dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
-        cursors = game.input.keyboard.createCursorKeys();
+        createControls();
       }
 
-      // Built protein block ####################################################################
+      // Sound effects ##########################################################################
+      achievementA = game.add.audio("achievement-a", effectsVolume);
+      checkpointA = game.add.audio("checkpoint-a", effectsVolume);
+      collectionA = game.add.audio("collection-a", effectsVolume);
+      captureA = game.add.audio("capture-a", effectsVolume);
+      impactA = game.add.audio("impact-a", effectsVolume);
+      dropA = game.add.audio("drop-a", effectsVolume);
+
+      // Built protein ##########################################################################
       proteinGroup = game.add.group();
       proteinGroup.name = "proteinGroup";
       proteinGroup.fixedToCamera = true;
 
-      // Player block ###########################################################################
+      // Player #################################################################################
       player = game.add.sprite(100, 1100, "player");
       game.physics.arcade.enable(player);
       player.body.collideWorldBounds = true;
@@ -308,7 +323,7 @@ define([
       player.tint = playerColor;
       player.addChild(eyes);
 
-      // Amino swarm block ######################################################################
+      // Amino swarm ############################################################################
       aminoGroup = game.add.group();
       aminoGroup.name = "aminoGroup";
       aminoGroup.enableBody = true;
@@ -336,7 +351,7 @@ define([
         anAmino.anchor.setTo(0.5, 0.5);
       }
 
-      // Ribosome & codon block #################################################################
+      // Ribosome & codon #######################################################################
       ribounder = game.add.sprite(20, 410, "ribo-under");
       ribounder.fixedToCamera = true;
       codonGroup = game.add.group();
@@ -752,7 +767,8 @@ define([
 //-------------------------------------------------------------------------------------------------
 
   function onExit() {
-    game.input.keyboard.destroy();
+    controlsDestroyed = true;
+    game.input.keyboard.clearCaptures();
   }
 
 //-------------------------------------------------------------------------------------------------
@@ -939,6 +955,10 @@ define([
       }
       largeSpeech.visible = false;
       smallSpeech.visible = true;
+      if(controlsDestroyed) {
+        controlsDestroyed = false;
+        createControls();
+      }
       controlsLocked = false;
       talkCycles = game.rnd.integerInRange(3, 7);
     }
@@ -988,6 +1008,14 @@ define([
 
 //-------------------------------------------------------------------------------------------------
 
+    function createControls() {
+      wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+      aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
+      sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
+      dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
+      cursors = game.input.keyboard.createCursorKeys();
+    }
+
     function getAminoName(value) {
       for (var aa = 0; aa < aminosArr.length; aa++) {
         if (aminosArr[aa].code == value) return aminosArr[aa].name;
@@ -1026,6 +1054,7 @@ define([
         }
         toReturnTime = dropoffTime - pickupTime;
         talkCycles = game.rnd.integerInRange(3, 7);
+        collectionA.play();
         aminoCollectionRoutine(true);
         carriedAmino.destroy();
         carryingAmino = false;
@@ -1086,6 +1115,7 @@ define([
         if((fullProteinLength - remainingProteinLength) % checkpointInterval === 0) {
           checkpointCount++;
           checkAchieveText.text = "Checkpoint " + checkpointCount + " of " + Math.floor(fullProteinLength / checkpointInterval) + "!";
+          checkpointA.play();
           checkpoint.visible = true;
           usersObj[currentKey].remainingProteinLength = remainingProteinLength;
           usersObj[currentKey].achievements = achievements;
@@ -1100,22 +1130,19 @@ define([
 
     function achievementRoutine() {
       if(hitCount === 0) {
-        var delay = 0;
+        achievementA.play();
         if((toGetTime + toReturnTime) > 14000) {
           achievements.epicCollections++;
-          delay = 2000;
           checkAchieveText.text = "Epic Collection!";
           epicIcon.visible = true;
           checkpoint.visible = true;
         } else if(toGetTime > 7000) {
           achievements.hiddenAminoAcids++;
-          delay = 2000;
           checkAchieveText.text = "Hidden Amino!";
           hiddenIcon.visible = true;
           checkpoint.visible = true;
         } else if(toReturnTime > 7000) {
           achievements.longWayHomes++;
-          delay = 2000;
           checkAchieveText.text = "Long Way Home!";
           longIcon.visible = true;
           checkpoint.visible = true;
@@ -1126,7 +1153,6 @@ define([
           checkpoint.visible = true;
         } else {
           achievements.cleanCollections++;
-          delay = 2000;
           checkAchieveText.text = "Clean Collection!";
           cleanIcon.visible = true;
           checkpoint.visible = true;
@@ -1155,6 +1181,7 @@ define([
         if(intenseDebug) {console.log("Good Amino Contact -------------------------------------------------------");}
         carryingAmino = true;
         theAmino.kill();
+        captureA.play();
         carriedAmino = game.add.sprite(0, -62, theAmino.key);
         carriedAmino.anchor.setTo(0.5, 0.5);
         player.addChild(carriedAmino);
@@ -1227,6 +1254,7 @@ define([
         player.rotation = 0;
       }, (1000));
       if(carryingAmino) {
+        dropA.play();
         carryingAmino = false;
         var promisedBadAmino = spriteRevival(aminoGroup, carriedAmino.key, player.body.x, player.body.y - 60);
         promisedBadAmino.then(function(anAmino) {
@@ -1239,6 +1267,8 @@ define([
           anAmino.anchor.setTo(0.5, 0.5);
         });
         carriedAmino.destroy();
+      } else {
+        impactA.play();
       }
     }
 

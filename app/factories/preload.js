@@ -89,6 +89,12 @@ define([
         game.load.image("a", "images/Adenine.png");
         game.load.image("g", "images/Guanine.png");
         game.load.image("t", "images/Thymine.png");
+        game.load.audio("achievement-a", "audio/Achievement.mp3");
+        game.load.audio("checkpoint-a", "audio/Checkpoint.mp3");
+        game.load.audio("collection-a", "audio/Collection.mp3");
+        game.load.audio("capture-a", "audio/Capture.mp3");
+        game.load.audio("impact-a", "audio/Impact.mp3");
+        game.load.audio("drop-a", "audio/Drop.mp3");
       };
   }]);
 });
