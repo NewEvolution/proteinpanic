@@ -320,31 +320,31 @@ define([
       dropA = game.add.audio("drop-a", effectsVolume);
       riboSpeech = game.add.audio("speech-a", effectsVolume);
       riboSpeech.allowMultple = true;
-      ribospeech.addMarker("1", 0.1, 0.15);
-      ribospeech.addMarker("2", 0.3, 0.18);
-      ribospeech.addMarker("3", 0.5, 0.32);
-      ribospeech.addMarker("4", 0.9, 0.29);
-      ribospeech.addMarker("5", 1.2, 0.25);
-      ribospeech.addMarker("6", 1.5, 0.3);
-      ribospeech.addMarker("7", 1.8, 0.29);
-      ribospeech.addMarker("8", 2.1, 0.25);
-      ribospeech.addMarker("9", 2.4, 0.17);
-      ribospeech.addMarker("10", 2.6, 0.15);
-      ribospeech.addMarker("11", 2.8, 0.18);
-      ribospeech.addMarker("12", 3.0, 0.18);
-      ribospeech.addMarker("13", 3.2, 0.18);
-      ribospeech.addMarker("14", 3.4, 0.2);
-      ribospeech.addMarker("15", 3.6, 0.27);
-      ribospeech.addMarker("16", 3.9, 0.13);
-      ribospeech.addMarker("17", 4.1, 0.15);
-      ribospeech.addMarker("18", 4.3, 0.22);
-      ribospeech.addMarker("19", 4.6, 0.18);
-      ribospeech.addMarker("20", 4.8, 0.19);
-      ribospeech.addMarker("21", 5.0, 0.2);
-      ribospeech.addMarker("22", 5.2, 0.23);
-      ribospeech.addMarker("23", 5.5, 0.37);
-      ribospeech.addMarker("24", 5.9, 0.25);
-      ribospeech.addMarker("25", 6.2, 0.3);
+      riboSpeech.addMarker("1", 0.1, 0.15);
+      riboSpeech.addMarker("2", 0.3, 0.18);
+      riboSpeech.addMarker("3", 0.5, 0.32);
+      riboSpeech.addMarker("4", 0.9, 0.29);
+      riboSpeech.addMarker("5", 1.2, 0.25);
+      riboSpeech.addMarker("6", 1.5, 0.3);
+      riboSpeech.addMarker("7", 1.8, 0.29);
+      riboSpeech.addMarker("8", 2.1, 0.25);
+      riboSpeech.addMarker("9", 2.4, 0.17);
+      riboSpeech.addMarker("10", 2.6, 0.15);
+      riboSpeech.addMarker("11", 2.8, 0.18);
+      riboSpeech.addMarker("12", 3.0, 0.18);
+      riboSpeech.addMarker("13", 3.2, 0.18);
+      riboSpeech.addMarker("14", 3.4, 0.2);
+      riboSpeech.addMarker("15", 3.6, 0.27);
+      riboSpeech.addMarker("16", 3.9, 0.13);
+      riboSpeech.addMarker("17", 4.1, 0.15);
+      riboSpeech.addMarker("18", 4.3, 0.22);
+      riboSpeech.addMarker("19", 4.6, 0.18);
+      riboSpeech.addMarker("20", 4.8, 0.19);
+      riboSpeech.addMarker("21", 5.0, 0.2);
+      riboSpeech.addMarker("22", 5.2, 0.23);
+      riboSpeech.addMarker("23", 5.5, 0.37);
+      riboSpeech.addMarker("24", 5.9, 0.25);
+      riboSpeech.addMarker("25", 6.2, 0.3);
 
       // Built protein ##########################################################################
       proteinGroup = game.add.group();
@@ -608,7 +608,7 @@ define([
         progressBar.visible = false;
         progressHolder.visible = false;
         proteinDisplayName.visible = false;
-        talkCycles = game.rnd.integerInRange(3, 8);
+        talkCycles = game.rnd.integerInRange(5, 10);
         titleGroup.y += 50;
       } else if (goToProteinChooser) {
         proteinChooser();
@@ -667,6 +667,8 @@ define([
         } else {
           mouthClosedCounter = 0;
           ribosome.frame = 1;
+          var spokenWord = game.rnd.integerInRange(1, 25);
+          riboSpeech.play(spokenWord);
         }
       }
       if(ribosome.frame === 1) {
@@ -870,7 +872,7 @@ define([
         nucleotideGroup.visible = false;
       }
       interstitialText.text = introContent[page];
-      talkCycles = game.rnd.integerInRange(3, 8);
+      talkCycles = game.rnd.integerInRange(5, 10);
     }
 
     function nucleotideMover() {
@@ -961,7 +963,7 @@ define([
       interstitialText.visible = true;
       proteinDisplayName.visible = true;
       proteinDisplayName.text = chosenProtein;
-      talkCycles = game.rnd.integerInRange(3, 7);
+      talkCycles = game.rnd.integerInRange(3, 5);
       if(remainingProteinLength >= proteinAminos.length - 1 || !remainingProteinLength) {
         remainingProteinLength = proteinAminos.length - 1;
         usersObj[currentKey].remainingProteinLength = remainingProteinLength;
@@ -998,7 +1000,7 @@ define([
         createControls();
       }
       controlsLocked = false;
-      talkCycles = game.rnd.integerInRange(3, 7);
+      talkCycles = game.rnd.integerInRange(3, 5);
     }
 
     function victoryPrevFunc() {
@@ -1093,7 +1095,7 @@ define([
           });
         }
         toReturnTime = dropoffTime - pickupTime;
-        talkCycles = game.rnd.integerInRange(3, 7);
+        talkCycles = game.rnd.integerInRange(3, 5);
         collectionA.play();
         aminoCollectionRoutine(true);
         carriedAmino.destroy();
