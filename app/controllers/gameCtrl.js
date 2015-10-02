@@ -142,6 +142,7 @@ define([
     var hiddenIcon;
     var pickupTime;
     var justLoaded;
+    var riboSpeech;
     var optionsBtn;
     var aminoGroup;
     var codonGroup;
@@ -308,15 +309,42 @@ define([
       }
 
       // Audio ####################################################################################
+      victoryMusic = game.add.audio("victory-a", musicVolume, true);
       gameMusic = game.add.audio("game-a", musicVolume, true);
       gameMusic.play();
-      victoryMusic = game.add.audio("victory-a", musicVolume, true);
       achievementA = game.add.audio("achievement-a", effectsVolume);
       checkpointA = game.add.audio("checkpoint-a", effectsVolume);
       collectionA = game.add.audio("collection-a", effectsVolume);
       captureA = game.add.audio("capture-a", effectsVolume);
       impactA = game.add.audio("impact-a", effectsVolume);
       dropA = game.add.audio("drop-a", effectsVolume);
+      riboSpeech = game.add.audio("speech-a", effectsVolume);
+      riboSpeech.allowMultple = true;
+      ribospeech.addMarker("1", 0.1, 0.15);
+      ribospeech.addMarker("2", 0.3, 0.18);
+      ribospeech.addMarker("3", 0.5, 0.32);
+      ribospeech.addMarker("4", 0.9, 0.29);
+      ribospeech.addMarker("5", 1.2, 0.25);
+      ribospeech.addMarker("6", 1.5, 0.3);
+      ribospeech.addMarker("7", 1.8, 0.29);
+      ribospeech.addMarker("8", 2.1, 0.25);
+      ribospeech.addMarker("9", 2.4, 0.17);
+      ribospeech.addMarker("10", 2.6, 0.15);
+      ribospeech.addMarker("11", 2.8, 0.18);
+      ribospeech.addMarker("12", 3.0, 0.18);
+      ribospeech.addMarker("13", 3.2, 0.18);
+      ribospeech.addMarker("14", 3.4, 0.2);
+      ribospeech.addMarker("15", 3.6, 0.27);
+      ribospeech.addMarker("16", 3.9, 0.13);
+      ribospeech.addMarker("17", 4.1, 0.15);
+      ribospeech.addMarker("18", 4.3, 0.22);
+      ribospeech.addMarker("19", 4.6, 0.18);
+      ribospeech.addMarker("20", 4.8, 0.19);
+      ribospeech.addMarker("21", 5.0, 0.2);
+      ribospeech.addMarker("22", 5.2, 0.23);
+      ribospeech.addMarker("23", 5.5, 0.37);
+      ribospeech.addMarker("24", 5.9, 0.25);
+      ribospeech.addMarker("25", 6.2, 0.3);
 
       // Built protein ##########################################################################
       proteinGroup = game.add.group();

@@ -1,0 +1,61 @@
+<?xml version="1.0" standalone="no" ?>
+<!DOCTYPE project PUBLIC "-//audacityproject-1.3.0//DTD//EN" "http://audacity.sourceforge.net/xml/audacityproject-1.3.0.dtd" >
+<project xmlns="http://audacity.sourceforge.net/xml/" projname="CleanedSpeech_data" version="1.3.0" audacityversion="2.1.1" sel0="3.4000000000" sel1="3.6000350820" vpos="0" h="2.9851584005" zoom="1031.1010630204" rate="48000.0" snapto="off" selectionformat="hh:mm:ss + milliseconds" frequencyformat="Hz" bandwidthformat="octaves">
+	<tags>
+		<tag name="YEAR" value="2015"/>
+		<tag name="ARTIST" value="Ryan Tanay"/>
+	</tags>
+	<wavetrack name="CleanedSpeech" channel="0" linked="1" mute="0" solo="0" height="150" minimized="0" isSelected="1" rate="48000" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="316834">
+				<waveblock start="0">
+					<simpleblockfile filename="e0000b84.au" len="132022" min="-0.890747" max="0.78999" rms="0.088796"/>
+				</waveblock>
+				<waveblock start="132022">
+					<simpleblockfile filename="e000081a.au" len="184812" min="-0.678001" max="0.620295" rms="0.097725"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="CleanedSpeech" channel="1" linked="0" mute="0" solo="0" height="150" minimized="0" isSelected="1" rate="48000" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="316834">
+				<waveblock start="0">
+					<simpleblockfile filename="e0000ef0.au" len="132022" min="-0.890747" max="0.78999" rms="0.088796"/>
+				</waveblock>
+				<waveblock start="132022">
+					<simpleblockfile filename="e0000b86.au" len="184812" min="-0.678001" max="0.620295" rms="0.097725"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<labeltrack name="Label Track" numlabels="25" height="73" minimized="0" isSelected="1">
+		<label t="0.0998932148" t1="0.2502179556" title="1"/>
+		<label t="0.3000000000" t1="0.4800693334" title="2"/>
+		<label t="0.5000000000" t1="0.8204821335" title="3"/>
+		<label t="0.9000000000" t1="1.1899900446" title="4"/>
+		<label t="1.2000000000" t1="1.4499063706" title="5"/>
+		<label t="1.5000000000" t1="1.8000175410" title="6"/>
+		<label t="1.8000175410" t1="2.0899988151" title="7"/>
+		<label t="2.1000000000" t1="2.3499151411" title="8"/>
+		<label t="2.4000000000" t1="2.5700681485" title="9"/>
+		<label t="2.6000000000" t1="2.7504578375" title="10"/>
+		<label t="2.8000000000" t1="2.9803092153" title="11"/>
+		<label t="3.0000000000" t1="3.1800956449" title="12"/>
+		<label t="3.2000000000" t1="3.3798820746" title="13"/>
+		<label t="3.4000000000" t1="3.6000350820" title="14"/>
+		<label t="3.6000350820" t1="3.8696497784" title="15"/>
+		<label t="3.9000000000" t1="4.0296728895" title="16"/>
+		<label t="4.1000000000" t1="4.2498258970" title="17"/>
+		<label t="4.3000000000" t1="4.5204104303" title="18"/>
+		<label t="4.6000000000" t1="4.7803267563" title="19"/>
+		<label t="4.8000000000" t1="4.9898115563" title="20"/>
+		<label t="5.0000000000" t1="5.2002661934" title="21"/>
+		<label t="5.2002661934" t1="5.4301175712" title="22"/>
+		<label t="5.5000000000" t1="5.8704235861" title="23"/>
+		<label t="5.9000000000" t1="6.1497366528" title="24"/>
+		<label t="6.2000000000" t1="6.4998478232" title="25"/>
+	</labeltrack>
+</project>
