@@ -101,6 +101,7 @@ define([
     var dKey;
     var eyes;
     var tRNA;
+    var mask;
     var dropA;
     var player;
     var hitbox;
@@ -224,6 +225,7 @@ define([
     var pointsR = [48, 48, 48, 48, 48, 48, 28, 48, 48, 48];
     var pointsY = [78, 78, 78, 78, 78, 78, 78, 58, 78, 78];
     var pointsX = [133, 133, 133, 133, 133, 133, 133, 133, 113, 133];
+    var polygonPoints = [0,0, 0,481, 146,481, 146,576, 1024,576, 1024,0, 0,0];
     var introContent = [
       "",
       "Those little colorful beings bouncing around in the background are amino acids, the building blocks of proteins.\n\nAs a ribosome, my job is to assemble those amino acids in a specific order to build a protein, but there's more to it than that, and that's where you come in.",
@@ -296,6 +298,10 @@ define([
       game.physics.startSystem(Phaser.Physics.ARCADE);
       game.add.tileSprite(0, 0, 1200, 1200, "cell-bg");
       game.world.setBounds(0, 0, 1200, 1200);
+      mask = game.add.graphics(0, 0);
+      mask.beginFill(0x000000);
+      mask.drawPolygon(polygonPoints);
+      mask.fixedToCamera = true;
       if(!mouse) {
         createControls();
       }
@@ -325,6 +331,7 @@ define([
       game.camera.follow(player);
       player.tint = playerColor;
       player.addChild(eyes);
+      player.mask = mask;
 
       // Amino swarm ############################################################################
       aminoGroup = game.add.group();
@@ -482,32 +489,27 @@ define([
       victoryBubble.addChild(menuBtn);
       vEpicIcon = game.add.sprite(-135, 58, "epic");
       vEpicIcon.anchor.setTo(0.5, 0,5);
-      vEpicIcon.scale.x = 0.5;
-      vEpicIcon.scale.y = 0.5;
+      vEpicIcon.scale.set(0.5);
       victoryBubble.addChild(vEpicIcon);
       vEpicIcon.visible = false;
       vHiddenIcon = game.add.sprite(-135, 115, "hidden");
       vHiddenIcon.anchor.setTo(0.5, 0,5);
-      vHiddenIcon.scale.x = 0.5;
-      vHiddenIcon.scale.y = 0.5;
+      vHiddenIcon.scale.set(0.5);
       victoryBubble.addChild(vHiddenIcon);
       vHiddenIcon.visible = false;
       vLongIcon = game.add.sprite(-135, 172, "longhome");
       vLongIcon.anchor.setTo(0.5, 0,5);
-      vLongIcon.scale.x = 0.5;
-      vLongIcon.scale.y = 0.5;
+      vLongIcon.scale.set(0.5);
       victoryBubble.addChild(vLongIcon);
       vLongIcon.visible = false;
       vQuickIcon = game.add.sprite(-135, 229, "quick");
       vQuickIcon.anchor.setTo(0.5, 0,5);
-      vQuickIcon.scale.x = 0.5;
-      vQuickIcon.scale.y = 0.5;
+      vQuickIcon.scale.set(0.5);
       victoryBubble.addChild(vQuickIcon);
       vQuickIcon.visible = false;
       vCleanIcon = game.add.sprite(-135, 286, "clean");
       vCleanIcon.anchor.setTo(0.5, 0,5);
-      vCleanIcon.scale.x = 0.5;
-      vCleanIcon.scale.y = 0.5;
+      vCleanIcon.scale.set(0.5);
       victoryBubble.addChild(vCleanIcon);
       vCleanIcon.visible = false;
       victoryPrevBtn = game.add.button(-200, 285, "prev-btn", victoryPrevFunc, this, 0, 1, 2, 0);
@@ -1080,8 +1082,7 @@ define([
       if(intenseDebug) {console.log("Building Protein ---------------------------------------------------------");}
       var promisedAssembledAmino = spriteRevival(proteinGroup, proteinAminos[0], 60, 400);
       promisedAssembledAmino.then(function(assembledAmino) {
-        assembledAmino.scale.x = 1;
-        assembledAmino.scale.y = 1;
+        assembledAmino.scale.set(1);
         proteinGroup.addAll("y", -5, true);
         proteinGroup.addAll("scale.x", -0.025, true);
         proteinGroup.addAll("scale.y", -0.025, true);
