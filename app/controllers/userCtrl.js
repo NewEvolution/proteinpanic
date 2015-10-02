@@ -25,7 +25,6 @@ define([
     var currentUID = null;
     var currentKey = null;
     var promisedCreation;
-    var _this = this;
     this.deleteToggle = false;
     this.emailToggle = false;
     this.passToggle = false;
@@ -33,14 +32,14 @@ define([
     this.color = "#00ff00";
     this.newPassword = "";
     this.checkpoint = 10;
-    this.effects = 100;
+    this.effects = 1.0;
     this.username = "";
     this.password = "";
     this.newEmail = "";
     this.radioVal = "";
     this.intro = true;
     this.mouse = true;
-    this.music = 100;
+    this.music = 1.0;
     this.email = "";
 
 		var authData = ref.getAuth();
@@ -60,6 +59,8 @@ define([
             this.color = data[key].color;
             this.intro = data[key].intro;
             currentKey = data[key].$id;
+            menuSplash.volumeSetter(this.music);
+            menuSplash.trnaTintSetter("0x" + this.color.slice(1));
             if(currentUID.indexOf("github") === -1 && 
             currentUID.indexOf("facebook") === -1 && 
             currentUID.indexOf("twitter") === -1 && 
@@ -72,11 +73,13 @@ define([
           menuSplash.menusLoadedSetter(true);
           menuSplash.hasTitleSetter(false);
           promisedCreation = menuSplash.menuStarter();
-          promisedCreation.then(function() {
-            menuSplash.trnaTintSetter("0x" + _this.color.slice(1));
-          });
+          promisedCreation.then(angular.bind(this, function() {
+            menuSplash.volumeSetter(this.music);
+            menuSplash.trnaTintSetter("0x" + this.color.slice(1));
+          }));
         } else {
           menuSplash.hasTitleSetter(false);
+          menuSplash.volumeSetter(this.music);
           menuSplash.trnaTintSetter("0x" + this.color.slice(1));
         }
 			}));
@@ -122,15 +125,23 @@ define([
       menuSplash.trnaTintSetter("0x" + this.color.slice(1));
     };
 
+    this.volumeChange = function() {
+      menuSplash.volumeSetter(this.music);
+    };
+
     this.saveUserData = function(destination) {
       usersObj[currentKey].checkpoint = parseInt(this.checkpoint);
-      usersObj[currentKey].effects = parseInt(this.effects);
-      usersObj[currentKey].music = parseInt(this.music);
+      usersObj[currentKey].effects = parseFloat(this.effects);
+      usersObj[currentKey].music = parseFloat(this.music);
       usersObj[currentKey].username = this.username;
       usersObj[currentKey].mouse = this.mouse;
       usersObj[currentKey].color = this.color;
       usersObj[currentKey].intro = this.intro;
       usersObj.$save().then(function(ref) {
+        if(destination === "game") {
+          menuSplash.musicStopper();
+          game.state.remove("allMenus");
+        }
         window.location = "#/" + destination;
       });
     };

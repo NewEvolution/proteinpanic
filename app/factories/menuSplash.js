@@ -40,11 +40,15 @@ define([
     var trnaRot = 0;
 
     var aminoGroup;
+    var background;
     var panicGroup;
     var menuGroup;
+    var menuMusic;
     var trnaEyes;
     var title;
     var hasTitle = true;
+    var musicVolume = 1;
+    var currentVolume = 1;
     var trnaTint = 0x00FF00;
     var menusLoaded = false;
 
@@ -56,6 +60,12 @@ define([
       },
       trnaTintSetter: function(value) {
         trnaTint = value;
+      },
+      volumeSetter: function(value) {
+        musicVolume = value;
+      },
+      musicStopper: function() {
+        menuMusic.stop();
       },
       menusLoadedSetter: function(value) {
         menusLoaded = value;
@@ -76,9 +86,11 @@ define([
     function create() {
       game.physics.startSystem(Phaser.Physics.ARCADE);
       game.world.setBounds(0, 0, 1200, 1200);
-      game.add.tileSprite(0, 0, 1200, 1200, "background");
+      game.add.tileSprite(0, 0, 1200, 1200, "cell-bg");
       game.camera.x = (game.world.width - game.camera.width) / 2;
       game.camera.y = (game.world.height - game.camera.height) / 2;
+      menuMusic = game.add.audio("menu-a", musicVolume, true);
+      menuMusic.play();
 
       // Floating amino block ###################################################################
       aminoGroup = game.add.group();
@@ -146,6 +158,11 @@ define([
     }
 
     function update() {
+      // Music volume ###########################################################################
+      if(currentVolume !== musicVolume) {
+        menuMusic.volume = musicVolume;
+        currentVolume = musicVolume;
+      }
       // Aminos on stage management #############################################################
       game.physics.arcade.collide(aminoGroup, aminoGroup, rotateBoth, null, this);
       aminoGroup.forEachAlive(function(liveAmino) {

@@ -70,8 +70,8 @@ define([
         game.load.image("victory-r", "images/victory-r.png");
         game.load.image("victory-y", "images/victory-y.png");
         game.load.image("victory-x", "images/victory-x.png");
-        game.load.image("background", "images/cell-bg.png");
         game.load.image("longhome", "images/longhome.png");
+        game.load.image("cell-bg", "images/cell-bg.png");
         game.load.image("orline", "images/or-line.png");
         game.load.image("hitbox", "images/hitbox.png");
         game.load.image("hidden", "images/hidden.png");
@@ -95,6 +95,8 @@ define([
         game.load.audio("capture-a", "audio/Capture.mp3");
         game.load.audio("impact-a", "audio/Impact.mp3");
         game.load.audio("drop-a", "audio/Drop.mp3");
+        game.load.audio("menu-a", "audio/Menu.mp3");
+        game.load.audio("game-a", "audio/Game.mp3");
       };
   }]);
 });

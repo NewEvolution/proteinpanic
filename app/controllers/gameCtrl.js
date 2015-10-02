@@ -56,8 +56,8 @@ define([
             intro = data[key].intro;
             currentKey = data[key].$id;
             username = data[key].username;
-            musicVolume = data[key].music * 0.01;
-            effectsVolume = data[key].effects * 0.01;
+            musicVolume = data[key].music;
+            effectsVolume = data[key].effects;
             completedIntro = data[key].completedIntro;
             checkpointInterval = data[key].checkpoint;
             playerColor = "0x" + data[key].color.slice(1);
@@ -129,6 +129,7 @@ define([
     var victoryX;
     var captureA;
     var page = 0;
+    var gameMusic;
     var ribounder;
     var toGetTime;
     var quickIcon;
@@ -186,7 +187,6 @@ define([
     var nucleotideGroup;
     var collectableName;
     var codonChain = [];
-    var musicVolume = 0;
     var achievementsList;
     var checkAchieveText;
     var interstitialText;
@@ -194,9 +194,9 @@ define([
     var blinkCounter = 0;
     var fullProteinLength;
     var collectCodonGroup;
+    var musicVolume = 1.0;
     var codonSliding = 45;
     var achievements = {};
-    var effectsVolume = 1;
     var collectDescription;
     var goToProteinChooser;
     var proteinDisplayName;
@@ -204,6 +204,7 @@ define([
     var proteinAminos = [];
     var aminoToCollectGroup;
     var spinningOut = false;
+    var effectsVolume = 1.0;
     var checkpointCount = 0;
     var cpVisibleTimer = 120;
     var mouthOpenCounter = 0;
@@ -293,13 +294,15 @@ define([
     function create() {
       // Generic setup ##########################################################################
       game.physics.startSystem(Phaser.Physics.ARCADE);
-      game.add.tileSprite(0, 0, 1200, 1200, "background");
+      game.add.tileSprite(0, 0, 1200, 1200, "cell-bg");
       game.world.setBounds(0, 0, 1200, 1200);
       if(!mouse) {
         createControls();
       }
 
-      // Sound effects ##########################################################################
+      // Audio ####################################################################################
+      gameMusic = game.add.audio("game-a", musicVolume, true);
+      gameMusic.play();
       achievementA = game.add.audio("achievement-a", effectsVolume);
       checkpointA = game.add.audio("checkpoint-a", effectsVolume);
       collectionA = game.add.audio("collection-a", effectsVolume);
@@ -757,10 +760,11 @@ define([
       }
 
       // Assembled protein on stage management ##################################################
-      var firstLivingAmino = proteinGroup.getFirstAlive();
-      if(firstLivingAmino && firstLivingAmino.scale.y < 0.08) {
-        firstLivingAmino.kill();
-      }
+      proteinGroup.forEachAlive(function(proteinAmino) {
+        if(proteinAmino.scale.y < 0.08) {
+          proteinAmino.kill();
+        }
+      });
 
     }
 
@@ -768,6 +772,7 @@ define([
 
   function onExit() {
     controlsDestroyed = true;
+    gameMusic.stop();
     game.input.keyboard.clearCaptures();
   }
 
@@ -996,6 +1001,7 @@ define([
     }
 
     function menuFunc() {
+      onExit();
       window.location = "#/menu";
     }
 

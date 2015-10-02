@@ -27,11 +27,11 @@
     </div>
     <hr>
     <h3>Music Volume:</h3>
-    <input type="range" class="slider" id="music-volume" min="0" max="100" step="1" ng-model="user.music">
-    <input type="text" class="display" id="mv-display" readonly ng-model="user.music">
+    <input type="range" class="slider" id="music-volume" min="0.00" max="1.00" step="0.01" value="1.0" ng-model="user.music" ng-change="user.volumeChange()">
+    <input type="text" class="display" id="mv-display" readonly ng-value="user.music * 100">
     <h3>Effects Volume:</h3>
-    <input type="range" class="slider" id="effects-volume" min="0" max="100" step="1" value="100" ng-model="user.effects">
-    <input type="text" class="display" id="ev-display" readonly ng-model="user.effects">
+    <input type="range" class="slider" id="effects-volume" min="0.00" max="1.00" step="0.01" value="1.0" ng-model="user.effects">
+    <input type="text" class="display" id="ev-display" readonly ng-value="user.effects * 100">
     <hr>
     <button id="menu-btn" type="submit" ng-click="user.checkAvail(true, 'menu')">Go To Main Menu</button>
     <button id="game-btn" ng-click="user.checkAvail(true, 'game')">Go To Game</button>

@@ -23,6 +23,7 @@ define([
     var usersArr = $firebaseArray(users);
     var currentUID = null;
     var color = 0x00ff00;
+    var music = 1;
 
     this.arrayOfUsers = usersArr;
     this.username = "";
@@ -38,6 +39,7 @@ define([
         for(var key in data) {
           if(data[key].uid === currentUID) {
             userDoesNotExist = false;
+            music = data[key].music;
             this.username = data[key].username;
             color = "0x" + data[key].color.slice(1);
           }
@@ -52,10 +54,12 @@ define([
             menuSplash.menusLoadedSetter(true);
             menuSplash.hasTitleSetter(false);
             menuSplash.trnaTintSetter(color);
+            menuSplash.volumeSetter(music);
             menuSplash.menuStarter();
           } else {
             menuSplash.hasTitleSetter(false);
             menuSplash.trnaTintSetter(color);
+            menuSplash.volumeSetter(music);
           }
         }
       }));

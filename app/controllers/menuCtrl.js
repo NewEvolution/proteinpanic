@@ -24,6 +24,7 @@ define([
     var currentUID = null;
     var color = 0x00ff00;
     var promisedCreation;
+    var music = 1;
     this.username = "";
 
     var authData = ref.getAuth();
@@ -37,8 +38,11 @@ define([
         for(var key in data) {
           if(data[key].uid === currentUID) {
             userDoesNotExist = false;
+            music = data[key].music;
             this.username = data[key].username;
             color = "0x" + data[key].color.slice(1);
+            menuSplash.volumeSetter(music);
+            menuSplash.volumeSetter(music);
           }
         }
         if(userDoesNotExist) {
@@ -53,11 +57,13 @@ define([
             menuSplash.trnaTintSetter(color);
             promisedCreation = menuSplash.menuStarter();
             promisedCreation.then(function() {
+              menuSplash.volumeSetter(music);
               create();
             });
           } else {
             menuSplash.hasTitleSetter(true);
             menuSplash.trnaTintSetter(color);
+            menuSplash.volumeSetter(music);
             create();
           }
         }
@@ -82,6 +88,8 @@ define([
 
     function startFunc() {
       btnKiller();
+      menuSplash.musicStopper();
+      game.state.remove("allMenus");
       window.location ="#/game";
     }
 
