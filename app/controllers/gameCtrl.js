@@ -58,6 +58,7 @@ define([
             username = data[key].username;
             musicVolume = data[key].music;
             effectsVolume = data[key].effects;
+            ribosomeMuted = data[key].ribosomeMuted;
             completedIntro = data[key].completedIntro;
             checkpointInterval = data[key].checkpoint;
             playerColor = "0x" + data[key].color.slice(1);
@@ -179,6 +180,7 @@ define([
     var hitCount = 0;
     var chosenProtein;
     var victoryBubble;
+    var ribosomeMuted;
     var mouse = false;
     var victoryPrevBtn;
     var victoryNextBtn;
@@ -591,8 +593,10 @@ define([
         Alanine = nucleotideGroup.create(495, 305, "A");
         nucleotideGroup.visible = false;
         Alanine.visible = false;
-        tRNA = game.add.sprite(390, 315, "player");
+        tRNA = game.add.sprite(355, 368, "player");
+        tRNA.anchor.setTo(0.5, 0.5);
         var t_eyes = game.add.sprite(0, 0, "eyes");
+        t_eyes.anchor.setTo(0.5, 0.5);
         tRNA.addChild(t_eyes);
         tRNA.tint = playerColor;
         tRNA.scale.x = -1;
@@ -667,8 +671,10 @@ define([
         } else {
           mouthClosedCounter = 0;
           ribosome.frame = 1;
-          var spokenWord = game.rnd.integerInRange(1, 25);
-          riboSpeech.play(spokenWord);
+          if(!ribosomeMuted) {
+            var spokenWord = game.rnd.integerInRange(1, 25);
+            riboSpeech.play(spokenWord);
+          }
         }
       }
       if(ribosome.frame === 1) {

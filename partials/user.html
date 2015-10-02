@@ -32,6 +32,9 @@
     <h3>Effects Volume:</h3>
     <input type="range" class="slider" id="effects-volume" min="0.00" max="1.00" step="0.01" value="1.0" ng-model="user.effects">
     <input type="text" class="display" id="ev-display" readonly ng-value="user.effects * 100">
+    <div>
+      <input class="radio" type="checkbox" name="speech" ng-true-value="true" ng-false-value="false" ng-model="user.ribosomeMuted"><span> - Mute Ribosome Speaking</span>
+    </div>
     <hr>
     <button id="menu-btn" type="submit" ng-click="user.checkAvail(true, 'menu')">Go To Main Menu</button>
     <button id="game-btn" ng-click="user.checkAvail(true, 'game')">Go To Game</button>

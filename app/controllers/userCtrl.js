@@ -25,6 +25,7 @@ define([
     var currentUID = null;
     var currentKey = null;
     var promisedCreation;
+    this.ribosomeMuted = false;
     this.deleteToggle = false;
     this.emailToggle = false;
     this.passToggle = false;
@@ -51,6 +52,7 @@ define([
 			usersArr.$loaded().then(angular.bind(this, function(data) {
 				for(var key in data) {
 					if(data[key].uid === currentUID) {
+            this.ribosomeMuted = data[key].ribosomeMuted;
             this.checkpoint = data[key].checkpoint;
             this.username = data[key].username;
             this.effects = data[key].effects;
@@ -131,6 +133,7 @@ define([
 
     this.saveUserData = function(destination) {
       usersObj[currentKey].checkpoint = parseInt(this.checkpoint);
+      usersObj[currentKey].ribosomeMuted = this.ribosomeMuted;
       usersObj[currentKey].effects = parseFloat(this.effects);
       usersObj[currentKey].music = parseFloat(this.music);
       usersObj[currentKey].username = this.username;
