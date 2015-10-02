@@ -22,6 +22,12 @@
           {{user.achievements.totalEpicCollections}} - Epic Collections
         </li>
       </ul>
+      <div class="percentage">
+        <h5>{{((stats.userRank(user.completedProteins)) / stats.proteinCount) * 100}}% of the human protenome completed.</h5>
+      </div>
+      <div class="progress">
+        <span class="bar" ng-style="stats.barWidth(user.color, stats.userRank(user.completedProteins))"></span>
+      </div>
       <hr>
     </section>
     <button id="menu-btn" ng-click="stats.mainMenu()">Return to Main Menu</button>

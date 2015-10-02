@@ -17,9 +17,11 @@ define([
     
     var game = proteinPanic;
 
+    var proteins = new Firebase("https://proteinpanic.firebaseio.com/proteins");
     var users = new Firebase("https://proteinpanic.firebaseio.com/users");
     var ref = new Firebase("https://proteinpanic.firebaseio.com");
     
+    var proteinArr = $firebaseArray(proteins);
     var usersArr = $firebaseArray(users);
     var currentUID = null;
     var color = 0x00ff00;
@@ -27,6 +29,10 @@ define([
 
     this.arrayOfUsers = usersArr;
     this.username = "";
+
+    proteinArr.$loaded().then(angular.bind(this, function(data) {
+      this.proteinCount = data.length;
+    }));
 
     var authData = ref.getAuth();
     if(authData === null) {
@@ -73,6 +79,11 @@ define([
         }
       }
       return 0;
+    };
+
+    this.barWidth = function(color, completedProteins) {
+      var widthPercentange = ((completedProteins / this.proteinCount) * 100) + "%";
+      return {"background-color": color, width: widthPercentange};
     };
 
     this.userColor = function(color) {

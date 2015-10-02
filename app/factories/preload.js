@@ -93,6 +93,7 @@ define([
         game.load.audio("checkpoint-a", "audio/Checkpoint.ogg");
         game.load.audio("collection-a", "audio/Collection.ogg");
         game.load.audio("capture-a", "audio/Capture.ogg");
+        game.load.audio("victory-a", "audio/Victory.ogg");
         game.load.audio("impact-a", "audio/Impact.ogg");
         game.load.audio("drop-a", "audio/Drop.ogg");
         game.load.audio("menu-a", "audio/Menu.ogg");

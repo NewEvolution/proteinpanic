@@ -167,6 +167,7 @@ define([
     var victoryText;
     var continueBtn;
     var progressBar;
+    var victoryMusic;
     var achievementA;
     var victoryGroup;
     var toReturnTime;
@@ -309,6 +310,7 @@ define([
       // Audio ####################################################################################
       gameMusic = game.add.audio("game-a", musicVolume, true);
       gameMusic.play();
+      victoryMusic = game.add.audio("victory-a", musicVolume, true);
       achievementA = game.add.audio("achievement-a", effectsVolume);
       checkpointA = game.add.audio("checkpoint-a", effectsVolume);
       collectionA = game.add.audio("collection-a", effectsVolume);
@@ -775,6 +777,7 @@ define([
   function onExit() {
     controlsDestroyed = true;
     gameMusic.stop();
+    victoryMusic.stop();
     game.input.keyboard.clearCaptures();
   }
 
@@ -999,6 +1002,7 @@ define([
     }
 
     function proteinFunc() {
+      victoryMusic.stop();
       window.location.reload();
     }
 
@@ -1092,6 +1096,8 @@ define([
         achievementRoutine();
         if(proteinAminos.length === 1) {
           // won goes here
+          gameMusic.stop();
+          victoryMusic.play();
           noclip = true;
           controlsLocked = true;
           pauseBtn.visible = false;

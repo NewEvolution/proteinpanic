@@ -130,35 +130,51 @@ body {
     float: left;
   }
   .user-color {
-    border: 1px solid black;
-    display: inline-block;
-    margin-bottom: -5px;
+    width: 20px;
+    height: 20px;
     margin-right: 10px;
     border-radius: 5px;
-    height: 20px;
-    width: 20px;
+    margin-bottom: -5px;
+    display: inline-block;
+    border: 1px solid black;
   }
   .achievements {
-    text-align: center;
+    padding: 0;
+    margin: 5px 0;
     font-size: 0.8em;
     list-style: none;
-    margin: 5px 0;
-    padding: 0;
+    text-align: center;
     li {
       display: inline-block;
       width: 40%;
     }
   }
+  .percentage {
+    text-align: center;
+    h5 {
+      margin: 5px 0;
+    }
+  }
+  .progress {
+    height: 20px;
+    border: 5px ridge #eee;
+    background-color: #bbb;
+    .bar {
+      height: 100%;
+      display: inline-block;
+      box-shadow: inset 2px 2px 5px white, inset -2px -2px 5px #777;
+    }
+  }
 }
 
 .protein-menu {
-  position: absolute;
   top: 175px;
   left: 250px;
   width: 530px;
   height: 250px;
   overflow: auto;
   font-size: 1.2em;
+  position: absolute;
   .radiocheck {
     margin-right: 10px;
   }
