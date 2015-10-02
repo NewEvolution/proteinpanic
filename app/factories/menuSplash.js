@@ -39,20 +39,18 @@ define([
     var trnaStep = 0;
     var trnaRot = 0;
 
+    var title;
+    var trnaEyes;
+    var menuGroup;
+    var menuMusic;
     var aminoGroup;
     var background;
     var panicGroup;
-    var menuGroup;
-    var menuMusic;
-    var trnaEyes;
-    var title;
     var hasTitle = true;
     var musicVolume = 1;
     var currentVolume = 1;
     var trnaTint = 0x00FF00;
     var menusLoaded = false;
-
-    var deferred = $q.defer();
 
     return {
       hasTitleSetter: function(value) {
@@ -74,87 +72,88 @@ define([
         return menusLoaded;
       },
       menuStarter: function() {
-        allMenus();
-        return deferred.promise;
+        return allMenus();
       }
     };
 
     function allMenus() {
+      var deferred = $q.defer();
       game.state.add("allMenus", {preload: preload, create: create, update: update}, true);
-    }
 
-    function create() {
-      game.physics.startSystem(Phaser.Physics.ARCADE);
-      game.world.setBounds(0, 0, 1200, 1200);
-      game.add.tileSprite(0, 0, 1200, 1200, "cell-bg");
-      game.camera.x = (game.world.width - game.camera.width) / 2;
-      game.camera.y = (game.world.height - game.camera.height) / 2;
-      menuMusic = game.add.audio("menu-a", musicVolume, true);
-      menuMusic.play();
+      function create() {
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+        game.world.setBounds(0, 0, 1200, 1200);
+        game.add.tileSprite(0, 0, 1200, 1200, "cell-bg");
+        game.camera.x = (game.world.width - game.camera.width) / 2;
+        game.camera.y = (game.world.height - game.camera.height) / 2;
+        menuMusic = game.add.audio("menu-a", musicVolume, true);
+        menuMusic.play();
 
-      // Floating amino block ###################################################################
-      aminoGroup = game.add.group();
-      aminoGroup.name = "aminoGroup";
-      aminoGroup.enableBody = true;
-      for (var i = 0; i < 15; i++) {
-        var aminoX = game.world.randomX;
-        var aminoY = game.world.randomY;
-        var theAmino = game.rnd.pick(allAminos);
-        var anAmino = aminoGroup.create(aminoX, aminoY, theAmino);
-        anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
-        anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
-        anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
-        anAmino.body.bounce.x = 0.6 + Math.random() * 0.35;
-        anAmino.body.collideWorldBounds = true;
-        anAmino.anchor.setTo(0.5, 0.5);
+        // Floating amino block ###################################################################
+        aminoGroup = game.add.group();
+        aminoGroup.name = "aminoGroup";
+        aminoGroup.enableBody = true;
+        for (var i = 0; i < 15; i++) {
+          var aminoX = game.world.randomX;
+          var aminoY = game.world.randomY;
+          var theAmino = game.rnd.pick(allAminos);
+          var anAmino = aminoGroup.create(aminoX, aminoY, theAmino);
+          anAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
+          anAmino.rotation = game.rnd.realInRange(-0.2, 0.2);
+          anAmino.body.bounce.y = 0.6 + Math.random() * 0.35;
+          anAmino.body.bounce.x = 0.6 + Math.random() * 0.35;
+          anAmino.body.collideWorldBounds = true;
+          anAmino.anchor.setTo(0.5, 0.5);
+        }
+
+        // Background block #######################################################################
+        menuGroup = game.add.group();
+        menuGroup.name = "menuGroup";
+        menuGroup.fixedToCamera = true;
+        menuGroup.create(0, 18, "splash-ribo");
+
+        // Valine
+        valine = menuGroup.create(57, 70, "splash-valine");
+        valine.anchor.setTo(0.5, 0.5);
+        for(var vi = 0; vi <= 1; vi += 0.005) {
+          var vx = game.math.catmullRomInterpolation(valinePoints.x, vi);
+          var vy = game.math.catmullRomInterpolation(valinePoints.y, vi);
+          valinePath.push( { x: vx, y: vy });
+        }
+
+        // Arginine
+        arginine = menuGroup.create(725, 485, "splash-arginine");
+        arginine.anchor.setTo(0.5, 0.5);
+        for(var ai = 0; ai <= 1; ai += 0.002) {
+          var ax = game.math.catmullRomInterpolation(argininePoints.x, ai);
+          var ay = game.math.catmullRomInterpolation(argininePoints.y, ai);
+          argininePath.push( { x: ax, y: ay });
+        }
+
+        // tRNA
+        trna = menuGroup.create(270, 121, "splash-trna");
+        trna.anchor.setTo(0.5, 0.5);
+        trna.tint = trnaTint;
+        trnaEyes = menuGroup.create(-35, -58, "splash-trna-eyes");
+        trna.addChild(trnaEyes);
+        for(var ti = 0; ti <= 1; ti += 0.001) {
+          var tx = game.math.catmullRomInterpolation(trnaPoints.x, ti);
+          var ty = game.math.catmullRomInterpolation(trnaPoints.y, ti);
+          trnaPath.push( { x: tx, y: ty });
+        }
+
+        // Menu block #############################################################################
+        title = menuGroup.create(433, 38, "title");
+        panicGroup = game.add.group();
+        menuGroup.addChild(panicGroup);
+        panicGroup.create(728, 38, "panic-p");
+        panicGroup.create(773, 38, "panic-a");
+        panicGroup.create(835, 38, "panic-n");
+        panicGroup.create(893, 38, "panic-i");
+        panicGroup.create(917, 38, "panic-c");
+        deferred.resolve();
       }
-
-      // Background block #######################################################################
-      menuGroup = game.add.group();
-      menuGroup.name = "menuGroup";
-      menuGroup.fixedToCamera = true;
-      menuGroup.create(0, 18, "splash-ribo");
-
-      // Valine
-      valine = menuGroup.create(57, 70, "splash-valine");
-      valine.anchor.setTo(0.5, 0.5);
-      for(var vi = 0; vi <= 1; vi += 0.005) {
-        var vx = game.math.catmullRomInterpolation(valinePoints.x, vi);
-        var vy = game.math.catmullRomInterpolation(valinePoints.y, vi);
-        valinePath.push( { x: vx, y: vy });
-      }
-
-      // Arginine
-      arginine = menuGroup.create(725, 485, "splash-arginine");
-      arginine.anchor.setTo(0.5, 0.5);
-      for(var ai = 0; ai <= 1; ai += 0.002) {
-        var ax = game.math.catmullRomInterpolation(argininePoints.x, ai);
-        var ay = game.math.catmullRomInterpolation(argininePoints.y, ai);
-        argininePath.push( { x: ax, y: ay });
-      }
-
-      // tRNA
-      trna = menuGroup.create(270, 121, "splash-trna");
-      trna.anchor.setTo(0.5, 0.5);
-      trna.tint = trnaTint;
-      trnaEyes = menuGroup.create(-35, -58, "splash-trna-eyes");
-      trna.addChild(trnaEyes);
-      for(var ti = 0; ti <= 1; ti += 0.001) {
-        var tx = game.math.catmullRomInterpolation(trnaPoints.x, ti);
-        var ty = game.math.catmullRomInterpolation(trnaPoints.y, ti);
-        trnaPath.push( { x: tx, y: ty });
-      }
-
-      // Menu block #############################################################################
-      title = menuGroup.create(433, 38, "title");
-      panicGroup = game.add.group();
-      menuGroup.addChild(panicGroup);
-      panicGroup.create(728, 38, "panic-p");
-      panicGroup.create(773, 38, "panic-a");
-      panicGroup.create(835, 38, "panic-n");
-      panicGroup.create(893, 38, "panic-i");
-      panicGroup.create(917, 38, "panic-c");
-      deferred.resolve();
+      return deferred.promise;
     }
 
     function update() {
