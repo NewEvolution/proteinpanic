@@ -182,6 +182,7 @@ define([
     var victoryBubble;
     var ribosomeMuted;
     var mouse = false;
+    var tRNACW = true;
     var victoryPrevBtn;
     var victoryNextBtn;
     var victoryProtein;
@@ -684,6 +685,23 @@ define([
           talkCycles--;
           mouthOpenCounter = 0;
           ribosome.frame = 0;
+        }
+      }
+
+      // Intro tRNA rotation ####################################################################
+      if(tRNA.visible) {
+        if(tRNACW) {
+          if(tRNA.rotation < 0.2) {
+            tRNA.rotation = (Math.round((tRNA.rotation + 0.01) * 100)) / 100; // JavaScript really does not like floats
+          } else {
+            tRNACW = false;
+          }
+        } else {
+          if(tRNA.rotation > -0.2) {
+            tRNA.rotation = (Math.floor((tRNA.rotation - 0.01) * 100)) / 100; // JavaScript really does not like floats
+          } else {
+            tRNACW = true;
+          }
         }
       }
 
