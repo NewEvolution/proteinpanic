@@ -120,7 +120,6 @@ define([
     var Cytosine;
     var ribosome;
     var startBtn;
-    var pauseBtn;
     var victoryV;
     var victoryI;
     var victoryC;
@@ -187,6 +186,7 @@ define([
     var victoryNextBtn;
     var victoryProtein;
     var progressHolder;
+    var checkpointIcon;
     var letterStep = 0;
     var aminoCount = 0;
     var talkCycles = 0;
@@ -206,7 +206,6 @@ define([
     var collectDescription;
     var goToProteinChooser;
     var proteinDisplayName;
-    var mousedOver = false;
     var proteinAminos = [];
     var aminoToCollectGroup;
     var spinningOut = false;
@@ -239,7 +238,7 @@ define([
       "Every amino acid can be represented by three nucleotides in a specific order. This group of three nucleotides is called a codon, and every amino acid has at least one codon, though some have more.\n\nFor example:\n\nis a codon for Alanine",
       "I'll read the DNA one codon at a time and tell you which amino acid to catch. Once you've caught the amino acid, bring it back to me and I'll add it to the protein we're building.\n\nBe careful not to run into any of the other amino acids floating about, as they'll make you spin out and drop any amino acid you're carrying!",
       "Proteins can be very long, some contain thousands of amino acids! We'll start with a shorter one, but there will also be checkpoints along the way.\n\nOnce you've reached a checkpoint, you can restart from there later. You can change how often checkpoints happen in your user options.",
-      "You control your flight around the inside of the cell with either the W A S D keys or arrow keys, or with your mouse/touch.\n\nYou can switch your control type on your user option screen as well.\n\nAt any time during the game you can click/tap the \"P\" button at the top left to pause and check your progress.",
+      "You control your flight around the inside of the cell with either the W A S D keys or arrow keys, or with your mouse/touch.\n\nYou can switch your control type on your user option screen as well.\n\nAt any time during the game you can click/tap on me to pause and check your progress.",
       "After completing a protein, or starting a new game you can choose your next protein to make.\n\nYou can only have one protein in progress at a time though, so starting a new protein will erase any progess you've made on an incomplete protein.",
       "That's the end of the introduction, you're now ready to start building your first protein!\n\nIf you'd like to see this intro again, you can check off \"Play Introduction\" in your user options.\n\nClick \"Start\" to start the game, or you can click \"Options\" to edit your user options."
     ];
@@ -562,6 +561,9 @@ define([
       checkAchieveText = game.add.text(0, 5, "");
       checkAchieveText.anchor.setTo(0.5, 0.5);
       checkpoint.addChild(checkAchieveText);
+      checkpointIcon = game.add.sprite(-228, -25, "checkmark");
+      checkpoint.addChild(checkpointIcon);
+      checkpointIcon.visible = false;
       hiddenIcon = game.add.sprite(-270, -31, "hidden");
       checkpoint.addChild(hiddenIcon);
       hiddenIcon.visible = false;
@@ -577,9 +579,6 @@ define([
       epicIcon = game.add.sprite(-270, -31, "epic");
       checkpoint.addChild(epicIcon);
       epicIcon.visible = false;
-      pauseBtn = game.add.button(5, 5, "p-btn", pauseMenu, this, 0, 1, 2, 0);
-      pauseBtn.fixedToCamera = true;
-      pauseBtn.visible = false;
 
       // Introductory instructions ################################################################
       if(intro) {
@@ -613,8 +612,10 @@ define([
         progressBar.visible = false;
         progressHolder.visible = false;
         proteinDisplayName.visible = false;
-        talkCycles = game.rnd.integerInRange(5, 10);
         titleGroup.y += 50;
+        setTimeout(function() {
+          talkCycles = game.rnd.integerInRange(5, 10);
+        }, 500);
       } else if (goToProteinChooser) {
         proteinChooser();
       } else {
@@ -631,6 +632,11 @@ define([
       game.physics.arcade.overlap(player, hitbox, inTheRibosome, null, this);
       if(!noclip) {game.physics.arcade.collide(player, aminoGroup, checkAmino, null, this);}
       game.physics.arcade.collide(ribosome, aminoGroup, nothing, null, this);
+
+      // Game pausing ###########################################################################
+      if(ribosome.input.pointerDown()) {
+        pauseMenu();
+      }
 
       // Protein in progress resuming #############################################################
       if((proteinAminos.length -1) > remainingProteinLength) {
@@ -689,7 +695,7 @@ define([
       }
 
       // Intro tRNA rotation ####################################################################
-      if(tRNA.visible) {
+      if(tRNA && tRNA.visible) {
         if(tRNACW) {
           if(tRNA.rotation < 0.2) {
             tRNA.rotation = (Math.round((tRNA.rotation + 0.01) * 100)) / 100; // JavaScript really does not like floats
@@ -713,6 +719,7 @@ define([
           checkpoint.alpha -= 0.1;
           cpVisibleTimer--;
         } else {
+          checkpointIcon.visible = false;
           hiddenIcon.visible = false;
           quickIcon.visible = false;
           cleanIcon.visible = false;
@@ -736,17 +743,14 @@ define([
       }
 
       // Player Motion ##########################################################################
-      if(ribosome.input.pointerOver() && !mousedOver) {
-        mousedOver = true; // So we don't just hurtle off into the aether upon game start
-      }
       player.frame = 0;
       eyes.frame = 0;
       if(spinningOut) {
         player.rotation += 0.5;
       } else if(!controlsLocked) {
-        if(mouse && mousedOver) { // Mouse-follow controls
+        if(mouse) { // Mouse-follow controls
           game.physics.arcade.moveToPointer(player, 60, game.input.activePointer, 400);
-        } else if(!mouse) { // Keyboard controls
+        } else { // Keyboard controls
           player.body.velocity.x = 0;
           player.body.velocity.y = 0;
           if(cursors.left.isDown || aKey.isDown) {
@@ -977,7 +981,6 @@ define([
     function pauseMenu() {
       noclip = true;
       controlsLocked = true;
-      pauseBtn.visible = false;
       startBtn.visible = false;
       continueBtn.visible = true;
       largeSpeech.visible = true;
@@ -1010,8 +1013,6 @@ define([
 
     function continueFunc() {
       noclip = false;
-      pauseBtn.visible = true;
-      pauseBtn.frame = 1;
       if(justLoaded) {
         codonSliding -= 45;
         justLoaded = false;
@@ -1154,7 +1155,6 @@ define([
           victoryMusic.play();
           noclip = true;
           controlsLocked = true;
-          pauseBtn.visible = false;
           victoryBubble.visible = true;
           victoryProtein.text = chosenProtein;
           victoryText.text = "\n\n\n\nYou built\n\n\n\nfrom " + fullProteinLength + " amino acids!";
@@ -1183,6 +1183,7 @@ define([
           checkpointCount++;
           checkAchieveText.text = "Checkpoint " + checkpointCount + " of " + Math.floor(fullProteinLength / checkpointInterval) + "!";
           checkpointA.play();
+          checkpointIcon.visible = true;
           checkpoint.visible = true;
           usersObj[currentKey].remainingProteinLength = remainingProteinLength;
           usersObj[currentKey].achievements = achievements;

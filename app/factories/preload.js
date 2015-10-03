@@ -35,7 +35,6 @@ define([
         game.load.spritesheet("I", "images/Isoleucine.png", 60, 59);
         game.load.spritesheet("M", "images/Methionine.png", 43, 60);
         game.load.spritesheet("W", "images/Tryptophan.png", 60, 31);
-        game.load.spritesheet("p-btn", "images/p-btn.png", 44, 44);
         game.load.spritesheet("Q", "images/Glutamine.png", 60, 44);
         game.load.spritesheet("H", "images/Histidine.png", 59, 60);
         game.load.spritesheet("T", "images/Threonine.png", 56, 60);
@@ -70,6 +69,7 @@ define([
         game.load.image("victory-r", "images/victory-r.png");
         game.load.image("victory-y", "images/victory-y.png");
         game.load.image("victory-x", "images/victory-x.png");
+        game.load.image("checkmark", "images/checkmark.png");
         game.load.image("longhome", "images/longhome.png");
         game.load.image("cell-bg", "images/cell-bg.png");
         game.load.image("orline", "images/or-line.png");
