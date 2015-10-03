@@ -76,7 +76,7 @@ body {
     .user-group #color-input:hover {
       cursor: pointer; }
   .user-group #logout-btn {
-    margin-left: 100px; }
+    margin-left: 15%; }
   .user-group .slider {
     width: 80%; }
   .user-group .display {

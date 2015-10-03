@@ -812,10 +812,11 @@ define([
       });
 
       // Codons on stage management #############################################################
-      var firstLivingCodon = codonGroup.getFirstAlive();
-      if(firstLivingCodon && firstLivingCodon.x < -15) {
-        firstLivingCodon.destroy();
-      }
+      codonGroup.forEachAlive(function(theCodon) {
+        if(theCodon.x < -15) {
+          theCodon.destroy();
+        }
+      });
       if(codonSliding < 45) {
         codonGroup.addAll("x", -1, true);
         codonSliding++;
