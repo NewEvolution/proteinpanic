@@ -1,7 +1,5 @@
 <div class="positioner">
   <div class="stats-group">
-    <button class="menu-btn" ng-click="stats.mainMenu()">Return to Main Menu</button>
-    <hr>
     <section ng-repeat="(index, user) in stats.arrayOfUsers | orderBy: '!stats.userRank(user.completedProteins)'">
       <div>
         <span class="user-color" ng-style="stats.userColor(user.color)"></span>{{user.username}}<span class="sequence-length">{{stats.userRank(user.completedProteins)}} Completed Proteins</span>
@@ -30,8 +28,9 @@
       <div class="progress">
         <span class="bar" ng-style="stats.barWidth(user.color, stats.userRank(user.completedProteins))"></span>
       </div>
-      <hr>
     </section>
+  </div>
+  <div class="menu-controls">
     <button class="menu-btn" ng-click="stats.mainMenu()">Return to Main Menu</button>
   </div>
 </div>

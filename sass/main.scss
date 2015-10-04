@@ -79,10 +79,10 @@ body {
 
 .user-group {
   @extend .form-group;
-  top: 40px;
+  top: 30px;
   left: 415px;
   width: 565px;
-  height: 260px;
+  height: 238px;
   overflow: auto;
   h3 {
     padding: 0;
@@ -96,9 +96,6 @@ body {
     &:hover {
       cursor: pointer;
     }
-  }
-  #logout-btn {
-    margin-left: 15%;
   }
   .slider {
     width: 80%;
@@ -167,14 +164,30 @@ body {
   }
 }
 
+.menu-controls {
+  @extend .form-group;
+  top: 270px;
+  left: 415px;
+  width: 565px;
+  height: 2em;
+}
+
+.protein-search {
+  @extend .form-group;
+  top: 170px;
+  left: 250px;
+  height: 2em;
+  width: 530px;
+}
+
 .protein-menu {
-  top: 175px;
+  @extend .form-group;
+  top: 220px;
   left: 250px;
   width: 530px;
-  height: 250px;
+  height: 215px;
   overflow: auto;
-  font-size: 1.2em;
-  position: absolute;
+  text-align: left;
   .radiocheck {
     width: 15px;
     height: 15px;

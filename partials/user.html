@@ -1,9 +1,5 @@
 <div class="positioner">
   <div class="user-group">
-    <button id="top-menu-btn" type="submit" ng-click="user.checkAvail(true, 'menu')">Go To Main Menu</button>
-    <button id="top-game-btn" ng-click="user.checkAvail(true, 'game')">Go To Game</button>
-    <button id="logout-btn" ng-click="user.logOut()">Logout</button>
-    <hr>
     <h3>Username:</h3>
     <input type="text" id="username-input" placeholder="Choose a username" ng-model="user.username">
     <button id="available-btn" ng-click="user.checkAvail()">Check Availability</button>
@@ -36,9 +32,6 @@
       <input class="radio" type="checkbox" name="speech" ng-true-value="true" ng-false-value="false" ng-model="user.ribosomeMuted"><span> - Mute Ribosome Speaking</span>
     </div>
     <hr>
-    <button id="menu-btn" type="submit" ng-click="user.checkAvail(true, 'menu')">Go To Main Menu</button>
-    <button id="game-btn" ng-click="user.checkAvail(true, 'game')">Go To Game</button>
-    <hr>
     <div ng-show="user.emailAuth">
       <h3>Account Settings:</h3>
       <div class="radio-holder">
@@ -60,5 +53,11 @@
       <button id="email-btn" ng-click="user.changePassword()" ng-show="user.passToggle">Change Password</button>
       <button id="email-btn" ng-click="user.removeUser()" ng-show="user.deleteToggle">Delete Account :(</button>
     </div>
+  </div>
+  <div class="menu-controls">
+    <button id="logout-btn" ng-click="user.logOut()">Logout</button>
+    Save and:
+    <button id="top-menu-btn" type="submit" ng-click="user.checkAvail(true, 'menu')">Go To Main Menu</button>
+    <button id="top-game-btn" ng-click="user.checkAvail(true, 'game')">Go To Game</button>
   </div>
 </div>

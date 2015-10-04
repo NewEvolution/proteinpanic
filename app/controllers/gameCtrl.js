@@ -34,6 +34,7 @@ define([
     this.arrayOfProteins = proteinsArr;
     this.arrayOfUsers = usersArr;
     this.selectedProtein = null;
+    this.proteinSearch = "";
     $scope.proteinMenu = false;
 
     // Debugging tool variables
@@ -306,9 +307,6 @@ define([
       mask.beginFill(0x000000);
       mask.drawPolygon(polygonPoints);
       mask.fixedToCamera = true;
-      if(!mouse) {
-        createControls();
-      }
 
       // Audio ####################################################################################
       victoryMusic = game.add.audio("victory-a", musicVolume, true);
@@ -967,11 +965,12 @@ define([
     }
 
     function proteinChooser() {
+      game.input.keyboard.clearCaptures();
       $scope.proteinMenu = true;
       $scope.$apply();
       startBtn.visible = true;
-      continueBtn.visible=false;
       largeSpeech.visible = true;
+      continueBtn.visible = false;
       smallSpeech.visible = false;
       progressBar.visible = false;
       progressHolder.visible = false;
@@ -1013,6 +1012,9 @@ define([
     }
 
     function continueFunc() {
+      if(!mouse && !cursors) {
+        createControls();
+      }
       noclip = false;
       if(justLoaded) {
         codonSliding -= 45;
