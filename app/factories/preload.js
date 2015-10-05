@@ -26,6 +26,7 @@ define([
         game.load.spritesheet("menu-btn", "images/menu-btn.png", 192, 42);
         game.load.spritesheet("next-btn", "images/next-btn.png", 34, 61);
         game.load.spritesheet("prev-btn", "images/prev-btn.png", 34, 61);
+        game.load.spritesheet("U", "images/Selenocysteine.png", 59, 60);
         game.load.spritesheet("eyes", "images/tRNA-eyes.png", 71, 106);
         game.load.spritesheet("D", "images/Aspartic_acid.png", 60, 58);
         game.load.spritesheet("E", "images/Glutamic_acid.png", 30, 60);

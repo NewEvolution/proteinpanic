@@ -270,9 +270,6 @@ define([
                   }
                 }
               }
-              if(proteinAminos[maf] === "U") { // Figure out Selenocysteine at some point
-                proteinAminos[maf] = "C";
-              }
               proteinAminos.push("STOP");
             }
           }
