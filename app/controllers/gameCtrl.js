@@ -252,6 +252,27 @@ define([
             if(proteinsArr[p].name === chosenProtein) {
               proteinAminos = proteinsArr[p].sequence.split(""); // Grab the list of amino acids & build the array to grab
               fullProteinLength = proteinAminos.length;
+              for(var maf = 0; maf < proteinAminos.length; maf++) {
+                if(proteinAminos[maf] === "B") { // Nonspecific amino acid
+                  var bRand = game.rnd.integerInRange(0, 1);
+                  if(bRand > 0) {
+                    proteinAminos[maf] = "N";
+                  } else {
+                    proteinAminos[maf] = "D";
+                  }
+                }
+                if(proteinAminos[maf] === "Z") { // Nonspecific amino acid
+                  var zRand = game.rnd.integerInRange(0, 1);
+                  if(zRand > 0) {
+                    proteinAminos[maf] = "Q";
+                  } else {
+                    proteinAminos[maf] = "E";
+                  }
+                }
+              }
+              if(proteinAminos[maf] === "U") { // Figure out Selenocysteine at some point
+                proteinAminos[maf] = "C";
+              }
               proteinAminos.push("STOP");
             }
           }

@@ -45,6 +45,7 @@ define([
         game.load.spritesheet("G", "images/Glycine.png", 60, 57);
         game.load.spritesheet("L", "images/Leucine.png", 59, 60);
         game.load.spritesheet("P", "images/Proline.png", 60, 48);
+        game.load.spritesheet("X", "images/Unknown.png", 60, 60);
         game.load.spritesheet("K", "images/Lysine.png", 60, 44);
         game.load.spritesheet("S", "images/Serine.png", 39, 60);
         game.load.spritesheet("V", "images/Valine.png", 60, 60);
@@ -75,6 +76,7 @@ define([
         game.load.image("orline", "images/or-line.png");
         game.load.image("hitbox", "images/hitbox.png");
         game.load.image("hidden", "images/hidden.png");
+        game.load.image("x", "images/UnknownNuc.png");
         game.load.image("title", "images/title.png");
         game.load.image("clean", "images/clean.png");
         game.load.image("quick", "images/quick.png");
