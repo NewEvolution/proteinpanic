@@ -1,4 +1,4 @@
-#Aminos Anonymous
+#Protein Panic
 
 A science matching game where you the player need to capture amino acids in sequence to constuct a protein.
 
@@ -15,4 +15,4 @@ Built with Phaser http://www.phaser.io/
 - inside the main repo directory:
  - run _http-server_
  - make note of the port number returned after running _http-server_
-- navigate to http://localhost:[your-port-number]/#/game
+- navigate to http://localhost:[your-port-number]
