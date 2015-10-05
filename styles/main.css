@@ -150,6 +150,10 @@ body {
     height: 15px;
     margin-right: 10px; }
 
+.protein-name {
+  display: inline-block;
+  width: 400px; }
+
 .sequence-length {
   float: right;
   margin-left: 10px; }

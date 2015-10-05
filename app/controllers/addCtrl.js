@@ -57,6 +57,14 @@ define([
         }).done(function(data) {
           ungodlyArray = data.split("\n");
           for(var i = 0; i < ungodlyArray.length; i++) {
+            var forcefeedDelay = 0;
+            if(i % 5000 === 0) {
+              forcefeedDelay = 50000;
+            }
+            if(forcefeedDelay > 0) {
+              alert("Click this!");
+              forcefeedDelay = 0;
+            }
             var proteinComplete = false;
             if(newProtein.name === "" && !isSequence(ungodlyArray[i])) {
               newProtein.name = ungodlyArray[i];
@@ -76,7 +84,7 @@ define([
             }
             if(newProtein.name !== "" && proteinComplete) {
               console.log("full protein:", newProtein);
-              // proteinArr.$add(newProtein);
+              // proteinArr.$add(newProtein); // commented out so we don't hammer Firebase by mistake
               newProtein.name = "";
               newProtein.sequence = "";
             }

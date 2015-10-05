@@ -4,7 +4,7 @@
   </div>
   <div class="protein-menu">
     <section ng-repeat="protein in game.arrayOfProteins | orderBy: 'sequence.length' | filter: game.proteinSearch">
-      <input type="radio" class="radiocheck" name="protein-selection" ng-value="protein.name" ng-model="game.selectedProtein" ng-if="game.hideCompleted(protein.name)"><img class="radiocheck" src="images/checkmark.png" alt="completed" ng-if="!game.hideCompleted(protein.name)">{{protein.name}}<span class="sequence-length">{{protein.sequence.length}}<span>AAs</span></span>
+      <input type="radio" class="radiocheck" name="protein-selection" ng-value="protein.name" ng-model="game.selectedProtein" ng-if="game.hideCompleted(protein.name)"><img class="radiocheck" src="images/checkmark.png" alt="completed" ng-if="!game.hideCompleted(protein.name)"><span class="protein-name">{{protein.name}}</span><span class="sequence-length">{{protein.sequence.length}}<span>AAs</span></span>
       <hr>
     </section>
   </div>
