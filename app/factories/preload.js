@@ -62,7 +62,6 @@ define([
         game.load.image("splash-ribo", "images/SplashRibo.png");
         game.load.image("splash-trna", "images/SplashtRNA.png");
         game.load.image("checkpoint", "images/checkpoint.png");
-        game.load.image("splash", "images/splash-screen.png");
         game.load.image("victory-v", "images/victory-v.png");
         game.load.image("victory-i", "images/victory-i.png");
         game.load.image("victory-c", "images/victory-c.png");
@@ -97,6 +96,7 @@ define([
         game.load.audio("collection-a", "audio/Collection.ogg");
         game.load.audio("capture-a", "audio/Capture.ogg");
         game.load.audio("victory-a", "audio/Victory.ogg");
+        game.load.audio("fanfare-a", "audio/Fanfare.ogg");
         game.load.audio("speech-a", "audio/Speech.ogg");
         game.load.audio("impact-a", "audio/Impact.ogg");
         game.load.audio("drop-a", "audio/Drop.ogg");

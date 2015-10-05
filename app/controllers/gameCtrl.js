@@ -130,6 +130,7 @@ define([
     var victoryY;
     var victoryX;
     var captureA;
+    var fanfareA;
     var page = 0;
     var gameMusic;
     var ribounder;
@@ -334,6 +335,7 @@ define([
       achievementA = game.add.audio("achievement-a", effectsVolume);
       checkpointA = game.add.audio("checkpoint-a", effectsVolume);
       collectionA = game.add.audio("collection-a", effectsVolume);
+      fanfareA = game.add.audio("fanfare-a", effectsVolume);
       captureA = game.add.audio("capture-a", effectsVolume);
       impactA = game.add.audio("impact-a", effectsVolume);
       dropA = game.add.audio("drop-a", effectsVolume);
@@ -1175,7 +1177,10 @@ define([
           console.log(fullProteinLength, achievements);
           // won goes here
           gameMusic.stop();
-          victoryMusic.play();
+          fanfareA.play();
+          setTimeout(function() {
+            victoryMusic.play();
+          }, 4000);
           noclip = true;
           controlsLocked = true;
           victoryBubble.visible = true;

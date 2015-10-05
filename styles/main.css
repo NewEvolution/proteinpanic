@@ -4,6 +4,9 @@ body {
   font-family: "Nunito", Arial, sans-serif;
   background: #79C2B4; }
 
+.hidden {
+  display: none; }
+
 .input-group,
 #protein-btn,
 #amino-btn {
@@ -11,8 +14,9 @@ body {
 
 #game-holder {
   width: 1024px;
-  height: 600px;
-  margin: 20px auto 0; }
+  height: 576px;
+  margin: 20px auto 0;
+  background-image: url("../images/splash-screen.png"); }
 
 .positioner {
   width: 0;
