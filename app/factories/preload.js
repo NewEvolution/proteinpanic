@@ -91,7 +91,7 @@ define([
         game.load.image("STOP", "images/STOP.png");
         game.load.image("a", "images/Adenine.png");
         game.load.image("g", "images/Guanine.png");
-        game.load.image("t", "images/Thymine.png");
+        game.load.image("u", "images/Uracil.png");
         game.load.audio("achievement-a", "audio/Achievement.ogg");
         game.load.audio("checkpoint-a", "audio/Checkpoint.ogg");
         game.load.audio("collection-a", "audio/Collection.ogg");

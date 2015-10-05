@@ -107,12 +107,12 @@ define([
     var dropA;
     var player;
     var hitbox;
+    var Uracil;
     var prevBtn;
     var nextBtn;
     var cursors;
     var Adenine;
     var Guanine;
-    var Thymine;
     var Alanine;
     var menuBtn;
     var impactA;
@@ -235,7 +235,7 @@ define([
       "",
       "Those little colorful beings bouncing around in the background are amino acids, the building blocks of proteins.\n\nAs a ribosome, my job is to assemble those amino acids in a specific order to build a protein, but there's more to it than that, and that's where you come in.",
       "You see, as a ribosome, I'm fixed in place in the wall of the rough endoplasmic reticulum that surrounds the nucleus of the cell.  I can't run off and grab the amino acids we need to build the protein.\n\nGrabbing the right amino acid is up to you, the transport RNA!",
-      "The long colorful chain at the bottom of the screen is half of a strand of DNA, and it gives us our instructions for building the protein.\n\nHow does it do that? Well, the colored bars sticking up from the DNA's green backbone are called nucleotides, and they come in one of four types:\n\nAdenine  Cytosine  Guanine  Thymine",
+      "The long colorful chain at the bottom of the screen is a strand of messenger RNA, and it gives us our instructions for building the protein.\n\nHow does it do that? Well, the colored bars sticking up from the RNA's green backbone are called nucleotides, and they come in one of four types:\n\nAdenine  Cytosine  Guanine  Uracil",
       "Every amino acid can be represented by three nucleotides in a specific order. This group of three nucleotides is called a codon, and every amino acid has at least one codon, though some have more.\n\nFor example:\n\nis a codon for Alanine",
       "I'll read the DNA one codon at a time and tell you which amino acid to catch. Once you've caught the amino acid, bring it back to me and I'll add it to the protein we're building.\n\nBe careful not to run into any of the other amino acids floating about, as they'll make you spin out and drop any amino acid you're carrying!",
       "Proteins can be very long, some contain thousands of amino acids! We'll start with a shorter one, but there will also be checkpoints along the way.\n\nOnce you've reached a checkpoint, you can restart from there later. You can change how often checkpoints happen in your user options.",
@@ -252,6 +252,7 @@ define([
             if(proteinsArr[p].name === chosenProtein) {
               proteinAminos = proteinsArr[p].sequence.split(""); // Grab the list of amino acids & build the array to grab
               fullProteinLength = proteinAminos.length;
+              console.log(fullProteinLength);
               for(var maf = 0; maf < proteinAminos.length; maf++) {
                 if(proteinAminos[maf] === "B") { // Nonspecific amino acid
                   var bRand = game.rnd.integerInRange(0, 1);
@@ -336,33 +337,33 @@ define([
       captureA = game.add.audio("capture-a", effectsVolume);
       impactA = game.add.audio("impact-a", effectsVolume);
       dropA = game.add.audio("drop-a", effectsVolume);
-      riboSpeech = game.add.audio("speech-a", effectsVolume);
+      riboSpeech = game.add.audio("speech-a");
       riboSpeech.allowMultple = true;
-      riboSpeech.addMarker("1", 0.1, 0.15);
-      riboSpeech.addMarker("2", 0.3, 0.18);
-      riboSpeech.addMarker("3", 0.5, 0.32);
-      riboSpeech.addMarker("4", 0.9, 0.29);
-      riboSpeech.addMarker("5", 1.2, 0.25);
-      riboSpeech.addMarker("6", 1.5, 0.3);
-      riboSpeech.addMarker("7", 1.8, 0.29);
-      riboSpeech.addMarker("8", 2.1, 0.25);
-      riboSpeech.addMarker("9", 2.4, 0.17);
-      riboSpeech.addMarker("10", 2.6, 0.15);
-      riboSpeech.addMarker("11", 2.8, 0.18);
-      riboSpeech.addMarker("12", 3.0, 0.18);
-      riboSpeech.addMarker("13", 3.2, 0.18);
-      riboSpeech.addMarker("14", 3.4, 0.2);
-      riboSpeech.addMarker("15", 3.6, 0.27);
-      riboSpeech.addMarker("16", 3.9, 0.13);
-      riboSpeech.addMarker("17", 4.1, 0.15);
-      riboSpeech.addMarker("18", 4.3, 0.22);
-      riboSpeech.addMarker("19", 4.6, 0.18);
-      riboSpeech.addMarker("20", 4.8, 0.19);
-      riboSpeech.addMarker("21", 5.0, 0.2);
-      riboSpeech.addMarker("22", 5.2, 0.23);
-      riboSpeech.addMarker("23", 5.5, 0.37);
-      riboSpeech.addMarker("24", 5.9, 0.25);
-      riboSpeech.addMarker("25", 6.2, 0.3);
+      riboSpeech.addMarker("1", 0.1, 0.15, effectsVolume);
+      riboSpeech.addMarker("2", 0.3, 0.18, effectsVolume);
+      riboSpeech.addMarker("3", 0.5, 0.32, effectsVolume);
+      riboSpeech.addMarker("4", 0.9, 0.29, effectsVolume);
+      riboSpeech.addMarker("5", 1.2, 0.25, effectsVolume);
+      riboSpeech.addMarker("6", 1.5, 0.3, effectsVolume);
+      riboSpeech.addMarker("7", 1.8, 0.29, effectsVolume);
+      riboSpeech.addMarker("8", 2.1, 0.25, effectsVolume);
+      riboSpeech.addMarker("9", 2.4, 0.17, effectsVolume);
+      riboSpeech.addMarker("10", 2.6, 0.15, effectsVolume);
+      riboSpeech.addMarker("11", 2.8, 0.18, effectsVolume);
+      riboSpeech.addMarker("12", 3.0, 0.18, effectsVolume);
+      riboSpeech.addMarker("13", 3.2, 0.18, effectsVolume);
+      riboSpeech.addMarker("14", 3.4, 0.2, effectsVolume);
+      riboSpeech.addMarker("15", 3.6, 0.27, effectsVolume);
+      riboSpeech.addMarker("16", 3.9, 0.13, effectsVolume);
+      riboSpeech.addMarker("17", 4.1, 0.15, effectsVolume);
+      riboSpeech.addMarker("18", 4.3, 0.22, effectsVolume);
+      riboSpeech.addMarker("19", 4.6, 0.18, effectsVolume);
+      riboSpeech.addMarker("20", 4.8, 0.19, effectsVolume);
+      riboSpeech.addMarker("21", 5.0, 0.2, effectsVolume);
+      riboSpeech.addMarker("22", 5.2, 0.23, effectsVolume);
+      riboSpeech.addMarker("23", 5.5, 0.37, effectsVolume);
+      riboSpeech.addMarker("24", 5.9, 0.25, effectsVolume);
+      riboSpeech.addMarker("25", 6.2, 0.3, effectsVolume);
 
       // Built protein ##########################################################################
       proteinGroup = game.add.group();
@@ -387,7 +388,7 @@ define([
       aminoGroup.enableBody = true;
       for (var i = 0; i < 15; i++) {
         var theAmino = "";
-        if(i < 5) {
+        if(i < 5 && proteinAminos[i] !== "STOP") {
           theAmino = proteinAminos[i];
         } else {
           while(theAmino === "" || theAmino === "STOP") { // The stop shouldn't be on stage...
@@ -602,10 +603,10 @@ define([
         prevBtn = game.add.button(50, 355, "prev-btn", prevFunc, this, 0, 1, 2, 0);
         nextBtn = game.add.button(610, 355, "next-btn", nextFunc, this, 0, 1, 2, 0);
         nucleotideGroup = game.add.group();
-        Adenine = nucleotideGroup.create(150, 330, "a");
-        Cytosine = nucleotideGroup.create(275, 330, "c");
-        Guanine = nucleotideGroup.create(395, 330, "g");
-        Thymine = nucleotideGroup.create(520, 330, "t");
+        Adenine = nucleotideGroup.create(170, 360, "a");
+        Cytosine = nucleotideGroup.create(295, 360, "c");
+        Guanine = nucleotideGroup.create(415, 360, "g");
+        Uracil = nucleotideGroup.create(520, 360, "u");
         Alanine = nucleotideGroup.create(495, 305, "A");
         nucleotideGroup.visible = false;
         Alanine.visible = false;
@@ -922,13 +923,13 @@ define([
 
     function nucleotideMover() {
       if(page === 3) {
-        Adenine.x = 150;
-        Adenine.y = 330;
-        Cytosine.x = 275;
-        Cytosine.y = 330;
-        Guanine.x = 395;
-        Guanine.y = 330;
-        Thymine.visible = true;
+        Adenine.x = 170;
+        Adenine.y = 360;
+        Cytosine.x = 295;
+        Cytosine.y = 360;
+        Guanine.x = 415;
+        Guanine.y = 360;
+        Uracil.visible = true;
         Alanine.visible = false;
       }
       if(page === 4) {
@@ -938,7 +939,7 @@ define([
         Cytosine.y = 325;
         Guanine.x = 150;
         Guanine.y = 325;
-        Thymine.visible = false;
+        Uracil.visible = false;
         Alanine.visible = true;
       }
     }
@@ -1171,6 +1172,7 @@ define([
       if(inRibosome) {
         achievementRoutine();
         if(proteinAminos.length === 1) {
+          console.log(fullProteinLength, achievements);
           // won goes here
           gameMusic.stop();
           victoryMusic.play();

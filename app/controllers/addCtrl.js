@@ -41,6 +41,7 @@ define([
         var newAmino = {name: theName, codons: theCodons, code: theCode};
         aminoArr.$add(newAmino);
         this.aminoName = "";
+        this.aminoCode = "";
         this.codonString = "";
       };
 
@@ -56,6 +57,7 @@ define([
         }).done(function(data) {
           ungodlyArray = data.split("\n");
           for(var i = 0; i < ungodlyArray.length; i++) {
+            var proteinComplete = false;
             if(newProtein.name === "" && !isSequence(ungodlyArray[i])) {
               newProtein.name = ungodlyArray[i];
             } else if(!isSequence(ungodlyArray[i])) {
@@ -63,11 +65,18 @@ define([
                 newProtein.name = ungodlyArray[i];
               }
             } else if(isSequence(ungodlyArray[i])) {
-              newProtein.sequence = ungodlyArray[i];
+              newProtein.sequence = newProtein.sequence + ungodlyArray[i];
+              if((i + 1) < ungodlyArray.length){
+                if(!isSequence(ungodlyArray[i + 1])) {
+                  proteinComplete = true;
+                }
+              } else {
+                proteinComplete = true;
+              }
             }
-            if(newProtein.name !== "" && newProtein.sequence !== "") {
+            if(newProtein.name !== "" && proteinComplete) {
               console.log("full protein:", newProtein);
-              proteinArr.$add(newProtein);
+              // proteinArr.$add(newProtein);
               newProtein.name = "";
               newProtein.sequence = "";
             }
@@ -78,6 +87,9 @@ define([
       var cannotHave = [ "J", "O", "-", "'", ".", "/", "[", "]", "(", ")", " ", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
       function isSequence(str) {
+        if(str.length > 60) {
+          return false;
+        }
         var upperStr = str.toUpperCase();
         for(var j = 0; j < cannotHave.length; j++) {
           if(upperStr.indexOf(cannotHave[j]) >= 0) {

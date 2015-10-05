@@ -7,7 +7,7 @@ define([
 
     var game = proteinPanic;
 
-    var allAminos = ["D", "E", "F", "N", "I", "M", "W", "Q", "H", "T", "R", "C", "Y", "A", "G", "L", "P", "K", "S", "V"];
+    var allAminos = ["D", "E", "F", "N", "I", "M", "W", "Q", "H", "T", "R", "C", "Y", "A", "G", "L", "P", "K", "S", "U", "V"];
 
     var valine;
     var valinePoints = {
