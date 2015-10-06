@@ -6,6 +6,7 @@ define([
   "angularRoute",
   "angularFilter",
   "factories/uid",
+  "factories/creator",
   "factories/preload",
   "controllers/addCtrl",
   "factories/menuSplash",
@@ -15,7 +16,7 @@ define([
   "controllers/loginCtrl",
   "controllers/statsCtrl",
   "factories/proteinPanic"
-], function(phaser, angular, bootstrap, angularfire, angularRoute, filter, uid, preload, add, menuSplash, menu, user, game, login, stats, proteinPanic) {
+], function(phaser, angular, bootstrap, angularfire, angularRoute, filter, uid, userCreator, preload, add, menuSplash, menu, user, game, login, stats, proteinPanic) {
   return angular.module("AminoApp", [
     "ngRoute",
     "firebase",
@@ -29,6 +30,7 @@ define([
     "angular.filter",
     "AminoApp.preload",
     "AminoApp.menuSplash",
+    "AminoApp.userCreator",
     "AminoApp.proteinPanic"
   ]).
   config(["$routeProvider", function($routeProvider) {
