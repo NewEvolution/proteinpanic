@@ -60,7 +60,6 @@ define([
             musicVolume = data[key].music;
             effectsVolume = data[key].effects;
             ribosomeMuted = data[key].ribosomeMuted;
-            completedIntro = data[key].completedIntro;
             checkpointInterval = data[key].checkpoint;
             playerColor = "0x" + data[key].color.slice(1);
             if(data[key].completedProteins) {
@@ -218,7 +217,6 @@ define([
     var carryingAmino = false;
     var controlsLocked = true;
     var remainingProteinLength;
-    var completedIntro = false;
     var completedProteins = "";
     var mouthClosedCounter = 0;
     var checkpointInterval = 10;
@@ -961,7 +959,6 @@ define([
       } else {
         intro = false;
         usersObj[currentKey].intro = false;
-        usersObj[currentKey].completedIntro = true;
         usersObj[currentKey].proteinInProgress = "Insulin";
         usersObj[currentKey].remainingProteinLength = proteinAminos.length;
         usersObj.$save();
@@ -976,12 +973,8 @@ define([
         startBtn.visible = false;
         optionsBtn.visible = true;
         continueBtn.visible = true;
-        if(completedIntro) {
-          goToProteinChooser = true;
-          proteinChooser();
-        } else {
-          pauseMenu();
-        }
+        goToProteinChooser = true;
+        proteinChooser();
       }
     }
 
