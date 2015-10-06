@@ -100,6 +100,7 @@ define([
               quickCollections: 0,
               totalQuickCollections: 0
             },
+            intro: true,
             checkpoint: 10,
             color: "#000000",
             effects: 1,
@@ -271,7 +272,6 @@ define([
             if(proteinsArr[p].name === chosenProtein) {
               proteinAminos = proteinsArr[p].sequence.split(""); // Grab the list of amino acids & build the array to grab
               fullProteinLength = proteinAminos.length;
-              console.log(fullProteinLength);
               for(var maf = 0; maf < proteinAminos.length; maf++) {
                 if(proteinAminos[maf] === "B") { // Nonspecific amino acid
                   var bRand = game.rnd.integerInRange(0, 1);
@@ -1187,7 +1187,6 @@ define([
       if(inRibosome) {
         achievementRoutine();
         if(proteinAminos.length === 1) {
-          console.log(fullProteinLength, achievements);
           // won goes here
           gameMusic.stop();
           fanfareA.play();

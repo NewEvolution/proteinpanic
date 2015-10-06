@@ -50,27 +50,60 @@ define([
 		  uid.setUid(authData.uid);
 		  currentUID = authData.uid;
 			usersArr.$loaded().then(angular.bind(this, function(data) {
-				for(var key in data) {
-					if(data[key].uid === currentUID) {
-            this.ribosomeMuted = data[key].ribosomeMuted;
-            this.checkpoint = data[key].checkpoint;
+        var userDoesNotExist = true;
+        for(var key in data) {
+          if(data[key].uid === currentUID) {
+            userDoesNotExist = false;
             this.username = data[key].username;
-            this.effects = data[key].effects;
-            this.mouse = data[key].mouse;
-            this.music = data[key].music;
-            this.color = data[key].color;
-            this.intro = data[key].intro;
-            currentKey = data[key].$id;
-            menuSplash.volumeSetter(this.music);
-            menuSplash.trnaTintSetter("0x" + this.color.slice(1));
-            if(currentUID.indexOf("github") === -1 && 
-            currentUID.indexOf("facebook") === -1 && 
-            currentUID.indexOf("twitter") === -1 && 
-            currentUID.indexOf("google") === -1) {
-              this.emailAuth = true;
-            }
-					}
-				}
+          }
+        }
+        if(userDoesNotExist) {
+          usersArr.$add({
+            uid: currentUID,
+            achievements: {
+              epicCollections: 0,
+              totalEpicCollections: 0,
+              hiddenAminoAcids: 0,
+              totalHiddenAminoAcids: 0,
+              longWayHomes: 0,
+              totalLongWayHomes: 0,
+              cleanCollections: 0,
+              totalCleanCollections: 0,
+              quickCollections: 0,
+              totalQuickCollections: 0
+            },
+            intro: true,
+            checkpoint: 10,
+            color: "#000000",
+            effects: 1,
+            music: 1,
+            mouse: false,
+            ribosomeMuted: false
+          });
+          window.location.reload();
+        } else {
+  				for(var anotherKey in data) {
+  					if(data[anotherKey].uid === currentUID) {
+              this.ribosomeMuted = data[anotherKey].ribosomeMuted;
+              this.checkpoint = data[anotherKey].checkpoint;
+              this.username = data[anotherKey].username;
+              this.effects = data[anotherKey].effects;
+              this.mouse = data[anotherKey].mouse;
+              this.music = data[anotherKey].music;
+              this.color = data[anotherKey].color;
+              this.intro = data[anotherKey].intro;
+              currentKey = data[anotherKey].$id;
+              menuSplash.volumeSetter(this.music);
+              menuSplash.trnaTintSetter("0x" + this.color.slice(1));
+              if(currentUID.indexOf("github") === -1 && 
+              currentUID.indexOf("facebook") === -1 && 
+              currentUID.indexOf("twitter") === -1 && 
+              currentUID.indexOf("google") === -1) {
+                this.emailAuth = true;
+              }
+  					}
+  				}
+        }
         if(menuSplash.menusLoadedGetter() === false) {
           menuSplash.menusLoadedSetter(true);
           menuSplash.hasTitleSetter(false);

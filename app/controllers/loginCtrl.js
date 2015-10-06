@@ -65,6 +65,7 @@ define([
               quickCollections: 0,
               totalQuickCollections: 0
             },
+            intro: true,
             checkpoint: 10,
             color: "#000000",
             effects: 1,
