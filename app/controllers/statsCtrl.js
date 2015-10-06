@@ -51,7 +51,27 @@ define([
           }
         }
         if(userDoesNotExist) {
-          usersArr.$add({uid: currentUID});
+          usersArr.$add({
+            uid: currentUID,
+            achievements: {
+              epicCollections: 0,
+              totalEpicCollections: 0,
+              hiddenAminoAcids: 0,
+              totalHiddenAminoAcids: 0,
+              longWayHomes: 0,
+              totalLongWayHomes: 0,
+              cleanCollections: 0,
+              totalCleanCollections: 0,
+              quickCollections: 0,
+              totalQuickCollections: 0
+            },
+            checkpoint: 10,
+            color: "#000000",
+            effects: 1,
+            music: 1,
+            mouse: false,
+            ribosomeMuted: false
+          });
         }
         if(this.username === "") {
           window.location = "#/user";

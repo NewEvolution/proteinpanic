@@ -64,7 +64,13 @@ define([
               totalCleanCollections: 0,
               quickCollections: 0,
               totalQuickCollections: 0
-            }
+            },
+            checkpoint: 10,
+            color: "#000000",
+            effects: 1,
+            music: 1,
+            mouse: false,
+            ribosomeMuted: false
           });
         }
 				if(this.username === "") {
