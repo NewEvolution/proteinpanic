@@ -1,8 +1,8 @@
 <div class="positioner">
   <div class="stats-group">
-    <section ng-repeat="(index, user) in stats.arrayOfUsers | orderBy: '!stats.userRank(user.completedProteins)'">
+    <section ng-repeat="(index, user) in stats.arrayOfUsers | orderBy: stats.userRank(user.completedProteins)">
       <div>
-        <span class="user-color" ng-style="stats.userColor(user.color)"></span>{{user.username}}<span class="sequence-length">{{stats.userRank(user.completedProteins)}} Completed Proteins</span>
+        <span class="user-color" ng-style="stats.userColor(user.color)"></span>{{user.username}}<span class="sequence-length">{{stats.completedCount(user.completedProteins)}} Completed Proteins</span>
       </div>
       <span class="rank">#{{index + 1}}</span>
       <ul class="achievements">
@@ -23,11 +23,12 @@
         </li>
       </ul>
       <div class="percentage">
-        <h5>{{((stats.userRank(user.completedProteins)) / stats.proteinCount) * 100}}% of the protein database completed!</h5>
+        <h5>{{((stats.completedCount(user.completedProteins)) / stats.proteinCount) * 100}}% of the protein database completed!</h5>
       </div>
       <div class="progress">
-        <span class="bar" ng-style="stats.barWidth(user.color, stats.userRank(user.completedProteins))"></span>
+        <span class="bar" ng-style="stats.barWidth(user.color, stats.completedCount(user.completedProteins))"></span>
       </div>
+      <hr>
     </section>
   </div>
   <div class="menu-controls">

@@ -71,11 +71,11 @@ define([
       }));
     }
 
-    this.userRank = function(proteinString) {
+    this.completedCount = function(proteinString) {
       if(proteinString) {
-        var rank = proteinString.split(",").length - 1;
-        if(rank > 0) {
-          return rank;
+        var count = proteinString.split(",").length - 1;
+        if(count > 0) {
+          return count;
         }
       }
       return 0;
