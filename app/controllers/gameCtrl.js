@@ -424,7 +424,7 @@ define([
       hitbox.body.immovable = true;
 
       // Small speech bubbble - collection instructions ###########################################
-      smallSpeech = game.add.sprite(170, 440, "speech-bubble");
+      smallSpeech = game.add.sprite(175, 440, "speech-bubble");
       smallSpeech.fixedToCamera = true;
       aminoToCollectGroup = game.add.group();
       aminoToCollectGroup.name = "aminoToCollectGroup";
@@ -445,7 +445,6 @@ define([
       collectableName.setTextBounds(110, 25, 225, 40);
       smallSpeech.addChild(collectableName);
       smallSpeech.visible = false;
-      console.log(smallSpeech.cameraOffset.y);
 
       // Large speech bubble - intro/pause/success/protein selection ##############################
       largeSpeech = game.add.sprite(170, 80, "large-bubble");
@@ -658,11 +657,29 @@ define([
       }
 
       // Small speech buble relocation ############################################################
-      if((game.camera.y < 510) && smallSpeech.cameraOffset.x >= -280) {
+      // Following ribosome
+      if(game.camera.x >= 0 && game.camera.x <= 175) {
+        smallSpeech.cameraOffset.x = 175 - game.camera.x;
+      }
+      // Retraction
+      if((game.camera.y < 490 || game.camera.x > 175) && smallSpeech.cameraOffset.x >= -305) {
         smallSpeech.cameraOffset.x -= 30;
-      } else if((game.camera.y >= 510) && smallSpeech.cameraOffset.x < 170) {
+      }
+      // Extension
+      if((game.camera.y >= 490 && game.camera.x <= 175) && smallSpeech.cameraOffset.x < 175) {
         smallSpeech.cameraOffset.x += 30;
       }
+      // Vertical sliding to avoid RNA chain
+      if(game.camera.y !== 0) {
+        var offset = 440 + (624 - game.camera.y);
+        if(offset < 505) {
+          smallSpeech.cameraOffset.y = offset;
+        }
+      }
+
+      // if(game.camera.x > 0) {
+      //   smallSpeech.cameraOffset.x = (0 - game.camera.x) + 170;
+      // }
 
       // Panic vibration ##########################################################################
       panicGroup.forEachExists(function(letter) {
