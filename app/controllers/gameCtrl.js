@@ -367,7 +367,6 @@ define([
       // Built protein ##########################################################################
       proteinGroup = game.add.group();
       proteinGroup.name = "proteinGroup";
-      proteinGroup.fixedToCamera = true;
 
       // Player #################################################################################
       player = game.add.sprite(100, 1100, "player");
@@ -410,23 +409,19 @@ define([
       }
 
       // Ribosome & codon #######################################################################
-      ribounder = game.add.sprite(20, 410, "ribo-under");
-      ribounder.fixedToCamera = true;
+      ribounder = game.add.sprite(20, 1034, "ribo-under");
       codonGroup = game.add.group();
       codonGroup.name = "codonGroup";
-      codonGroup.fixedToCamera = true;
       dnaMaker();
-      ribosome = game.add.sprite(20, 410, "ribosome");
+      ribosome = game.add.sprite(20, 1034, "ribosome");
       game.physics.arcade.enable(ribosome);
       ribosome.body.immovable = true;
       ribosome.inputEnabled = true;
-      ribosome.fixedToCamera = true;
-      riboeyes = game.add.sprite(85, 432, "riboeyes");
-      riboeyes.fixedToCamera = true;
-      hitbox = game.add.sprite(20, 500, "hitbox");
+      riboeyes = game.add.sprite(65, 22, "riboeyes");
+      ribosome.addChild(riboeyes);
+      hitbox = game.add.sprite(20, 1124, "hitbox");
       game.physics.arcade.enable(hitbox);
       hitbox.body.immovable = true;
-      hitbox.fixedToCamera = true;
 
       // Small speech bubbble - collection instructions ###########################################
       smallSpeech = game.add.sprite(170, 440, "speech-bubble");
@@ -450,6 +445,7 @@ define([
       collectableName.setTextBounds(110, 25, 225, 40);
       smallSpeech.addChild(collectableName);
       smallSpeech.visible = false;
+      console.log(smallSpeech.cameraOffset.y);
 
       // Large speech bubble - intro/pause/success/protein selection ##############################
       largeSpeech = game.add.sprite(170, 80, "large-bubble");
@@ -661,6 +657,13 @@ define([
         aminoStageCheck(true);
       }
 
+      // Small speech buble relocation ############################################################
+      if((game.camera.y < 510) && smallSpeech.cameraOffset.x >= -280) {
+        smallSpeech.cameraOffset.x -= 30;
+      } else if((game.camera.y >= 510) && smallSpeech.cameraOffset.x < 170) {
+        smallSpeech.cameraOffset.x += 30;
+      }
+
       // Panic vibration ##########################################################################
       panicGroup.forEachExists(function(letter) {
         var anchors = {p: 375, a: 420, n: 482, i: 540, c: 564, y: 20};
@@ -673,7 +676,7 @@ define([
         }
       });
 
-      // Ribosome blinking ######################################################################
+      // Ribosome blinking ########################################################################
       var blink = game.rnd.integerInRange(0, 300);
       if(blink === 10 && riboeyes.frame === 0) {
         riboeyes.frame = 1;
@@ -1107,7 +1110,7 @@ define([
 
     function dnaMaker() {
       for (var c = 0; c <codonChain.length; c++) {
-        var nucleotide = codonGroup.create(134 + (15 * c), 520, codonChain[c]);
+        var nucleotide = codonGroup.create(134 + (15 * c), 1144, codonChain[c]);
       }
     }
 
@@ -1155,7 +1158,7 @@ define([
       if(intenseDebug) {console.log("Building Codon -----------------------------------------------------------");}
       codonMaker(codonSeqStart);
       if(intenseDebug) {console.log("Building Protein ---------------------------------------------------------");}
-      var promisedAssembledAmino = spriteRevival(proteinGroup, proteinAminos[0], 60, 400);
+      var promisedAssembledAmino = spriteRevival(proteinGroup, proteinAminos[0], 60, 1024);
       promisedAssembledAmino.then(function(assembledAmino) {
         assembledAmino.scale.set(1);
         proteinGroup.addAll("y", -5, true);
