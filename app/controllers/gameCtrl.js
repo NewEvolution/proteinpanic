@@ -657,13 +657,15 @@ define([
       }
 
       // Small speech buble relocation ############################################################
-      // Retraction
-      if((game.camera.y < 490 || game.camera.x > 175) && smallSpeech.cameraOffset.x >= -305) {
-        smallSpeech.cameraOffset.x -= 30;
-      }
-      // Extension
-      if((game.camera.y >= 490 && game.camera.x <= 175) && smallSpeech.cameraOffset.x < 175) {
-        smallSpeech.cameraOffset.x += 30;
+      // Ribosome following
+      if(game.camera.x >= 0 && game.camera.x <= 175 && game.camera.y >= 490) {
+        if(smallSpeech.cameraOffset.x < (175 - game.camera.x) - 30) {
+          smallSpeech.cameraOffset.x += 30; // Extension
+        } else {
+          smallSpeech.cameraOffset.x = 175 - game.camera.x; // Following
+        }
+      } else if(smallSpeech.cameraOffset.x >= -305) {
+        smallSpeech.cameraOffset.x -= 30; // Retraction
       }
       // Vertical sliding to avoid RNA chain
       if(game.camera.y !== 0) {
