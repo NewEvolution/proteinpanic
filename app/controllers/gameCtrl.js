@@ -661,11 +661,13 @@ define([
       if(game.camera.x >= 0 && game.camera.x <= 175 && game.camera.y >= 490) {
         if(smallSpeech.cameraOffset.x < (175 - game.camera.x) - 30) {
           smallSpeech.cameraOffset.x += 30; // Extension
+          aminoToCollectGroup.getFirstAlive().frame = 0;
         } else {
           smallSpeech.cameraOffset.x = 175 - game.camera.x; // Following
         }
       } else if(smallSpeech.cameraOffset.x >= -305) {
         smallSpeech.cameraOffset.x -= 30; // Retraction
+        aminoToCollectGroup.getFirstAlive().frame = 1;
       }
       // Vertical sliding to avoid RNA chain
       if(game.camera.y !== 0) {
@@ -761,7 +763,7 @@ define([
         }
       }
 
-      // Victory jumping ########################################################################
+      // Victory letter jumping ###################################################################
       if(victoryBubble.visible && victoryGroup.visible) {
         for(var lj = 0; lj < victoryMoveMaker.length; lj++) {
           victoryMoveMaker[lj][0].y = victoryMoveMaker[lj][1][letterStep];
@@ -834,9 +836,9 @@ define([
           liveAmino.body.velocity.set(game.rnd.integerInRange(-200, 200), game.rnd.integerInRange(-200, 200));
         }
         // Make sure the amino is facing the diretion it's traveling
-        if(liveAmino.body.velocity.x > 0) {
+        if(liveAmino.body.velocity.x > 0 && liveAmino.frame === 0) {
           liveAmino.frame = 1;
-        } else if(liveAmino.body.velocity.x < 0) { 
+        } else if(liveAmino.body.velocity.x < 0 && liveAmino.frame === 1) { 
           liveAmino.frame = 0;
         }
       });
@@ -1180,7 +1182,7 @@ define([
       if(inRibosome) {
         achievementRoutine();
         if(proteinAminos.length === 1) {
-          // won goes here
+          // Protein completed
           gameMusic.stop();
           fanfareA.play();
           setTimeout(function() {
