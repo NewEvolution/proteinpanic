@@ -657,10 +657,6 @@ define([
       }
 
       // Small speech buble relocation ############################################################
-      // Following ribosome
-      if(game.camera.x >= 0 && game.camera.x <= 175) {
-        smallSpeech.cameraOffset.x = 175 - game.camera.x;
-      }
       // Retraction
       if((game.camera.y < 490 || game.camera.x > 175) && smallSpeech.cameraOffset.x >= -305) {
         smallSpeech.cameraOffset.x -= 30;
@@ -676,10 +672,6 @@ define([
           smallSpeech.cameraOffset.y = offset;
         }
       }
-
-      // if(game.camera.x > 0) {
-      //   smallSpeech.cameraOffset.x = (0 - game.camera.x) + 170;
-      // }
 
       // Panic vibration ##########################################################################
       panicGroup.forEachExists(function(letter) {
