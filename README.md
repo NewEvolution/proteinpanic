@@ -9,9 +9,9 @@ Built with [Phaser](http://www.phaser.io/)
 - Installation of http-server via _npm install -g http-server_
 
 ###To use the deveopment code:
-- in index.html:
-  - uncomment line 17
-  - comment out line 18
+- in _index.html_:
+  - uncomment line 20
+  - comment out line 21 & 22
 - inside the _lib_ directory:
   - run _npm install_
   - run _bower install_

@@ -19,7 +19,7 @@ require.config({
   },
   priority: [
     "angular"
-  ],
+  ]
 });
 
 require([
