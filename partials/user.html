@@ -47,7 +47,7 @@
       </div>
       <input type="email" id="email-input" placeholder="Current Email" ng-model="user.email" ng-show="user.emailToggle || user.passToggle || user.deleteToggle">
       <input type="email" id="new-email-input" placeholder="New Email" ng-model="user.newEmail" ng-show="user.emailToggle">
-      <input type="pasword" id="password-input" placeholder="Current Password" ng-model="user.password" ng-show="user.emailToggle || user.passToggle || user.deleteToggle">
+      <input type="password" id="password-input" placeholder="Current Password" ng-model="user.password" ng-show="user.emailToggle || user.passToggle || user.deleteToggle">
       <input type="password" id="new-password-input" placeholder="New Password" ng-model="user.newPassword" ng-show="user.passToggle">
       <button id="email-btn" ng-click="user.changeEmail()" ng-show="user.emailToggle">Change Email</button>
       <button id="email-btn" ng-click="user.changePassword()" ng-show="user.passToggle">Change Password</button>
