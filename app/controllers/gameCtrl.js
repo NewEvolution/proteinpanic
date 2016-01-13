@@ -17,7 +17,7 @@ define([
 
     // Debugging tool variables
     var noclip = false;
-    var intenseDebug = true;
+    var intenseDebug = false;
     
     var game = proteinPanic;
 
@@ -269,61 +269,72 @@ define([
 
     function gameGeneration() {
       codonChain = [];
-      for(var p = 0; p < proteinsArr.length; p++) {
-        if(proteinsArr[p].name === chosenProtein) {
-          proteinAminos = proteinsArr[p].sequence.split(""); // Grab the list of amino acids & build the array to grab
-          fullProteinLength = proteinAminos.length;
-          for(var maf = 0; maf < proteinAminos.length; maf++) {
-            if(proteinAminos[maf] === "B") { // Nonspecific amino acid
-              var bRand = game.rnd.integerInRange(0, 1);
-              if(bRand > 0) {
-                proteinAminos[maf] = "N";
-              } else {
-                proteinAminos[maf] = "D";
-              }
-            }
-            if(proteinAminos[maf] === "Z") { // Nonspecific amino acid
-              var zRand = game.rnd.integerInRange(0, 1);
-              if(zRand > 0) {
-                proteinAminos[maf] = "Q";
-              } else {
-                proteinAminos[maf] = "E";
-              }
-            }
-          }
-          proteinAminos.push("STOP");
-        }
-      }
-      for(var pa = 0; pa < proteinAminos.length; pa++) {
-        for (var a = 0; a < aminosArr.length; a++) {
-          if(aminosArr[a].code === proteinAminos[pa]) { // If the amino matches the amino in our grabbing array...
-            var theCodon = game.rnd.pick(aminosArr[a].codons); // grab one of its possible codons...
-            for (var c = 0; c < theCodon.length; c++) {
-              codonChain.push(theCodon[c].toLowerCase()); // and add each nucleotide in sequence to our DNA strand!
-            }
-          }
-        }
-      }
-      if(initialLoad) {
-        initialLoad = false;
-        theGame(); // All preparations are complete, get the party started!
+      if(aminosArr.length !== 0 && proteinsArr.length !== 0) {
+        generate();
       } else {
-        aminoGroup.forEachAlive(function(amino) {
-          amino.kill();
+        aminosArr.$loaded().then(function(aminosData) {
+          proteinsArr.$loaded().then(function(proteinsData) {
+            generate();
+          });
         });
-        codonGroup.removeAll(true, false);
-        var toCollectAmino = aminoToCollectGroup.getFirstAlive();
-        toCollectAmino.kill();
-        for(var am = 0; am < 15; am++) {
-          aminoStageCheck(true);
+      }
+      function generate() {
+        for(var p = 0; p < proteinsArr.length; p++) {
+          if(proteinsArr[p].name === chosenProtein) {
+            proteinAminos = proteinsArr[p].sequence.split(""); // Grab the list of amino acids & build the array to grab
+            fullProteinLength = proteinAminos.length;
+            for(var maf = 0; maf < proteinAminos.length; maf++) {
+              if(proteinAminos[maf] === "B") { // Nonspecific amino acid
+                var bRand = game.rnd.integerInRange(0, 1);
+                if(bRand > 0) {
+                  proteinAminos[maf] = "N";
+                } else {
+                  proteinAminos[maf] = "D";
+                }
+              }
+              if(proteinAminos[maf] === "Z") { // Nonspecific amino acid
+                var zRand = game.rnd.integerInRange(0, 1);
+                if(zRand > 0) {
+                  proteinAminos[maf] = "Q";
+                } else {
+                  proteinAminos[maf] = "E";
+                }
+              }
+            }
+            proteinAminos.push("STOP");
+          }
         }
-        usersObj[currentKey].remainingProteinLength = fullProteinLength;
-        codonSliding = 45;
-        justLoaded = true;
-        collectMaker();
-        codonMaker(0);
-        dnaMaker();
-        pauseMenu();
+        for(var pa = 0; pa < proteinAminos.length; pa++) {
+          for (var a = 0; a < aminosArr.length; a++) {
+            if(aminosArr[a].code === proteinAminos[pa]) { // If the amino matches the amino in our grabbing array...
+              var theCodon = game.rnd.pick(aminosArr[a].codons); // grab one of its possible codons...
+              for (var c = 0; c < theCodon.length; c++) {
+                codonChain.push(theCodon[c].toLowerCase()); // and add each nucleotide in sequence to our DNA strand!
+              }
+            }
+          }
+        }
+        if(initialLoad) {
+          initialLoad = false;
+          theGame(); // All preparations are complete, get the party started!
+        } else {
+          aminoGroup.forEachAlive(function(amino) {
+            amino.kill();
+          });
+          codonGroup.removeAll(true, false);
+          var toCollectAmino = aminoToCollectGroup.getFirstAlive();
+          toCollectAmino.kill();
+          for(var am = 0; am < 15; am++) {
+            aminoStageCheck(true);
+          }
+          usersObj[currentKey].remainingProteinLength = fullProteinLength;
+          codonSliding = 45;
+          justLoaded = true;
+          collectMaker();
+          codonMaker(0);
+          dnaMaker();
+          pauseMenu();
+        }
       }
     }
 
