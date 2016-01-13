@@ -14,6 +14,10 @@ define([
   }])
   .controller("gameCtrl", ["$q", "$scope", "$firebaseArray", "$firebaseObject", "uid", "userCreator", "proteinPanic", "preload", "menuSplash",
   function($q, $scope, $firebaseArray, $firebaseObject, uid, userCreator, proteinPanic, preload, menuSplash) {
+
+    // Debugging tool variables
+    var noclip = false;
+    var intenseDebug = true;
     
     var game = proteinPanic;
 
@@ -21,25 +25,45 @@ define([
     var aminos = new Firebase("https://proteinpanic.firebaseio.com/aminos");
     var users = new Firebase("https://proteinpanic.firebaseio.com/users");
     var ref = new Firebase("https://proteinpanic.firebaseio.com");
-    
-    var proteinsArr = $firebaseArray(proteins);
-    var aminosArr = $firebaseArray(aminos);
+
     var usersObj = $firebaseObject(users);
     var usersArr = $firebaseArray(users);
+    var proteinsArr;
+    var aminiosArr;
     var initialLoad = true;
     var currentUID = null;
     var currentKey = null;
     var username = "";
 
+    if(storageAvailable("localStorage")) {
+       if(intenseDebug) {console.log("Local storage is available");}
+      if(localStorage.getItem("proteins") && localStorage.getItem("aminos")) {
+        if(intenseDebug) {console.log("Local storage has our data, use it");}
+        proteinsArr = JSON.parse(localStorage.proteins);
+        aminosArr = JSON.parse(localStorage.aminos);
+      } else {
+        if(intenseDebug) {console.log("Local storage does not have our data, wipe & fill it");}
+        localStorage.clear();
+        proteinsArr = $firebaseArray(proteins);
+        aminosArr = $firebaseArray(aminos);
+        aminosArr.$loaded().then(function(aminosData) {
+          proteinsArr.$loaded().then(function(proteinsData) {
+            localStorage.proteins = JSON.stringify(proteinsArr);
+            localStorage.aminos = JSON.stringify(aminosArr);
+          });
+        });
+      }
+    } else {
+      if(intenseDebug) {console.log("Local storage isn't available, boo");}
+      proteinsArr = $firebaseArray(proteins);
+      aminosArr = $firebaseArray(aminos);
+    }
+    
     this.arrayOfProteins = proteinsArr;
     this.arrayOfUsers = usersArr;
     this.selectedProtein = null;
     this.proteinSearch = "";
     $scope.proteinMenu = false;
-
-    // Debugging tool variables
-    var noclip = false;
-    var intenseDebug = false;
 
     var authData = ref.getAuth();
     if(authData === null) {
@@ -245,66 +269,62 @@ define([
 
     function gameGeneration() {
       codonChain = [];
-      aminosArr.$loaded().then(function(aminosData) {
-        proteinsArr.$loaded().then(function(proteinsData) {
-          for(var p = 0; p < proteinsArr.length; p++) {
-            if(proteinsArr[p].name === chosenProtein) {
-              proteinAminos = proteinsArr[p].sequence.split(""); // Grab the list of amino acids & build the array to grab
-              fullProteinLength = proteinAminos.length;
-              for(var maf = 0; maf < proteinAminos.length; maf++) {
-                if(proteinAminos[maf] === "B") { // Nonspecific amino acid
-                  var bRand = game.rnd.integerInRange(0, 1);
-                  if(bRand > 0) {
-                    proteinAminos[maf] = "N";
-                  } else {
-                    proteinAminos[maf] = "D";
-                  }
-                }
-                if(proteinAminos[maf] === "Z") { // Nonspecific amino acid
-                  var zRand = game.rnd.integerInRange(0, 1);
-                  if(zRand > 0) {
-                    proteinAminos[maf] = "Q";
-                  } else {
-                    proteinAminos[maf] = "E";
-                  }
-                }
+      for(var p = 0; p < proteinsArr.length; p++) {
+        if(proteinsArr[p].name === chosenProtein) {
+          proteinAminos = proteinsArr[p].sequence.split(""); // Grab the list of amino acids & build the array to grab
+          fullProteinLength = proteinAminos.length;
+          for(var maf = 0; maf < proteinAminos.length; maf++) {
+            if(proteinAminos[maf] === "B") { // Nonspecific amino acid
+              var bRand = game.rnd.integerInRange(0, 1);
+              if(bRand > 0) {
+                proteinAminos[maf] = "N";
+              } else {
+                proteinAminos[maf] = "D";
               }
-              proteinAminos.push("STOP");
             }
-          }
-          for(var pa = 0; pa < proteinAminos.length; pa++) {
-            for (var a = 0; a < aminosArr.length; a++) {
-              if(aminosArr[a].code === proteinAminos[pa]) { // If the amino matches the amino in our grabbing array...
-                var theCodon = game.rnd.pick(aminosArr[a].codons); // grab one of its possible codons...
-                for (var c = 0; c < theCodon.length; c++) {
-                  codonChain.push(theCodon[c].toLowerCase()); // and add each nucleotide in sequence to our DNA strand!
-                }
+            if(proteinAminos[maf] === "Z") { // Nonspecific amino acid
+              var zRand = game.rnd.integerInRange(0, 1);
+              if(zRand > 0) {
+                proteinAminos[maf] = "Q";
+              } else {
+                proteinAminos[maf] = "E";
               }
             }
           }
-          if(initialLoad) {
-            initialLoad = false;
-            theGame(); // All preparations are complete, get the party started!
-          } else {
-            aminoGroup.forEachAlive(function(amino) {
-              amino.kill();
-            });
-            codonGroup.removeAll(true, false);
-            var toCollectAmino = aminoToCollectGroup.getFirstAlive();
-            toCollectAmino.kill();
-            for(var am = 0; am < 15; am++) {
-              aminoStageCheck(true);
+          proteinAminos.push("STOP");
+        }
+      }
+      for(var pa = 0; pa < proteinAminos.length; pa++) {
+        for (var a = 0; a < aminosArr.length; a++) {
+          if(aminosArr[a].code === proteinAminos[pa]) { // If the amino matches the amino in our grabbing array...
+            var theCodon = game.rnd.pick(aminosArr[a].codons); // grab one of its possible codons...
+            for (var c = 0; c < theCodon.length; c++) {
+              codonChain.push(theCodon[c].toLowerCase()); // and add each nucleotide in sequence to our DNA strand!
             }
-            usersObj[currentKey].remainingProteinLength = fullProteinLength;
-            codonSliding = 45;
-            justLoaded = true;
-            collectMaker();
-            codonMaker(0);
-            dnaMaker();
-            pauseMenu();
           }
+        }
+      }
+      if(initialLoad) {
+        initialLoad = false;
+        theGame(); // All preparations are complete, get the party started!
+      } else {
+        aminoGroup.forEachAlive(function(amino) {
+          amino.kill();
         });
-      });
+        codonGroup.removeAll(true, false);
+        var toCollectAmino = aminoToCollectGroup.getFirstAlive();
+        toCollectAmino.kill();
+        for(var am = 0; am < 15; am++) {
+          aminoStageCheck(true);
+        }
+        usersObj[currentKey].remainingProteinLength = fullProteinLength;
+        codonSliding = 45;
+        justLoaded = true;
+        collectMaker();
+        codonMaker(0);
+        dnaMaker();
+        pauseMenu();
+      }
     }
 
     function theGame() {
@@ -883,6 +903,19 @@ define([
 //-------------------------------------------------------------------------------------------------
 
     // Called functions #######################################################################
+    function storageAvailable(type) {
+      try {
+        var storage = window[type],
+          x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+      }
+      catch(e) {
+        return false;
+      }
+    }
+
     function prevFunc() {
       if(page > 0) {
         page--;
