@@ -21,18 +21,36 @@ define([
     var users = new Firebase("https://proteinpanic.firebaseio.com/users");
     var ref = new Firebase("https://proteinpanic.firebaseio.com");
     
-    var proteinArr = $firebaseArray(proteins);
+    var proteinsArr;
     var usersArr = $firebaseArray(users);
     var currentUID = null;
     var color = 0x00ff00;
     var music = 1;
 
+    if(storageAvailable("localStorage")) {
+      if(localStorage.getItem("proteins")) {
+        proteinsArr = JSON.parse(localStorage.proteins);
+      } else {
+        localStorage.clear();
+        proteinsArr = $firebaseArray(proteins);
+        proteinsArr.$loaded().then(function(proteinsData) {
+          localStorage.proteins = JSON.stringify(proteinsArr);
+        });
+      }
+    } else {
+      proteinsArr = $firebaseArray(proteins);
+    }
+
     this.arrayOfUsers = usersArr;
     this.username = "";
 
-    proteinArr.$loaded().then(angular.bind(this, function(data) {
-      this.proteinCount = data.length;
-    }));
+    if(proteinsArr.length !== 0) {
+      this.proteinCount = proteinsArr.length;
+    } else {
+      proteinsArr.$loaded().then(angular.bind(this, function(data) {
+        this.proteinCount = data.length;
+      }));
+    }
 
     var authData = ref.getAuth();
     if(authData === null) {
@@ -69,6 +87,19 @@ define([
           }
         }
       }));
+    }
+
+    function storageAvailable(type) {
+      try {
+        var storage = window[type],
+          x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+      }
+      catch(e) {
+        return false;
+      }
     }
 
     this.completedCount = function(proteinString) {
