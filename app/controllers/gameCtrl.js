@@ -18,7 +18,7 @@ define([
     // Debugging tool variables
     var noclip = false;
     var intenseDebug = false;
-    
+
     var game = proteinPanic;
 
     var proteins = new Firebase("https://proteinpanic.firebaseio.com/proteins");
@@ -58,7 +58,7 @@ define([
       proteinsArr = $firebaseArray(proteins);
       aminosArr = $firebaseArray(aminos);
     }
-    
+
     this.arrayOfProteins = proteinsArr;
     this.arrayOfUsers = usersArr;
     this.selectedProtein = null;
@@ -344,7 +344,7 @@ define([
       game.state.remove("allMenus");
     }
 
-//-------------------------------------------------------------------------------------------------      
+//-------------------------------------------------------------------------------------------------
 
     function create() {
       // Generic setup ##########################################################################
@@ -869,7 +869,7 @@ define([
         // Make sure the amino is facing the diretion it's traveling
         if(liveAmino.body.velocity.x > 0 && liveAmino.frame === 0) {
           liveAmino.frame = 1;
-        } else if(liveAmino.body.velocity.x < 0 && liveAmino.frame === 1) { 
+        } else if(liveAmino.body.velocity.x < 0 && liveAmino.frame === 1) {
           liveAmino.frame = 0;
         }
       });
@@ -1072,7 +1072,7 @@ define([
       if(justLoaded) {
         checkpointCount = Math.floor((fullProteinLength - remainingProteinLength) / checkpointInterval);
       }
-      progressBar.scale.x = (fullProteinLength - remainingProteinLength) / fullProteinLength; 
+      progressBar.scale.x = (fullProteinLength - remainingProteinLength) / fullProteinLength;
       interstitialText.boundsAlignH = "center";
       interstitialText.text = "\n\nCurrently building:\n\n\n\nCheckpoint " + checkpointCount + " of " + Math.floor(fullProteinLength/checkpointInterval) + "\n\n" + (fullProteinLength - remainingProteinLength) + " of " + fullProteinLength + " amino acids collected!";
     }
@@ -1221,7 +1221,7 @@ define([
         proteinGroup.addAll("y", -5, true);
         proteinGroup.addAll("scale.x", -0.025, true);
         proteinGroup.addAll("scale.y", -0.025, true);
-      }); 
+      });
       proteinAminos.splice(0, 1);
       if(inRibosome) {
         achievementRoutine();
