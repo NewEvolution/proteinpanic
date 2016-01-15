@@ -13,6 +13,7 @@ require.config({
     "angularfire" : ["angular", "firebase"],
     "firebase": {"exports" : "Firebase"},
     "angular" : {"exports" : "angular"},
+    "phaser": {"exports" : "Phaser"},
     "angularFilter" : ["angular"],
     "angularRoute": ["angular"],
     "bootstrap": ["jquery"]
