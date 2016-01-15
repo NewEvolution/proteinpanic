@@ -1,6 +1,7 @@
 {
-  "name": "angular",
-  "version": "0.0.0",
+  "name": "ProteinPanic",
+  "version": "1.0.4",
+  "homepage": "http://proteinpanic.newevolution.org",
   "authors": [
     "Ryan Tanay <ryantanay@newevolution.org>"
   ],
