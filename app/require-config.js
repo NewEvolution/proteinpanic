@@ -4,7 +4,8 @@ require.config({
     angularfire: "../lib/bower_components/angularfire/dist/angularfire.min",
     bootstrap: "../lib/bower_components/bootstrap/dist/js/bootstrap.min",
     angularRoute: "../lib/bower_components/angular-route/angular-route",
-    phaser: "../lib/bower_components/phaser/build/phaser.min",
+    // phaser: "../lib/bower_components/phaser/build/phaser.min", // ideal, using CDN for production outage resolution
+    phaser: "https://cdnjs.cloudflare.com/ajax/libs/phaser/2.4.4/phaser.min",
     jquery: "../lib/bower_components/jquery/dist/jquery.min",
     angular: "../lib/bower_components/angular/angular.min",
     firebase: "../lib/bower_components/firebase/firebase",
@@ -13,6 +14,7 @@ require.config({
     "angularfire" : ["angular", "firebase"],
     "firebase": {"exports" : "Firebase"},
     "angular" : {"exports" : "angular"},
+    "phaser": {"exports" : "Phaser"},
     "angularFilter" : ["angular"],
     "angularRoute": ["angular"],
     "bootstrap": ["jquery"]
