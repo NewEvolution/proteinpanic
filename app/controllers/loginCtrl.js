@@ -14,12 +14,12 @@ define([
 	}])
 	.controller("loginCtrl", ["$scope", "$firebaseArray", "uid", "userCreator", "proteinPanic", "menuSplash",
 	function($scope, $firebaseArray, uid, userCreator, proteinPanic, menuSplash) {
-	
+
   	var game = proteinPanic;
 
     var users = new Firebase("https://proteinpanic.firebaseio.com/users");
     var ref = new Firebase("https://proteinpanic.firebaseio.com");
-  
+
     var usersArr = $firebaseArray(users);
     var currentUID = null;
     var promisedCreation;
