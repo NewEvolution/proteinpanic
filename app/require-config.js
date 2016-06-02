@@ -7,7 +7,7 @@ require.config({
     phaser: "../lib/bower_components/phaser/build/phaser.min",
     jquery: "../lib/bower_components/jquery/dist/jquery.min",
     angular: "../lib/bower_components/angular/angular.min",
-    firebase: "../lib/bower_components/firebase/firebase",
+    firebase: "../lib/bower_components/firebase/firebase"
   },
   shim: {
     "angularfire" : ["angular", "firebase"],

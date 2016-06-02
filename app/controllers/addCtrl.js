@@ -1,8 +1,8 @@
 define([
   "angular",
-  "firebase",
+  "fireconf",
   "angularRoute"
-], function(angular, firebase, route) {
+], function(angular, fireconf, route) {
   angular
   .module("AminoApp.add", ["ngRoute"])
   .config(["$routeProvider", function($routeProvider) {
@@ -14,9 +14,10 @@ define([
   }])
   .controller("addCtrl", ["$firebaseArray", "uid",
     function($firebaseArray, uid) {
-      var proteins = new Firebase("https://proteinpanic.firebaseio.com/proteins/");
-      var aminos = new Firebase("https://proteinpanic.firebaseio.com/aminos/");
-      var users = new Firebase("https://proteinpanic.firebaseio.com/users/");
+      var ref = fireconf.database().ref();
+      var proteins = ref.child("proteins");
+      var aminos = ref.child("aminos");
+      var users = ref.child("users");
       var proteinArr = $firebaseArray(proteins);
       var aminoArr = $firebaseArray(aminos);
       var userArr = $firebaseArray(users);

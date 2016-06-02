@@ -1,8 +1,6 @@
 define([
   "angular",
-  "firebase",
-  "bootstrap",
-], function(angular, firebase, bootstrap) {
+], function(angular) {
   angular.module("AminoApp.preload", [])
   .factory("preload", ["proteinPanic", function(proteinPanic) {
 

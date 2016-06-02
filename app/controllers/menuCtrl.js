@@ -1,9 +1,8 @@
 define([
 	"angular",
-	"firebase",
-	"bootstrap",
-	"angularRoute",
-], function(angular, firebase, bootstrap, angularRoute) {
+	"fireconf",
+	"angularRoute"
+], function(angular, fireconf, angularRoute) {
 	angular.module("AminoApp.menu", ["ngRoute"])
 	.config(["$routeProvider", function($routeProvider) {
 		$routeProvider.when("/menu", {
@@ -17,8 +16,8 @@ define([
 
     var game = proteinPanic;
 
-    var users = new Firebase("https://proteinpanic.firebaseio.com/users");
-    var ref = new Firebase("https://proteinpanic.firebaseio.com");
+    var ref = fireconf.database().ref();
+    var users = ref.child("users");
 
     var usersArr = $firebaseArray(users);
     var currentUID = null;

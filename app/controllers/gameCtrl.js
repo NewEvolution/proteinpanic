@@ -1,9 +1,8 @@
 define([
   "angular",
-  "firebase",
-  "bootstrap",
-  "angularRoute",
-], function(angular, firebase, bootstrap, angularRoute) {
+  "fireconf",
+  "angularRoute"
+], function(angular, fireconf, angularRoute) {
   angular.module("AminoApp.game", ["ngRoute"])
   .config(["$routeProvider", function($routeProvider) {
     $routeProvider.when("/game", {
@@ -21,10 +20,10 @@ define([
 
     var game = proteinPanic;
 
-    var proteins = new Firebase("https://proteinpanic.firebaseio.com/proteins");
-    var aminos = new Firebase("https://proteinpanic.firebaseio.com/aminos");
-    var users = new Firebase("https://proteinpanic.firebaseio.com/users");
-    var ref = new Firebase("https://proteinpanic.firebaseio.com");
+    var ref = fireconf.database().ref();
+    var proteins = ref.child("proteins");
+    var aminos = ref.child("aminos");
+    var users = ref.child("users");
 
     var usersObj = $firebaseObject(users);
     var usersArr = $firebaseArray(users);
