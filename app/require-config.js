@@ -11,7 +11,7 @@ require.config({
   },
   shim: {
     "angularfire" : ["angular", "firebase"],
-    "firebase": {"exports" : "Firebase"},
+    "firebase": {"exports" : "firebase"},
     "angular" : {"exports" : "angular"},
     "phaser": {"exports" : "Phaser"},
     "angularFilter" : ["angular"],
