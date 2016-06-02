@@ -172,7 +172,7 @@ define([
         // Make sure the amino is facing the diretion it's traveling
         if(liveAmino.body.velocity.x > 0) {
           liveAmino.frame = 1;
-        } else if(liveAmino.body.velocity.x < 0) { 
+        } else if(liveAmino.body.velocity.x < 0) {
           liveAmino.frame = 0;
         }
       });

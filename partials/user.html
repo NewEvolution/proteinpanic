@@ -50,8 +50,8 @@
       <input type="password" id="password-input" placeholder="Current Password" ng-model="user.password" ng-show="user.emailToggle || user.passToggle || user.deleteToggle">
       <input type="password" id="new-password-input" placeholder="New Password" ng-model="user.newPassword" ng-show="user.passToggle">
       <button id="email-btn" ng-click="user.changeEmail()" ng-show="user.emailToggle">Change Email</button>
-      <button id="email-btn" ng-click="user.changePassword()" ng-show="user.passToggle">Change Password</button>
-      <button id="email-btn" ng-click="user.removeUser()" ng-show="user.deleteToggle">Delete Account :(</button>
+      <button id="passwd-btn" ng-click="user.changePassword()" ng-show="user.passToggle">Change Password</button>
+      <button id="delete-btn" ng-click="user.removeUser()" ng-show="user.deleteToggle">Delete Account :(</button>
     </div>
   </div>
   <div class="menu-controls">

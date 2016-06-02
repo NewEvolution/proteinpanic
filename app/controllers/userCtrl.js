@@ -74,9 +74,9 @@ define([
               currentKey = data[anotherKey].$id;
               menuSplash.volumeSetter(this.music);
               menuSplash.trnaTintSetter("0x" + this.color.slice(1));
-              if(currentUID.indexOf("github") === -1 && 
-              currentUID.indexOf("facebook") === -1 && 
-              currentUID.indexOf("twitter") === -1 && 
+              if(currentUID.indexOf("github") === -1 &&
+              currentUID.indexOf("facebook") === -1 &&
+              currentUID.indexOf("twitter") === -1 &&
               currentUID.indexOf("google") === -1) {
                 this.emailAuth = true;
               }

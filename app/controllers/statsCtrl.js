@@ -14,13 +14,13 @@ define([
   }])
   .controller("statsCtrl", ["$firebaseArray", "uid", "userCreator", "proteinPanic", "menuSplash", "preload",
   function($firebaseArray, uid, userCreator, proteinPanic, menuSplash, preload) {
-    
+
     var game = proteinPanic;
 
     var proteins = new Firebase("https://proteinpanic.firebaseio.com/proteins");
     var users = new Firebase("https://proteinpanic.firebaseio.com/users");
     var ref = new Firebase("https://proteinpanic.firebaseio.com");
-    
+
     var proteinsArr;
     var usersArr = $firebaseArray(users);
     var currentUID = null;

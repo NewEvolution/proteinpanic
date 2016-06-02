@@ -24,7 +24,6 @@ define([
       var userId = uid.getUid();
 
       // needs logged in admin check to display page
-      
       this.addProtein = function() {
         var theName = this.proteinName;
         var theAminos = this.aminoString;

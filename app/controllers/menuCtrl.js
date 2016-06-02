@@ -14,12 +14,12 @@ define([
 	}])
 	.controller("menuCtrl", ["$firebaseArray", "uid", "userCreator", "proteinPanic", "menuSplash", "preload",
 	function($firebaseArray, uid, userCreator, proteinPanic, menuSplash, preload) {
-		
+
     var game = proteinPanic;
 
     var users = new Firebase("https://proteinpanic.firebaseio.com/users");
     var ref = new Firebase("https://proteinpanic.firebaseio.com");
-    
+
     var usersArr = $firebaseArray(users);
     var currentUID = null;
     var color = 0x00ff00;

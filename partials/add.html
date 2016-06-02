@@ -9,7 +9,7 @@
       </div>
       <div class="input-group">
         <span class="input-group-addon">Amino&nbsp;Acid&nbsp;Sequence:</span>
-        <textarea type="text" class="form-control add-input" id="amino-sequence" placeholder="Enter the Protein's Single Letter Amino Acid Sequence" ng-model="add.aminoString"></textarea>
+        <textarea class="form-control add-input" id="amino-sequence" placeholder="Enter the Protein's Single Letter Amino Acid Sequence" ng-model="add.aminoString"></textarea>
       </div>
       <button class="btn btn-default form-control" id="protein-btn" ng-click="add.addProtein()">Add Protein</button>
       <h2>Amino Acid Entry</h2>
@@ -23,11 +23,12 @@
       </div>
       <div class="input-group">
         <span class="input-group-addon">&nbsp;Codon&nbsp;Sequence:</span>
-        <textarea type="text" class="form-control add-input" id="codon-sequence" placeholder="Enter the Amino Acid's Space-comma-separated Codon Sequences" ng-model="add.codonString"></textarea>
+        <textarea class="form-control add-input" id="codon-sequence" placeholder="Enter the Amino Acid's Space-comma-separated Codon Sequences" ng-model="add.codonString"></textarea>
       </div>
       <button class="btn btn-default form-control" id="amino-btn" ng-click="add.addAmino()">Add Amino Acid</button>
       <hr>
       <button class="btn btn-default form-control" id="doom-btn" ng-click="add.addEverything()">Button of DOOOOOOOOOM</button>
+    </div>
     <div class="col-sm-1 col-md-2 col-lg-3"></div>
   </div>
 </div>

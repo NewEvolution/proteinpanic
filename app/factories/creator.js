@@ -28,6 +28,6 @@ define([
         music: 1
       };
       return builtUser;
-    };   
+    };
   });
 });
