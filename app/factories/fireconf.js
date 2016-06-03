@@ -1,10 +1,9 @@
 define([
-  "angular",
-  "firebase"
-], function(angular, firebase) {
+  "angular"
+], function(angular) {
   angular
-  .module("AminoApp.fireconf", ["firebase"])
-  .factory("fireconf", function(firebase) {
+  .module("AminoApp.fireconf", [])
+  .factory("fireconf", ["firebase", function(firebase) {
     firebase.initializeApp({
       apiKey: "",
       authDomain: "",
@@ -12,5 +11,5 @@ define([
       storageBucket: ""
     });
     return firebase;
-  });
+  }]);
 });
