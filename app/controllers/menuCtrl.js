@@ -1,8 +1,7 @@
 define([
 	"angular",
-	"fireconf",
 	"angularRoute"
-], function(angular, fireconf, angularRoute) {
+], function(angular, angularRoute) {
 	angular.module("AminoApp.menu", ["ngRoute"])
 	.config(["$routeProvider", function($routeProvider) {
 		$routeProvider.when("/menu", {
@@ -11,8 +10,8 @@ define([
 			controllerAs: "menu"
 		});
 	}])
-	.controller("menuCtrl", ["$firebaseArray", "uid", "userCreator", "proteinPanic", "menuSplash", "preload",
-	function($firebaseArray, uid, userCreator, proteinPanic, menuSplash, preload) {
+	.controller("menuCtrl", ["$firebaseArray", "uid", "userCreator", "proteinPanic", "menuSplash", "preload", "fireconf",
+	function($firebaseArray, uid, userCreator, proteinPanic, menuSplash, preload, fireconf) {
 
     var game = proteinPanic;
 

@@ -1,8 +1,7 @@
 define([
   "angular",
-  "fireconf",
   "angularRoute"
-], function(angular, fireconf, angularRoute) {
+], function(angular, angularRoute) {
   angular.module("AminoApp.game", ["ngRoute"])
   .config(["$routeProvider", function($routeProvider) {
     $routeProvider.when("/game", {
@@ -11,8 +10,8 @@ define([
       controllerAs: "game"
     });
   }])
-  .controller("gameCtrl", ["$q", "$scope", "$firebaseArray", "$firebaseObject", "uid", "userCreator", "proteinPanic", "preload", "menuSplash",
-  function($q, $scope, $firebaseArray, $firebaseObject, uid, userCreator, proteinPanic, preload, menuSplash) {
+  .controller("gameCtrl", ["$q", "$scope", "$firebaseArray", "$firebaseObject", "uid", "userCreator", "proteinPanic", "preload", "menuSplash", "fireconf",
+  function($q, $scope, $firebaseArray, $firebaseObject, uid, userCreator, proteinPanic, preload, menuSplash, fireconf) {
 
     // Debugging tool variables
     var noclip = false;

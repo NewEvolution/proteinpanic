@@ -1,8 +1,7 @@
 define([
   "angular",
-  "fireconf",
   "angularRoute"
-], function(angular, fireconf, angularRoute) {
+], function(angular, angularRoute) {
   angular.module("AminoApp.stats", ["ngRoute"])
   .config(["$routeProvider", function($routeProvider) {
     $routeProvider.when("/stats", {
@@ -11,8 +10,8 @@ define([
       controllerAs: "stats"
     });
   }])
-  .controller("statsCtrl", ["$firebaseArray", "uid", "userCreator", "proteinPanic", "menuSplash", "preload",
-  function($firebaseArray, uid, userCreator, proteinPanic, menuSplash, preload) {
+  .controller("statsCtrl", ["$firebaseArray", "uid", "userCreator", "proteinPanic", "menuSplash", "preload", "fireconf",
+  function($firebaseArray, uid, userCreator, proteinPanic, menuSplash, preload, fireconf) {
 
     var game = proteinPanic;
 
