@@ -15,7 +15,7 @@ define([
 
     var game = proteinPanic;
 
-    var ref = fireconf.database.ref();
+    var ref = fireconf.database().ref();
     var proteins = ref.child("proteins");
     var users = ref.child("users");
 
@@ -50,42 +50,43 @@ define([
       }));
     }
 
-    var authData = ref.getAuth();
-    if(authData === null) {
-      window.location = "/";
-    } else {
-      uid.setUid(authData.uid);
-      currentUID = authData.uid;
-      usersArr.$loaded().then(angular.bind(this, function(data) {
-        var userDoesNotExist = true;
-        for(var key in data) {
-          if(data[key].uid === currentUID) {
-            userDoesNotExist = false;
-            music = data[key].music;
-            this.username = data[key].username;
-            color = "0x" + data[key].color.slice(1);
+    fireconf.auth().onAuthStateChanged(function(user) {
+      if(user === null) {
+        window.location = "/";
+      } else {
+        uid.setUid(user.uid);
+        currentUID = user.uid;
+        usersArr.$loaded().then(angular.bind(this, function(data) {
+          var userDoesNotExist = true;
+          for(var key in data) {
+            if(data[key].uid === currentUID) {
+              userDoesNotExist = false;
+              music = data[key].music;
+              this.username = data[key].username;
+              color = "0x" + data[key].color.slice(1);
+            }
           }
-        }
-        if(userDoesNotExist) {
-          usersArr.$add(userCreator(currentUID));
-        }
-        if(this.username === "") {
-          window.location = "#/user";
-        } else {
-          if(menuSplash.menusLoadedGetter() === false) {
-            menuSplash.menusLoadedSetter(true);
-            menuSplash.hasTitleSetter(false);
-            menuSplash.trnaTintSetter(color);
-            menuSplash.volumeSetter(music);
-            menuSplash.menuStarter();
+          if(userDoesNotExist) {
+            usersArr.$add(userCreator(currentUID));
+          }
+          if(this.username === "") {
+            window.location = "#/user";
           } else {
-            menuSplash.hasTitleSetter(false);
-            menuSplash.trnaTintSetter(color);
-            menuSplash.volumeSetter(music);
+            if(menuSplash.menusLoadedGetter() === false) {
+              menuSplash.menusLoadedSetter(true);
+              menuSplash.hasTitleSetter(false);
+              menuSplash.trnaTintSetter(color);
+              menuSplash.volumeSetter(music);
+              menuSplash.menuStarter();
+            } else {
+              menuSplash.hasTitleSetter(false);
+              menuSplash.trnaTintSetter(color);
+              menuSplash.volumeSetter(music);
+            }
           }
-        }
-      }));
-    }
+        }));
+      }
+    });
 
     function storageAvailable(type) {
       try {
