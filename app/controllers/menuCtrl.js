@@ -25,7 +25,6 @@ define([
     var music = 1;
     this.username = "";
 
-    var authData = ref.getAuth();
     fireconf.auth().onAuthStateChanged(function(user) {
       if(user === null) {
         window.location = "/";
