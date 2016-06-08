@@ -26,46 +26,48 @@ define([
     this.username = "";
 
     var authData = ref.getAuth();
-    if(authData === null) {
-      window.location = "/";
-    } else {
-      uid.setUid(authData.uid);
-      currentUID = authData.uid;
-      usersArr.$loaded().then(angular.bind(this, function(data) {
-        var userDoesNotExist = true;
-        for(var key in data) {
-          if(data[key].uid === currentUID) {
-            userDoesNotExist = false;
-            music = data[key].music;
-            this.username = data[key].username;
-            color = "0x" + data[key].color.slice(1);
-            menuSplash.volumeSetter(music);
+    fireconf.auth().onAuthStateChanged(function(user) {
+      if(user === null) {
+        window.location = "/";
+      } else {
+        uid.setUid(user.uid);
+        currentUID = user.uid;
+        usersArr.$loaded().then(angular.bind(this, function(data) {
+          var userDoesNotExist = true;
+          for(var key in data) {
+            if(data[key].uid === currentUID) {
+              userDoesNotExist = false;
+              music = data[key].music;
+              this.username = data[key].username;
+              color = "0x" + data[key].color.slice(1);
+              menuSplash.volumeSetter(music);
+            }
           }
-        }
-        if(userDoesNotExist) {
-          usersArr.$add(userCreator(currentUID));
-        }
-        if(this.username === "") {
-          window.location = "#/user";
-        } else {
-          if(menuSplash.menusLoadedGetter() === false) {
-            menuSplash.menusLoadedSetter(true);
-            menuSplash.hasTitleSetter(true);
-            menuSplash.trnaTintSetter(color);
-            promisedCreation = menuSplash.menuStarter();
-            promisedCreation.then(function() {
+          if(userDoesNotExist) {
+            usersArr.$add(userCreator(currentUID));
+          }
+          if(this.username === "") {
+            window.location = "#/user";
+          } else {
+            if(menuSplash.menusLoadedGetter() === false) {
+              menuSplash.menusLoadedSetter(true);
+              menuSplash.hasTitleSetter(true);
+              menuSplash.trnaTintSetter(color);
+              promisedCreation = menuSplash.menuStarter();
+              promisedCreation.then(function() {
+                menuSplash.volumeSetter(music);
+                create();
+              });
+            } else {
+              menuSplash.hasTitleSetter(true);
+              menuSplash.trnaTintSetter(color);
               menuSplash.volumeSetter(music);
               create();
-            });
-          } else {
-            menuSplash.hasTitleSetter(true);
-            menuSplash.trnaTintSetter(color);
-            menuSplash.volumeSetter(music);
-            create();
+            }
           }
-        }
-      }));
-    }
+        }));
+      }
+    });
 
     var startBtn;
     var statsBtn;
