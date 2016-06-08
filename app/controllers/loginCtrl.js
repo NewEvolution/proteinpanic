@@ -24,40 +24,42 @@ define([
     this.passReset = false;
     this.username = "";
 
-    var authData = ref.getAuth();
-    if(authData === null) {
-  		if(menuSplash.menusLoadedGetter() === false) {
-        menuSplash.menusLoadedSetter(true);
-        menuSplash.hasTitleSetter(true);
-        promisedCreation = menuSplash.menuStarter();
-        promisedCreation.then(function() {
+    fireconf.auth().onAuthStateChanged(function(user) {
+      if(user === null) {
+        if(menuSplash.menusLoadedGetter() === false) {
+          menuSplash.menusLoadedSetter(true);
+          menuSplash.hasTitleSetter(true);
+          promisedCreation = menuSplash.menuStarter();
+          promisedCreation.then(function() {
+            create();
+          });
+        } else {
+          menuSplash.hasTitleSetter(true);
           create();
-        });
-      } else {
-        menuSplash.hasTitleSetter(true);
-        create();
-      }
-		} else {
-		  uid.setUid(authData.uid);
-		  currentUID = authData.uid;
-			usersArr.$loaded().then(angular.bind(this, function(data) {
-        var userDoesNotExist = true;
-				for(var key in data) {
-					if(data[key].uid === currentUID) {
-            userDoesNotExist = false;
-						this.username = data[key].username;
-					}
-				}
-        if(userDoesNotExist) {
-          usersArr.$add(userCreator(currentUID));
         }
-				if(this.username === "") {
-          window.location = "#/user";
-				} else {
-					window.location = "#/menu";
-				}
-			}));
-		}
+      } else {
+        uid.setUid(user.uid);
+        currentUID = user.uid;
+        usersArr.$loaded().then(angular.bind(this, function(data) {
+          var userDoesNotExist = true;
+          for(var key in data) {
+            if(data[key].uid === currentUID) {
+              userDoesNotExist = false;
+              this.username = data[key].username;
+            }
+          }
+          if(userDoesNotExist) {
+            usersArr.$add(userCreator(currentUID));
+          }
+          if(this.username === "") {
+            window.location = "#/user";
+          } else {
+            window.location = "#/menu";
+          }
+        }));
+      }
+    });
+
     var githubBtn;
     var facebookBtn;
     var googleBtn;
@@ -76,99 +78,61 @@ define([
     }
 
     function facebookRedir() {
-    	serviceAuth("facebook");
+    	serviceAuth("Facebook");
     }
 
     function twitterRedir() {
-    	serviceAuth("twitter");
+    	serviceAuth("Twitter");
     }
 
     function githubRedir() {
-    	serviceAuth("github");
+    	serviceAuth("Github");
     }
 
     function googleRedir() {
-    	serviceAuth("google");
+    	serviceAuth("Google");
     }
 
 	  function serviceAuth(service) {
-      ref.authWithOAuthRedirect(service, function(error, authData) {
-        if (error) {
-          alert("Login Failed!\n" + error);
-        }
-      });
+      var provider = new fireconf.auth[service + "AuthProvider"]();
+      fireconf.auth().signInWithRedirect(provider);
     }
 
 	  this.signUp = function() {
 	  	if(this.email === undefined || this.email.indexOf("@") === -1 || this.password.length < 6) {
 	  		alert("You must provide a valid email address & a 6-character minimum password.");
 	  	} else {
-	      ref.createUser({
-	        email: this.email,
-	        password : this.password
-	      }, function(error, userData) {
-	        if (error) {
-	          alert("Error creating user:\n" + error);
-	        } else {
-	          this.logIn();
-	        }
-	      }.bind(this));
+        fireconf.auth()
+          .createUserWithEmailAndPassword(this.email, this.password)
+          .catch(function(error) {
+            alert("Error creating user:\n" + error.message);
+          }
+        );
 	    }
     };
 
     this.logIn = function() {
 	  	if(this.email === undefined || this.email.indexOf("@") === -1 || this.email.indexOf(".") === -1 || this.password.length < 6) {
-	  		alert("You must provide a valid email address & a 6-character minimum password.");
+	  		alert("You must provide a valid email address & password.");
 	  	} else {
-	      ref.authWithPassword({
-	        email: this.email,
-	        password: this.password
-	      }, function(error, authData) {
-	        if (error) {
-	          alert("Login Failed!\n" + error);
-            if(error.message === "The specified password is incorrect.") {
+        fireconf.auth()
+          .signInWithEmailAndPassword(this.email, this.password)
+          .catch(function(error) {
+            alert("Login Failed!\n" + error.message);
+            if(error.code === "auth/wrong-password") {
               this.passReset = true;
               $scope.$digest();
             }
-	        } else {
-	          currentUID = authData.uid;
-	          uid.setUid(currentUID);
-	          usersArr.$loaded().then(angular.bind(this, function(data) {
-              var userDoesNotExist = true;
-              for(var key in data) {
-                if(data[key].uid === currentUID) {
-                  userDoesNotExist = false;
-                  this.username = data[key].username;
-                }
-              }
-              if(userDoesNotExist) {
-                usersArr.$add({uid: currentUID});
-              }
-              orline.destroy();
-              githubBtn.destroy();
-              googleBtn.destroy();
-              twitterBtn.destroy();
-              facebookBtn.destroy();
-              if(this.username === "") {
-                window.location = "#/user";
-              } else {
-                window.location = "#/menu";
-              }
-            }));
-	        }
-	      }.bind(this));
+          }
+        );
 	    }
     };
 
     this.resetPass = function() {
-      ref.resetPassword({
-        email: this.email
+      fireconf.auth().sendPasswordResetEmail(this.email).then(function() {
+        alert("Password reset email sent successfully!");
       }, function(error) {
-        if (error === null) {
-          alert("Password reset email sent successfully!");
-        } else {
-          alert("Error sending password reset email:\n" + error);
-        }
+        alert("Error sending password reset email:\n" + error);
       });
     };
 
