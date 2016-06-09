@@ -51,6 +51,11 @@ define([
           if(userDoesNotExist) {
             usersArr.$add(userCreator(currentUID));
           }
+          orline.destroy();
+          githubBtn.destroy();
+          googleBtn.destroy();
+          twitterBtn.destroy();
+          facebookBtn.destroy();
           if(this.username === "") {
             window.location = "#/user";
           } else {
