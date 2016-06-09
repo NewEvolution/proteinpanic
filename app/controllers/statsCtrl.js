@@ -111,6 +111,12 @@ define([
       return 0;
     };
 
+    this.sorting = function(proteins1, proteins2) {
+      var count1 = proteins1.split(",").length;
+      var count2 = proteins2.split(",").length;
+      return count1 > count2 ? -1 : 1;
+    };
+
     this.barWidth = function(color, completedProteins) {
       var widthPercentange = ((completedProteins / this.proteinCount) * 100) + "%";
       return {"background-color": color, width: widthPercentange};

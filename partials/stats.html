@@ -1,6 +1,6 @@
 <div class="positioner">
   <div class="stats-group">
-    <section ng-repeat="(index, user) in stats.arrayOfUsers | orderBy: stats.completedCount(user.completedProteins)">
+    <section ng-repeat="(index, user) in stats.arrayOfUsers | orderBy: 'completedProteins':true:stats.sorting">
       <div>
         <span class="user-color" ng-style="stats.userColor(user.color)"></span>{{user.username}}<span class="sequence-length">{{stats.completedCount(user.completedProteins)}} Completed Proteins</span>
       </div>
