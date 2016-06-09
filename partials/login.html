@@ -1,5 +1,5 @@
 <div class="positioner">
-  <form class="login-group" action="">
+  <form class="login-group" ng-submit="login.logIn()">
     <div>
       <input type="email" id="email-input" placeholder="Email Address" ng-model="login.email">
     </div>
@@ -7,7 +7,7 @@
       <input type="password" id="password-input" placeholder="Password" ng-model="login.password">
     </div>
     <div>
-      <button id="login-btn" type="submit" ng-click="login.logIn()">Log In</button> or
+      <button id="login-btn" type="submit">Log In</button> or
       <button id="signup-btn" ng-click="login.signUp()">Sign Up</button>
       <button id="reset-btn" ng-click="login.resetPass()" ng-show="login.passReset">Reset Password</button>
     </div>
