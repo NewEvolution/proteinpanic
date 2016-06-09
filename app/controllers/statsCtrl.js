@@ -86,7 +86,7 @@ define([
           }
         }));
       }
-    });
+    }.bind(this));
 
     function storageAvailable(type) {
       try {

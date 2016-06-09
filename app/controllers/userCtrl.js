@@ -96,12 +96,11 @@ define([
           }
         }));
       }
-    });
+    }.bind(this));
 
     this.logOut = function() {
-      ref.unauth();
+      fireconf.auth().signOut();
       game.state.remove("theGame");
-      window.location = "#/";
     };
 
 		this.checkAvail = function(saving, destination) {

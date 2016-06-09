@@ -58,7 +58,7 @@ define([
           }
         }));
       }
-    });
+    }.bind(this));
 
     var githubBtn;
     var facebookBtn;

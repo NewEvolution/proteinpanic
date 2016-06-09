@@ -66,7 +66,7 @@ define([
           }
         }));
       }
-    });
+    }.bind(this));
 
     var startBtn;
     var statsBtn;
