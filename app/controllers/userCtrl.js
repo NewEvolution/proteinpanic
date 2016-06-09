@@ -41,61 +41,62 @@ define([
     this.music = 1.0;
     this.email = "";
 
-		var authData = ref.getAuth();
-		if(authData === null) {
-      window.location = "#/";
-		} else {
-		  uid.setUid(authData.uid);
-		  currentUID = authData.uid;
-			usersArr.$loaded().then(angular.bind(this, function(data) {
-        var userDoesNotExist = true;
-        for(var key in data) {
-          if(data[key].uid === currentUID) {
-            userDoesNotExist = false;
-            this.username = data[key].username;
+    fireconf.auth().onAuthStateChanged(function(user) {
+      if(user === null) {
+        window.location = "#/";
+      } else {
+        uid.setUid(user.uid);
+        currentUID = user.uid;
+        usersArr.$loaded().then(angular.bind(this, function(data) {
+          var userDoesNotExist = true;
+          for(var key in data) {
+            if(data[key].uid === currentUID) {
+              userDoesNotExist = false;
+              this.username = data[key].username;
+            }
           }
-        }
-        if(userDoesNotExist) {
-          usersArr.$add(userCreator(currentUID));
-          window.location.reload();
-        } else {
-  				for(var anotherKey in data) {
-  					if(data[anotherKey].uid === currentUID) {
-              this.ribosomeMuted = data[anotherKey].ribosomeMuted;
-              this.checkpoint = data[anotherKey].checkpoint;
-              this.username = data[anotherKey].username;
-              this.effects = data[anotherKey].effects;
-              this.mouse = data[anotherKey].mouse;
-              this.music = data[anotherKey].music;
-              this.color = data[anotherKey].color;
-              this.intro = data[anotherKey].intro;
-              currentKey = data[anotherKey].$id;
+          if(userDoesNotExist) {
+            usersArr.$add(userCreator(currentUID));
+            window.location.reload();
+          } else {
+            for(var anotherKey in data) {
+              if(data[anotherKey].uid === currentUID) {
+                this.ribosomeMuted = data[anotherKey].ribosomeMuted;
+                this.checkpoint = data[anotherKey].checkpoint;
+                this.username = data[anotherKey].username;
+                this.effects = data[anotherKey].effects;
+                this.mouse = data[anotherKey].mouse;
+                this.music = data[anotherKey].music;
+                this.color = data[anotherKey].color;
+                this.intro = data[anotherKey].intro;
+                currentKey = data[anotherKey].$id;
+                menuSplash.volumeSetter(this.music);
+                menuSplash.trnaTintSetter("0x" + this.color.slice(1));
+                if(currentUID.indexOf("github") === -1 &&
+                currentUID.indexOf("facebook") === -1 &&
+                currentUID.indexOf("twitter") === -1 &&
+                currentUID.indexOf("google") === -1) {
+                  this.emailAuth = true;
+                }
+              }
+            }
+          }
+          if(menuSplash.menusLoadedGetter() === false) {
+            menuSplash.menusLoadedSetter(true);
+            menuSplash.hasTitleSetter(false);
+            promisedCreation = menuSplash.menuStarter();
+            promisedCreation.then(angular.bind(this, function() {
               menuSplash.volumeSetter(this.music);
               menuSplash.trnaTintSetter("0x" + this.color.slice(1));
-              if(currentUID.indexOf("github") === -1 &&
-              currentUID.indexOf("facebook") === -1 &&
-              currentUID.indexOf("twitter") === -1 &&
-              currentUID.indexOf("google") === -1) {
-                this.emailAuth = true;
-              }
-  					}
-  				}
-        }
-        if(menuSplash.menusLoadedGetter() === false) {
-          menuSplash.menusLoadedSetter(true);
-          menuSplash.hasTitleSetter(false);
-          promisedCreation = menuSplash.menuStarter();
-          promisedCreation.then(angular.bind(this, function() {
+            }));
+          } else {
+            menuSplash.hasTitleSetter(false);
             menuSplash.volumeSetter(this.music);
             menuSplash.trnaTintSetter("0x" + this.color.slice(1));
-          }));
-        } else {
-          menuSplash.hasTitleSetter(false);
-          menuSplash.volumeSetter(this.music);
-          menuSplash.trnaTintSetter("0x" + this.color.slice(1));
-        }
-			}));
-		}
+          }
+        }));
+      }
+    });
 
     this.logOut = function() {
       ref.unauth();
