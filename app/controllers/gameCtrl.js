@@ -63,60 +63,61 @@ define([
     this.proteinSearch = "";
     $scope.proteinMenu = false;
 
-    var authData = ref.getAuth();
-    if(authData === null) {
-      window.location = "/";
-    } else {
-      menuSplash.menusLoadedSetter(false);
-      uid.setUid(authData.uid);
-      currentUID = authData.uid;
-      usersArr.$loaded().then(function(data) {
-        var userDoesNotExist = true;
-        for(var key in data) {
-          if(data[key].uid === currentUID) {
-            userDoesNotExist = false;
-            mouse = data[key].mouse;
-            intro = data[key].intro;
-            currentKey = data[key].$id;
-            username = data[key].username;
-            musicVolume = data[key].music;
-            effectsVolume = data[key].effects;
-            ribosomeMuted = data[key].ribosomeMuted;
-            checkpointInterval = data[key].checkpoint;
-            playerColor = "0x" + data[key].color.slice(1);
-            if(data[key].completedProteins) {
-              completedProteins = data[key].completedProteins;
-            }
-            achievements = data[key].achievements;
-            if (intro) {
-              chosenProtein = "Insulin";
-            } else if(data[key].proteinInProgress) {
-              chosenProtein = data[key].proteinInProgress;
-              remainingProteinLength = data[key].remainingProteinLength;
-              if(remainingProteinLength === 0) {
+    fireconf.auth().onAuthStateChanged(function(user) {
+      if(user === null) {
+        window.location = "/";
+      } else {
+        menuSplash.menusLoadedSetter(false);
+        uid.setUid(user.uid);
+        currentUID = user.uid;
+        usersArr.$loaded().then(function(data) {
+          var userDoesNotExist = true;
+          for(var key in data) {
+            if(data[key].uid === currentUID) {
+              userDoesNotExist = false;
+              mouse = data[key].mouse;
+              intro = data[key].intro;
+              currentKey = data[key].$id;
+              username = data[key].username;
+              musicVolume = data[key].music;
+              effectsVolume = data[key].effects;
+              ribosomeMuted = data[key].ribosomeMuted;
+              checkpointInterval = data[key].checkpoint;
+              playerColor = "0x" + data[key].color.slice(1);
+              if(data[key].completedProteins) {
+                completedProteins = data[key].completedProteins;
+              }
+              achievements = data[key].achievements;
+              if (intro) {
+                chosenProtein = "Insulin";
+              } else if(data[key].proteinInProgress) {
+                chosenProtein = data[key].proteinInProgress;
+                remainingProteinLength = data[key].remainingProteinLength;
+                if(remainingProteinLength === 0) {
+                  chosenProtein = "Insulin";
+                  remainingProteinLength = 110;
+                  goToProteinChooser = true;
+                }
+                if(intenseDebug) {console.log("Found a protein in progress: " + data[key].proteinInProgress);}
+              } else {
                 chosenProtein = "Insulin";
                 remainingProteinLength = 110;
                 goToProteinChooser = true;
+                if(intenseDebug) {console.log("Didn't find a protein in progress");}
               }
-              if(intenseDebug) {console.log("Found a protein in progress: " + data[key].proteinInProgress);}
-            } else {
-              chosenProtein = "Insulin";
-              remainingProteinLength = 110;
-              goToProteinChooser = true;
-              if(intenseDebug) {console.log("Didn't find a protein in progress");}
             }
           }
-        }
-        if(userDoesNotExist) {
-          usersArr.$add(userCreator(currentUID));
-        }
-        if(username === "") {
-          window.location = "#/user";
-        } else {
-          gameGeneration();
-        }
-      });
-    }
+          if(userDoesNotExist) {
+            usersArr.$add(userCreator(currentUID));
+          }
+          if(username === "") {
+            window.location = "#/user";
+          } else {
+            gameGeneration();
+          }
+        });
+      }
+    }.bind(this));
 
     var wKey;
     var aKey;
