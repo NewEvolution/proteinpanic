@@ -895,12 +895,12 @@ define([
 
 //-------------------------------------------------------------------------------------------------
 
-  function onExit() {
-    controlsDestroyed = true;
-    gameMusic.stop();
-    victoryMusic.stop();
-    game.input.keyboard.clearCaptures();
-  }
+    function onExit() {
+      controlsDestroyed = true;
+      gameMusic.stop();
+      victoryMusic.stop();
+      game.input.keyboard.clearCaptures();
+    }
 
 //-------------------------------------------------------------------------------------------------
 
